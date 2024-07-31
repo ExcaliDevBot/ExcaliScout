@@ -1,0 +1,25 @@
+body {
+    margin: 0;
+}
+
+.navbar {
+    background-color: #d4af37;
+    overflow: hidden;
+    text-align: center;
+}
+
+.navbar a {
+    float: right;
+    display: block;
+    color: #012265;
+    text-align: center;
+    padding: 12px 25px;
+    text-decoration: none;
+    font-family: "Assistant SemiBold";
+}
+
+.navbar a:hover {
+    background-color: #012265;
+    color: #d4af37;
+    font-family: "Assistant ExtraBold";
+}
