@@ -39,6 +39,7 @@ function LoginForm() {
             const data = await response.json();
             if (data.status === 'success') {
                 setUser(data.user);
+                localStorage.setItem('currentUser', JSON.stringify(data.user));
                 navigate('/my-matches');  // Redirect to My Matches page
             } else {
                 setMessage(data.message);
@@ -80,4 +81,3 @@ function LoginForm() {
 }
 
 export default Login;
-// Compare this snippet from Navbar.jsx:
