@@ -5,7 +5,7 @@ import App from './App';
 import { UserProvider } from './context/UserContext';
 import reportWebVitals from "./reportWebVitals";
 import {sendToVercelAnalytics} from "./vitals";
-
+import { SpeedInsights } from "@vercel/speed-insights/react"
 ReactDOM.render(
     <React.StrictMode>
         <UserProvider>
