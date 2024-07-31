@@ -20,7 +20,7 @@ function ManageUsers() {
     };
 
     const handleAddUser = async () => {
-        const response = await fetch('http://localhost:5000/add_user', {
+        const response = await fetch('https://ScoutingSystem.pythonanywhere.com/add_user', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newUser)
@@ -33,7 +33,7 @@ function ManageUsers() {
     };
 
     const handleDeleteUser = async (user_id) => {
-        const response = await fetch('http://localhost:5000/delete_user', {
+        const response = await fetch('https://ScoutingSystem.pythonanywhere.com/delete_user', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_id })
@@ -45,7 +45,7 @@ function ManageUsers() {
     };
 
     const handleUpdateUser = async (user_id, role) => {
-        const response = await fetch('http://localhost:5000/update_user', {
+        const response = await fetch('https://ScoutingSystem.pythonanywhere.com/update_user', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_id, role })

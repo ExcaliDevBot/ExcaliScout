@@ -11,7 +11,7 @@ function MyMatches() {
     useEffect(() => {
         if (user) {
             const fetchMatches = async () => {
-                const response = await fetch(`http://localhost:5000/matches_assignments?user_id=${user.user_id}`);
+                const response = await fetch(`https://ScoutingSystem.pythonanywhere.com/matches_assignments?user_id=${user.user_id}`);
                 const data = await response.json();
                 if (data.status === 'success') {
                     setMatches(data.matches);

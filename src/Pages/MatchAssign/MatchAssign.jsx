@@ -8,7 +8,7 @@ function MatchAssign() {
     useEffect(() => {
         const fetchMatches = async () => {
             try {
-                const response = await fetch('http://localhost:5000/matches');
+                const response = await fetch('https://ScoutingSystem.pythonanywhere.com/matches');
                 const data = await response.json();
                 if (data.status === 'success') {
                     setMatches(data.matches);
@@ -20,7 +20,7 @@ function MatchAssign() {
 
         const fetchUsers = async () => {
             try {
-                const response = await fetch('http://localhost:5000/users');
+                const response = await fetch('https://ScoutingSystem.pythonanywhere.com/users');
                 const data = await response.json();
                 if (data.status === 'success') {
                     setScouters(data.users);
@@ -45,7 +45,7 @@ function MatchAssign() {
 
     const handleManualAssign = async () => {
         try {
-            const response = await fetch('http://localhost:5000/manual_assign', {
+            const response = await fetch('https://ScoutingSystem.pythonanywhere.com/manual_assign', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
