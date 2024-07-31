@@ -12,7 +12,7 @@ function ManageUsers() {
     }, []);
 
     const fetchUsers = async () => {
-        const response = await fetch('http://localhost:5000/users');
+        const response = await fetch('https://ScoutingSystem.pythonanywhere.com/users');
         const data = await response.json();
         if (data.status === 'success') {
             setUsers(data.users);

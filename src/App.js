@@ -4,19 +4,24 @@ import Login from './Pages/Login/Login';
 import MyMatches from './Pages/MyMatches/MyMatches';
 import ScoutingForm from './Pages/Scouting/Scouting';
 import MatchAssign from './Pages/MatchAssign/MatchAssign';
-import ManageUsers from './Pages/ManageUsers/ManageUsers'; // Import the new component
+import Profile from './Pages/Profile/Profile';
+import ManageUsers from './Pages/ManageUsers/ManageUsers';
+import { UserProvider } from './context/UserContext';
 
 function App() {
     return (
-        <Router>
-            <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/assign" element={<MatchAssign />} />
-                <Route path="/my-matches" element={<MyMatches />} />
-                <Route path="/scout/:match_id" element={<ScoutingForm />} />
-                <Route path="/manage-users" element={<ManageUsers />} /> {/* Add the new route */}
-            </Routes>
-        </Router>
+        <UserProvider>
+            <Router>
+                <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/assign" element={<MatchAssign />} />
+                    <Route path="/my-matches" element={<MyMatches />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/scout/:match_id" element={<ScoutingForm />} />
+                    <Route path="/manage-users" element={<ManageUsers />} />
+                </Routes>
+            </Router>
+        </UserProvider>
     );
 }
 
