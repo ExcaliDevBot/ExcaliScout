@@ -1,0 +1,47 @@
+body {
+    font-family: "Assistant SemiBold", serif;
+}
+
+label, h3 {
+    font-family: "Copperplate Gothic Light", serif;
+    color: #d4af37;
+}
+
+BUtton {
+    font-size: 24px;
+    width: 80%;
+    height: 100px;
+    background: url('https://www.firstinspires.org/sites/default/files/uploads/hero_headers/header-image_1.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    font-size: 1.5em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+
+.button-container {
+    max-width: 780px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 0 10px;
+}
+
+.resizable-button {
+    width: 30%;
+    max-width: 250px;
+    height: auto;
+    font-size: larger;
+    margin: 10px;
+    box-sizing: border-box;
+}
+
+.Autonomus {
+    width: 80px;
+    height: 40px;
+}
