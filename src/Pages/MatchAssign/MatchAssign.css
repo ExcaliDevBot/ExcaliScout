@@ -1,0 +1,47 @@
+.match-assign-container {
+    padding: 20px;
+}
+
+.match-assign-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+thead th {
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+tbody td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.red-alliance {
+    background-color: rgba(255, 0, 0, 0.1);
+}
+
+.blue-alliance {
+    background-color: rgba(0, 0, 255, 0.1);
+}
+
+select {
+    width: 100%;
+    padding: 5px;
+    border: none;
+    background: none;
+}
+
+.robot-number {
+    font-size: 0.8em;
+    color: #555;
+    margin-top: 5px;
+}

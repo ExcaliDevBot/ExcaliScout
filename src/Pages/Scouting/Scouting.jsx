@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import QRCode from "qrcode.react";
 import "./Scouting.css";
 import Navbar from "../Navbar/Navbar";
@@ -6,10 +7,12 @@ import TeleField from "./Game/Teleop";
 import Papa from "papaparse";
 
 function ScoutingForm() {
+    const location = useLocation();
+    const { match, user } = location.state || {};
     const [formData, setFormData] = useState({
-        Name: '',
-        Team: '',
-        Alliance: '',
+        Name: user ? user.username : '',
+        Team: match ? match[`team${match.robot + 1}`] : '',
+        Alliance: match ? match.alliance : '',
         TeleNotes: '',
         checkboxes: Array(9).fill(false),
         TelePoints: []
@@ -22,7 +25,6 @@ function ScoutingForm() {
             const barcodeString = `${formData.Name},${formData.Alliance},${formData.Team},${telePointsCSV}`;
             return barcodeString;
         };
-
 
         setBarcodeData(generateBarcode());
     }, [formData]);
@@ -45,7 +47,7 @@ function ScoutingForm() {
 
     const sendDataToSheet = (value) => {
         value = removeUnwantedCharacters(value);
-        fetch('httpsscript.google.com/macros/s/AKfycbzxJmqZyvvPHM01FOFTnlGtUFxoslmNOJTUT0QccjLQsK5uQAHHhe_HfYFO2BxyK7Y_/exec', {
+        fetch('https://script.google.com/macros/s/AKfycbzxJmqZyvvPHM01FOFTnlGtUFxoslmNOJTUT0QccjLQsK5uQAHHhe_HfYFO2BxyK7Y_/exec', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
