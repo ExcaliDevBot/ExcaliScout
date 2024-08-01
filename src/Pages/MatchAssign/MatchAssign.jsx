@@ -120,6 +120,9 @@ function MatchAssign() {
                                                 </option>
                                             ))}
                                         </select>
+                                        <div>
+                                            {match[`team${scouterIndex}`]}
+                                        </div>
                                     </td>
                                 ))}
                             </tr>
