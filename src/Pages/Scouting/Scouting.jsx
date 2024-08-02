@@ -72,26 +72,26 @@ function ScoutingForm() {
 
     return (
         <div>
-            <Navbar />
-            <br />
-
+            <Navbar/>
+            <h2>Regular Scouting:</h2>
             <form onSubmit={handleSubmit}>
-                <label htmlFor="Sname">Name:</label><br />
-                <input type="text" id="Sname" name="Name" value={formData.Name} onChange={handleInputChange} /><br />
-                <br />
+                <label htmlFor="Sname">Name:</label><br/>
+                <input type="text" id="Sname" name="Name" value={formData.Name} onChange={handleInputChange}/><br/>
+                <br/>
 
-                <label htmlFor="Team">Team Number:</label><br />
-                <input type="number" id="Team" name="Team" value={formData.Team} onChange={handleInputChange} /><br />
-                <br />
+                <label htmlFor="Team">Team Number:</label><br/>
+                <input type="number" id="Team" name="Team" value={formData.Team} onChange={handleInputChange}/><br/>
+                <br/>
 
-                <label htmlFor="Alliance">Alliance:</label><br />
-                <input type="text" id="Alliance" name="Alliance" value={formData.Alliance} onChange={handleInputChange} />
-                <br />
+                <label htmlFor="Alliance">Alliance:</label><br/>
+                <input type="text" id="Alliance" name="Alliance" value={formData.Alliance}
+                       onChange={handleInputChange}/>
+                <br/>
             </form>
 
-            <br />
+            <br/>
 
-            <h3 style={{ color: 'black' }}>Turn your phone sideways to work comfortably with the map.</h3>
+            <h3 style={{color: 'black'}}>Turn your phone sideways to work comfortably with the map.</h3>
 
             <h3>Map for scouting:</h3>
 
@@ -101,21 +101,21 @@ function ScoutingForm() {
                 <button type="button" className="resizable-button" onClick={handleAutoClick}>Autonomus</button>
             </div>
 
-            <br />
+            <br/>
 
-            <TeleField formData={formData} setFormData={setFormData} />
+            <TeleField formData={formData} setFormData={setFormData}/>
 
-            <br />
+            <br/>
 
             <button type="submit" onClick={handleSubmit}>Submit</button>
             <h3>If there is no Wifi:</h3>
-            <QRCodeSection barcodeData={barcodeData} />
+            <QRCodeSection barcodeData={barcodeData}/>
             <br/>
         </div>
     );
 }
 
-function QRCodeSection({ barcodeData }) {
+function QRCodeSection({barcodeData }) {
     return (
         <div style={{ textAlign: 'center' }}>
             <QRCode value={barcodeData} size={150} />

@@ -5,6 +5,9 @@ body {
 label, h3 {
     font-family: "Copperplate Gothic Light", serif;
     color: #d4af37;
+    font-weight: bold;
+    display: block;
+    text-align: center;
 }
 
 .button-container {
@@ -15,6 +18,7 @@ label, h3 {
     flex-wrap: wrap;
     justify-content: space-around;
     padding: 0 10px;
+
 }
 
 .resizable-button {
@@ -29,4 +33,72 @@ label, h3 {
 .Autonomus {
     width: 80px;
     height: 40px;
+}
+
+textarea {
+    width: calc(100% - 40px);
+    min-height: 5em;
+    box-sizing: border-box;
+    resize: none;
+    padding: 0.5em;
+    font-size: 1em;
+    margin: 0px 20px 20px;
+    font-family: "Assistant SemiBold", serif;
+    direction: rtl;
+    overflow: hidden;
+}
+
+.center-button {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 800px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.question-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.question {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.question label {
+    margin-bottom: 5px;
+    display: block;
+    text-align: center;
+}
+
+.submit-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }

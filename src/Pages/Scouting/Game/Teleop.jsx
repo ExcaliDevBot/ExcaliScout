@@ -87,12 +87,6 @@ function TeleField({ formData, setFormData }) {
                 Change Mode
             </button>
 
-            <button onClick={() => {
-                const csvData = exportCSV();
-                console.log(csvData);
-            }} style={{ position: 'absolute', top: '50px', left: '10px', zIndex: '10' }}>
-                Export CSV
-            </button>
 
         </div>
     );
