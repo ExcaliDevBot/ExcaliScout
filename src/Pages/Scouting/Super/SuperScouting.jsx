@@ -1,5 +1,5 @@
 import React from "react";
-import Navbar from "C:/Users/Korengut/WebstormProjects/create-react-app1/src/Pages/Navbar/Navbar.jsx";
+import Navbar from "../../Navbar/Navbar.jsx";
 
 function SuperScouting() {
     return (
