@@ -7,7 +7,7 @@ function Navbar() {
     };
 
     const handleClickScoutNav = () => {
-        window.location.href = '/Scouting/ScoutNav';
+        window.location.href = '/ScoutNav';
     };
 
     const handleClickLogin = () => {
