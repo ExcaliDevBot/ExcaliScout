@@ -14,6 +14,7 @@ import Actions from "./Pages/Actions/Actions";
 import AdminRoute from './AdminRoute';
 import ProtectedRoute from './ProtectedRoute';
 import Navbar from './Pages/Navbar/Navbar';
+import Home from "./Pages/Home/Home";
 
 function App() {
     return (
@@ -22,6 +23,7 @@ function App() {
                 <Navbar />
                 <Routes>
                     <Route path="/login" element={<Login />} />
+                    <Route path="/" element={<Home />} />
                     <Route path="/ScoutNav" element={<ProtectedRoute><ScoutNav /></ProtectedRoute>} />
                     <Route path="/Pit-Scouting" element={<ProtectedRoute><PitScouting /></ProtectedRoute>} />
                     <Route path="/Super-scouting" element={<ProtectedRoute><SuperScouting /></ProtectedRoute>} />
