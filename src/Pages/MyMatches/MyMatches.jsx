@@ -24,8 +24,6 @@ function MyMatches() {
     }, [user]);
 
     return (
-        <div>
-            <Navbar/>
             <div className="container">
                 <h2>My Matches</h2>
                 <table>
@@ -53,7 +51,6 @@ function MyMatches() {
                     </tbody>
                 </table>
             </div>
-        </div>
     );
 }
 

@@ -1,6 +1,6 @@
+// src/Pages/MatchAssign/MatchAssign.jsx
 import React, { useState, useEffect } from 'react';
 import './MatchAssign.css';
-import Navbar from "../Navbar/Navbar";
 
 function MatchAssign() {
     const [matches, setMatches] = useState([]);
@@ -89,8 +89,6 @@ function MatchAssign() {
     };
 
     return (
-        <div>
-            <Navbar/>
         <div className="match-assign-container">
             <h2>Match Assignment</h2>
             <div className="table-container">
@@ -136,7 +134,6 @@ function MatchAssign() {
             <button onClick={handleManualAssign} className="save-button">Save Assignments</button>
             <button onClick={handleReassign} className="reassign-button">Reassign Scouters</button>
         </div>
-            </div>
     );
 }
 

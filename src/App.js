@@ -1,4 +1,4 @@
-import React from 'react';
+// src/App.js
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './Pages/Login/Login';
 import MyMatches from './Pages/MyMatches/MyMatches';
@@ -9,24 +9,30 @@ import ManageUsers from './Pages/ManageUsers/ManageUsers';
 import { UserProvider } from './context/UserContext';
 import SuperScouting from "./Pages/Scouting/Super/SuperScouting";
 import PitScouting from "./Pages/Scouting/Pit/PitScouting";
-import ScoutNav from "./Pages/Nav/ScoutNav"
+import ScoutNav from "./Pages/Nav/ScoutNav";
+import Actions from "./Pages/Actions/Actions";
+import AdminRoute from './AdminRoute';
+import ProtectedRoute from './ProtectedRoute';
+import Navbar from './Pages/Navbar/Navbar';
 
 function App() {
     return (
         <UserProvider>
             <Router>
+                <Navbar />
                 <Routes>
                     <Route path="/login" element={<Login />} />
-                    <Route path="/ScoutNav" element={<ScoutNav />} />
-                    <Route path="/Pit-Scouting" element={<PitScouting />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/Super-scouting" element={<SuperScouting />} />
-                    <Route path="/assign" element={<MatchAssign />} />
-                    <Route path="/" element={<MyMatches />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/scout/:match_id" element={<ScoutingForm />} />
-                    <Route path="/scout" element={<ScoutingForm />} />
-                    <Route path="/manage-users" element={<ManageUsers />} />
+                    <Route path="/ScoutNav" element={<ProtectedRoute><ScoutNav /></ProtectedRoute>} />
+                    <Route path="/Pit-Scouting" element={<ProtectedRoute><PitScouting /></ProtectedRoute>} />
+                    <Route path="/Super-scouting" element={<ProtectedRoute><SuperScouting /></ProtectedRoute>} />
+                    <Route path="/assign" element={<AdminRoute><MatchAssign /></AdminRoute>} />
+                    <Route path="/MyMatches" element={<ProtectedRoute><MyMatches /></ProtectedRoute>} />
+                    <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                    <Route path="/Actions" element={<ProtectedRoute><Actions /></ProtectedRoute>} />
+                    <Route path="/scout/:match_id" element={<ProtectedRoute><ScoutingForm /></ProtectedRoute>} />
+                    <Route path="/scout" element={<ProtectedRoute><ScoutingForm /></ProtectedRoute>} />
+                    <Route path="/manage-users" element={<AdminRoute><ManageUsers /></AdminRoute>} />
+                    <Route path="/no-access" element={<div>No Access</div>} />
                 </Routes>
             </Router>
         </UserProvider>
