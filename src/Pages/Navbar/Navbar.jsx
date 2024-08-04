@@ -1,51 +1,66 @@
-import React, { useContext } from 'react';
-import './Navbar.css';
+// src/Pages/Navbar/Navbar.jsx
+import React, { useContext, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
+import './Navbar.css';
 
-function Navbar() {
-    const { user } = useContext(UserContext);
+const Navbar = () => {
+    const { user, setUser } = useContext(UserContext);
+    const navigate = useNavigate();
+    const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+    const [actionsDropdownOpen, setActionsDropdownOpen] = useState(false);
 
-    const handleClickScout = () => {
-        window.location.href = '/Scouting';
+    const handleLogout = () => {
+        setUser(null);
+        localStorage.removeItem('currentUser');
+        navigate('/login');
     };
 
-    const handleClickScoutNav = () => {
-        window.location.href = '/ScoutNav';
+    const toggleProfileDropdown = () => {
+        setProfileDropdownOpen(!profileDropdownOpen);
     };
 
-    const handleClickLogin = () => {
-        window.location.href = '/Login';
-    };
-
-    const handleClickMyMatches = () => {
-        window.location.href = '/MyMatches';
-    };
-
-    const handleClickActions = () => {
-        window.location.href = '/Actions';
-    };
-
-    const renderUserLink = () => {
-        if (!user) {
-            return <a onClick={handleClickLogin}>Login</a>;
-        } else if (user.role === 'ADMIN') {
-            return <a onClick={handleClickActions}>Actions</a>;
-        } else {
-            return <a onClick={handleClickMyMatches}>My Matches</a>;
-        }
+    const toggleActionsDropdown = () => {
+        setActionsDropdownOpen(!actionsDropdownOpen);
     };
 
     return (
-        <div className="navbar">
-            <span>Hello, {user?.username || 'Guest'}</span>
-            <div>
-                <a href="/">Home</a>
-                <a onClick={handleClickScoutNav}>Scout</a>
-                {renderUserLink()}
-                <a href="#Simbucks">Simbucks</a>
+        <nav className="navbar">
+            <div className="navbar-left">
+                <button onClick={() => navigate('/')}>Home</button>
+                {user && <button onClick={() => navigate('/scout')}>Scout</button>}
+                {user && user.role === "ADMIN" && (
+                    <div className="dropdown">
+                        <button onClick={toggleActionsDropdown} className="dropbtn">Actions</button>
+                        {actionsDropdownOpen && (
+                            <div className="dropdown-content">
+                                <Link to="/manage-users">Manage Users</Link>
+                                <Link to="/assign">Assign Matches</Link>
+                                {/* Add more admin actions here */}
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
-        </div>
+            <div className="navbar-right">
+                {user ? (
+                    <>
+                        <div className="dropdown">
+                            <button onClick={toggleProfileDropdown} className="dropbtn">Profile</button>
+                            {profileDropdownOpen && (
+                                <div className="dropdown-content">
+                                    <Link to="/profile">View Profile</Link>
+                                    <button onClick={handleLogout}>Logout</button>
+                                </div>
+                            )}
+                        </div>
+                    </>
+                ) : (
+                    <Link to="/login">Login</Link>
+                )}
+            </div>
+        </nav>
     );
-}
+};
 
 export default Navbar;
