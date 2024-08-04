@@ -10,7 +10,7 @@ import { UserProvider } from './context/UserContext';
 import SuperScouting from "./Pages/Scouting/Super/SuperScouting";
 import PitScouting from "./Pages/Scouting/Pit/PitScouting";
 import ScoutNav from "./Pages/Nav/ScoutNav"
-
+import Actions from "./Pages/Actions/Actions";
 function App() {
     return (
         <UserProvider>
@@ -22,8 +22,9 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/Super-scouting" element={<SuperScouting />} />
                     <Route path="/assign" element={<MatchAssign />} />
-                    <Route path="/" element={<MyMatches />} />
+                    <Route path="/MyMatches" element={<MyMatches />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/Actions" element={<Actions />} />
                     <Route path="/scout/:match_id" element={<ScoutingForm />} />
                     <Route path="/scout" element={<ScoutingForm />} />
                     <Route path="/manage-users" element={<ManageUsers />} />
