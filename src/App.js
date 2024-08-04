@@ -10,11 +10,13 @@ import { UserProvider } from './context/UserContext';
 import SuperScouting from "./Pages/Scouting/Super/SuperScouting";
 import PitScouting from "./Pages/Scouting/Pit/PitScouting";
 import ScoutNav from "./Pages/Nav/ScoutNav"
+
 function App() {
     return (
         <UserProvider>
             <Router>
                 <Routes>
+                    <Route path="/login" element={<Login />} />
                     <Route path="/ScoutNav" element={<ScoutNav />} />
                     <Route path="/Pit-Scouting" element={<PitScouting />} />
                     <Route path="/login" element={<Login />} />
