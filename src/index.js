@@ -1,17 +1,8 @@
+// src/index.js
 import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
+import { createRoot } from 'react-dom/client';
 import App from './App';
-import { UserProvider } from './context/UserContext';
-import reportWebVitals from "./reportWebVitals";
-import {sendToVercelAnalytics} from "./vitals";
-import { SpeedInsights } from "@vercel/speed-insights/react"
-ReactDOM.render(
-    <React.StrictMode>
-        <UserProvider>
-            <App />
-        </UserProvider>
-    </React.StrictMode>,
-    document.getElementById('root')
-);
-reportWebVitals(sendToVercelAnalytics)
+
+const container = document.getElementById('root');
+const root = createRoot(container);
+root.render(<App />);
