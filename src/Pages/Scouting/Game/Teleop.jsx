@@ -45,7 +45,7 @@ function TeleField({ formData, setFormData }) {
     };
 
     const exportCSV = () => {
-        const csvData = pointPositions.map(point => `(${point.x.toFixed(2)},${point.y.toFixed(2)},${point.color === 1 ? 'O' : 'G'})`).join(' ');
+        const csvData = pointPositions.map(point => `(${point.x.toFixed(2)}:${point.y.toFixed(2)},${point.color === 1 ? 'O' : 'G'})`).join(' ');
         return csvData;
     };
 
