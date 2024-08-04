@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import './Navbar.css';
+import { UserContext } from '../../context/UserContext';
 
 function Navbar() {
+    const { user } = useContext(UserContext);
+
     const handleClickScout = () => {
         window.location.href = '/Scouting';
     };
@@ -16,6 +19,7 @@ function Navbar() {
 
     return (
         <div className="navbar">
+            <span>{user?.username || 'Guest'}</span>
             <a href="/">Home</a>
             <a onClick={handleClickScoutNav}>Scout</a>
             <a onClick={handleClickLogin}>Login</a>

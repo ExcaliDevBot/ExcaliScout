@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { UserContext } from '../../context/UserContext';
 import './ManageUsers.css';
+import Navbar from "../Navbar/Navbar";
 
 function ManageUsers() {
     const [users, setUsers] = useState([]);
@@ -57,6 +58,8 @@ function ManageUsers() {
     };
 
     return (
+        <div>
+        <Navbar/>
         <div className="container">
             <h2>Manage Users</h2>
             <div className="form-container">
@@ -115,6 +118,7 @@ function ManageUsers() {
                 </tbody>
             </table>
         </div>
+    </div>
     );
 }
 

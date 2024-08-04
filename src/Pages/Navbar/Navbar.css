@@ -1,25 +1,25 @@
-body {
-    margin: 0;
+/* Navbar.css */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #d4af37;
+    padding: 10px 20px;
+    color: #012265;
 }
 
-.navbar {
-    background-color: #d4af37;
-    overflow: hidden;
-    text-align: center;
+.navbar span {
+    font-size: 18px;
+    font-weight: bold;
 }
 
 .navbar a {
-    float: right;
-    display: block;
-    color: #012265;
-    text-align: center;
-    padding: 12px 25px;
+    color: white;
     text-decoration: none;
-    font-family: "Assistant SemiBold";
+    margin: 0 10px;
+    font-size: 16px;
 }
 
 .navbar a:hover {
-    background-color: #012265;
-    color: #d4af37;
-    font-family: "Assistant ExtraBold";
+    text-decoration: underline;
 }
