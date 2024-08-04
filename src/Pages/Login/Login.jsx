@@ -1,15 +1,15 @@
+// src/Pages/Login/Login.jsx
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
-import Navbar from '../Navbar/Navbar';
 import './Login.css';
 
 function Login() {
     return (
-        <div>
-            <Navbar />
-            <br />
-            <LoginForm />
+        <div className="login-container">
+            <div className="login-form">
+                <LoginForm />
+            </div>
         </div>
     );
 }
@@ -40,7 +40,7 @@ function LoginForm() {
             if (data.status === 'success') {
                 setUser(data.user);
                 localStorage.setItem('currentUser', JSON.stringify(data.user));
-                navigate('/my-matches');  // Redirect to My Matches page
+                navigate('/MyMatches');  // Redirect to My Matches page
             } else {
                 setMessage(data.message);
             }
