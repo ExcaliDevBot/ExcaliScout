@@ -72,7 +72,6 @@ function ScoutingForm() {
 
     return (
         <div>
-            <Navbar/>
             <h2>Regular Scouting:</h2>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="Sname">Name:</label><br/>
