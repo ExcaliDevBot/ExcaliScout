@@ -22,7 +22,7 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/Super-scouting" element={<SuperScouting />} />
                     <Route path="/assign" element={<MatchAssign />} />
-                    <Route path="/my-matches" element={<MyMatches />} />
+                    <Route path="/" element={<MyMatches />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/scout/:match_id" element={<ScoutingForm />} />
                     <Route path="/scout" element={<ScoutingForm />} />
