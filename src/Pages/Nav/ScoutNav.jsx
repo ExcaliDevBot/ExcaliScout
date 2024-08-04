@@ -1,27 +1,77 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Navbar from "../Navbar/Navbar.jsx";
-import "./ScoutNav.css"
+
+// Inline styles for buttons and container
+const buttonContainerStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: '20px',
+};
+
+const buttonStyle = {
+    backgroundColor: '#012265',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    padding: '20px',
+    width: '200px',
+    fontSize: '16px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s',
+    margin: '5px',
+    textAlign: 'center',
+    whiteSpace: 'nowrap',
+};
+
+const buttonHoverStyle = {
+    backgroundColor: '#001a3d',
+};
 
 function ScoutNav() {
     return (
-        <div>
+        <div className="scout-nav-container">
             <Navbar />
-            <br/>
-            {LoginForm()}
+            <LoginForm />
         </div>
     );
 }
 
 function LoginForm() {
     return (
-        <div>
-            <h2>Select your Scouting Type:</h2>
-
-            <br/>
-            <button style={{ background: 'url(https://www.firstinspires.org/sites/default/files/uploads/hero_headers/header-image_1.jpg)' }}>
-                Regular Scouting
-            </button>
+        <div className="login-form">
+            <h2>Your available scouts:</h2>
+            <div style={buttonContainerStyle}>
+                <Link to="/Scout" style={{ textDecoration: 'none' }}>
+                    <button
+                        style={buttonStyle}
+                        onMouseOver={(e) => e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor}
+                        onMouseOut={(e) => e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor}
+                    >
+                        Scouting
+                    </button>
+                </Link>
+                <Link to="/Pit-scouting" style={{ textDecoration: 'none' }}>
+                    <button
+                        style={buttonStyle}
+                        onMouseOver={(e) => e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor}
+                        onMouseOut={(e) => e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor}
+                    >
+                        Pit Scouting
+                    </button>
+                </Link>
+                <Link to="/Super-scouting" style={{ textDecoration: 'none' }}>
+                    <button
+                        style={buttonStyle}
+                        onMouseOver={(e) => e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor}
+                        onMouseOut={(e) => e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor}
+                    >
+                        Super Scouting
+                    </button>
+                </Link>
+            </div>
         </div>
     );
 }

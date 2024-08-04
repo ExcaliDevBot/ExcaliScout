@@ -45,7 +45,7 @@ function TeleField({ formData, setFormData }) {
     };
 
     const exportCSV = () => {
-        const csvData = pointPositions.map(point => `(${point.x.toFixed(2)},${point.y.toFixed(2)},${point.color === 1 ? 'O' : 'G'})`).join(' ');
+        const csvData = pointPositions.map(point => `(${point.x.toFixed(2)}:${point.y.toFixed(2)},${point.color === 1 ? 'O' : 'G'})`).join(' ');
         return csvData;
     };
 
@@ -87,12 +87,6 @@ function TeleField({ formData, setFormData }) {
                 Change Mode
             </button>
 
-            <button onClick={() => {
-                const csvData = exportCSV();
-                console.log(csvData);
-            }} style={{ position: 'absolute', top: '50px', left: '10px', zIndex: '10' }}>
-                Export CSV
-            </button>
 
         </div>
     );
