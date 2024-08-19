@@ -3,7 +3,6 @@ form, h3, h1, button {
     font-family: "Assistant SemiBold", serif;
 }
 html, body {
-    overflow-x: hidden;
     touch-action: none;
 }
 button {
