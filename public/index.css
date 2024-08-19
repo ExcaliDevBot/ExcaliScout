@@ -2,7 +2,10 @@ form, h3, h1, button {
     text-align: center;
     font-family: "Assistant SemiBold", serif;
 }
-
+html, body {
+    overflow-x: hidden;
+    touch-action: none;
+}
 button {
     margin: 0 auto;
     display: block;
