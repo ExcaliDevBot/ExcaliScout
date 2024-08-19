@@ -15,6 +15,8 @@ import AdminRoute from './AdminRoute';
 import ProtectedRoute from './ProtectedRoute';
 import Navbar from './Pages/Navbar/Navbar';
 import Home from "./Pages/Home/Home";
+import NotFound from './Pages/NotFound/NotFound';
+
 
 function App() {
     return (
@@ -35,6 +37,7 @@ function App() {
                     <Route path="/scout" element={<ProtectedRoute><ScoutingForm /></ProtectedRoute>} />
                     <Route path="/manage-users" element={<AdminRoute><ManageUsers /></AdminRoute>} />
                     <Route path="/no-access" element={<div>No Access</div>} />
+                    <Route path="*" element={<NotFound />} />
                 </Routes>
             </Router>
         </UserProvider>
