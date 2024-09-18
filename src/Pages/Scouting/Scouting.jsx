@@ -12,10 +12,12 @@ function ScoutingForm() {
         Team: match ? match[`team${match.robot + 1}`] : '',
         Alliance: match ? match.alliance : '',
         TeleNotes: '',
-        checkboxes: Array(9).fill(false),
+        checkboxes: Array(8).fill(false),
         TelePoints: []
     });
     const [barcodeData, setBarcodeData] = useState('');
+    const [mode, setMode] = useState('teleop'); // State to track mode
+    const [eraserMode, setEraserMode] = useState(false); // State for eraser mode
 
     useEffect(() => {
         const generateBarcode = () => {
@@ -63,56 +65,55 @@ function ScoutingForm() {
     };
 
     const handleAutoClick = () => {
+        setMode('checkbox'); // Switch to checkbox mode
     };
 
     const handleTeleopClick = () => {
+        setMode('teleop'); // Switch to teleop mode
     };
 
     return (
         <div>
             <h2>Regular Scouting:</h2>
             <form onSubmit={handleSubmit}>
-                <label htmlFor="Sname">Name:</label><br/>
-                <input type="text" id="Sname" name="Name" value={formData.Name} onChange={handleInputChange}/><br/>
-                <br/>
+                <label htmlFor="Sname">Name:</label><br />
+                <input type="text" id="Sname" name="Name" value={formData.Name} onChange={handleInputChange} /><br />
+                <br />
 
-                <label htmlFor="Team">Team Number:</label><br/>
-                <input type="number" id="Team" name="Team" value={formData.Team} onChange={handleInputChange}/><br/>
-                <br/>
+                <label htmlFor="Team">Team Number:</label><br />
+                <input type="number" id="Team" name="Team" value={formData.Team} onChange={handleInputChange} /><br />
+                <br />
 
-                <label htmlFor="Alliance">Alliance:</label><br/>
-                <input type="text" id="Alliance" name="Alliance" value={formData.Alliance}
-                       onChange={handleInputChange}/>
-                <br/>
+                <label htmlFor="Alliance">Alliance:</label><br />
+                <input type="text" id="Alliance" name="Alliance" value={formData.Alliance} onChange={handleInputChange} /><br />
             </form>
 
-            <br/>
+            <br />
 
-            <h3 style={{color: 'black'}}>Turn your phone sideways to work comfortably with the map.</h3>
+            <h3 style={{ color: 'black' }}>Turn your phone sideways to work comfortably with the map.</h3>
 
             <h3>Map for scouting:</h3>
 
             <div className="button-container">
-                <button type="button" className="resizable-button">Endgame</button>
+                <button type="button" className="resizable-button" onClick={handleAutoClick}>Autonomous</button>
                 <button type="button" className="resizable-button" onClick={handleTeleopClick}>Teleop</button>
-                <button type="button" className="resizable-button" onClick={handleAutoClick}>Autonomus</button>
             </div>
 
-            <br/>
+            <br />
 
-            <TeleField formData={formData} setFormData={setFormData}/>
+            <TeleField formData={formData} setFormData={setFormData} mode={mode} eraserMode={eraserMode} setEraserMode={setEraserMode} />
 
-            <br/>
+            <br />
 
-            <button type="submit" onClick={handleSubmit}>Submit</button>
+            <button type="submit">Submit</button>
             <h3>If there is no Wifi:</h3>
-            <QRCodeSection barcodeData={barcodeData}/>
-            <br/>
+            <QRCodeSection barcodeData={barcodeData} />
+            <br />
         </div>
     );
 }
 
-function QRCodeSection({barcodeData }) {
+function QRCodeSection({ barcodeData }) {
     return (
         <div style={{ textAlign: 'center' }}>
             <QRCode value={barcodeData} size={150} />

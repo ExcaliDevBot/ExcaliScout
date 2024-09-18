@@ -1,54 +1,72 @@
-import React, { useState, useRef, useEffect } from "react";
-import Papa from "papaparse";
+import React, { useEffect, useState, useRef } from "react";
 
-function TeleField({ formData, setFormData }) {
+function TeleField({ formData, setFormData, mode, eraserMode, setEraserMode }) {
     const [dotColor, setDotColor] = useState(1);
     const [pointPositions, setPointPositions] = useState([]);
-    const [barcodeData, setBarcodeData] = useState('');
-
+    const [counter, setCounter] = useState(0); // State for the counter
     const imageRef = useRef(null);
+    const pointRadius = 5; // Radius for eraser
+
+    const checkboxPositions = [
+        { left: '73.8%', top: '23.5%' },
+        { left: '73.8%', top: '38.5%' },
+        { left: '73.8%', top: '53.5%' },
+        { left: '50%', top: '19%' },
+        { left: '50%', top: '36%' },
+        { left: '50%', top: '53%' },
+        { left: '50%', top: '70%' },
+        { left: '50%', top: '87.5%' },
+    ];
 
     useEffect(() => {
-        const generateBarcode = () => {
-            const telePointsCSV = pointPositions.map(point => `${point.x.toFixed(2)}[${point.y.toFixed(2)}]`).join(',');
-            const barcodeString = `${formData.Name},${formData.Alliance},${formData.Team},${telePointsCSV}`;
-            return barcodeString;
-        };
-
-        setBarcodeData(generateBarcode());
-    }, [formData, pointPositions]);
+        setPointPositions(formData.TelePoints);
+    }, [formData]);
 
     const handleImageClick = (event) => {
         const imageElement = imageRef.current;
         if (!imageElement) return;
 
         const rect = imageElement.getBoundingClientRect();
-        const x = parseFloat(((event.clientX - rect.left) / rect.width * 100).toFixed(2));
-        const y = parseFloat(((event.clientY - rect.top) / rect.height * 100).toFixed(2));
+        const x = ((event.clientX - rect.left) / rect.width) * 100;
+        const y = ((event.clientY - rect.top) / rect.height) * 100;
 
-        const newPoint = {
-            x,
-            y,
-            color: dotColor,
-        };
+        if (eraserMode) {
+            const newPointPositions = pointPositions.filter(point => {
+                const distanceX = Math.abs(point.x - x);
+                const distanceY = Math.abs(point.y - y);
+                const distance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+                return distance > pointRadius; // Keep points outside the radius
+            });
 
-        setPointPositions([...pointPositions, newPoint]);
+            setPointPositions(newPointPositions);
+            setFormData(prevState => ({
+                ...prevState,
+                TelePoints: newPointPositions
+            }));
+        } else if (mode === 'teleop') {
+            const newPoint = { x, y, color: dotColor };
+            setPointPositions([...pointPositions, newPoint]);
 
-        setFormData(prevState => ({
-            ...prevState,
-            TelePoints: [...prevState.TelePoints, newPoint]
-        }));
+            setFormData(prevState => ({
+                ...prevState,
+                TelePoints: [...prevState.TelePoints, newPoint]
+            }));
+        }
+        // No action for autonomous mode
     };
 
     const toggleDotColor = () => {
         setDotColor(dotColor === 1 ? 2 : 1);
+        setEraserMode(false); // Switch to normal mode when changing colors
     };
 
-    const exportCSV = () => {
-        const csvData = pointPositions.map(point => `(${point.x.toFixed(2)}:${point.y.toFixed(2)}:${point.color === 1 ? 'O' : 'G'})`).join(' ');
-        return csvData;
+    const incrementCounter = () => {
+        setCounter(prevCounter => prevCounter + 1);
     };
 
+    const decrementCounter = () => {
+        setCounter(prevCounter => Math.max(0, prevCounter - 1)); // Prevent going below 0
+    };
 
     return (
         <div style={{ position: 'relative', width: '100%', maxWidth: '1000px', margin: '0 auto' }}>
@@ -83,11 +101,50 @@ function TeleField({ formData, setFormData }) {
                 </div>
             ))}
 
-            <button onClick={toggleDotColor} style={{ position: 'absolute', top: '10px', left: '10px', zIndex: '10' }}>
-                Change Mode
-            </button>
+            {mode === 'teleop' && (
+                <>
+                    <button onClick={toggleDotColor} style={{ position: 'absolute', top: '10px', left: '10px', zIndex: '10' }}>
+                        Change Mode
+                    </button>
 
+                    <button onClick={() => setEraserMode(!eraserMode)} style={{ position: 'absolute', top: '50px', left: '10px', zIndex: '10', marginTop: '10px' }}>
+                        {eraserMode ? 'Disable Eraser' : 'Eraser Mode'}
+                    </button>
 
+                    {/* Counter Display - positioned relative to the bottom of the image */}
+                    <div style={{ position: 'absolute', top: 'calc(100% - 70px)', left: '620px', zIndex: '10', fontSize: '24px' }}>
+                        <button onClick={decrementCounter} style={{ fontSize: '14px', padding: '5px 10px' }}>-</button>
+                        <span style={{ margin: '0 10px', fontSize: '20px' }}>{counter}</span>
+                        <button onClick={incrementCounter} style={{ fontSize: '14px', padding: '5px 10px' }}>+</button>
+                    </div>
+                </>
+            )}
+
+            {mode === 'checkbox' && (
+                <div>
+                    {formData.checkboxes.map((checked, index) => (
+                        <div
+                            key={index}
+                            style={{
+                                position: 'absolute',
+                                left: checkboxPositions[index]?.left,
+                                top: checkboxPositions[index]?.top,
+                                transform: 'translate(-50%, -50%)',
+                            }}
+                        >
+                            <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => {
+                                    const newCheckboxes = [...formData.checkboxes];
+                                    newCheckboxes[index] = !newCheckboxes[index];
+                                    setFormData({ ...formData, checkboxes: newCheckboxes });
+                                }}
+                            />
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
