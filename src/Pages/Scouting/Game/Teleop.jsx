@@ -113,24 +113,28 @@ function TeleField({ formData, setFormData, mode, eraserMode, setEraserMode }) {
             {mode === 'teleop' && (
                 <>
                     <button onClick={toggleDotColor} style={{ position: 'absolute', top: '10px', left: '10px', zIndex: '10' }}>
-                        Change Mode
+                        שנה מצב
                     </button>
 
                     <button onClick={() => setEraserMode(!eraserMode)} style={{ position: 'absolute', top: '50px', left: '10px', zIndex: '10', marginTop: '10px' }}>
-                        {eraserMode ? 'Disable Eraser' : 'Eraser Mode'}
+                        {eraserMode ? 'השבת מחק' : 'מצב מחק'}
                     </button>
 
-                    {/* Counter Display - positioned relative to the bottom of the image */}
+                    {/* Counter Display for Teleop */}
                     <div style={{ position: 'absolute', top: '0px', left: '500px', zIndex: '10', fontSize: '24px' }}>
                         <button onClick={decrementCounter} style={{ fontSize: '14px', padding: '5px 10px' }}>-</button>
                         <span style={{ margin: '0 10px', fontSize: '20px' }}>{counter}</span>
                         <button onClick={incrementCounter} style={{ fontSize: '14px', padding: '5px 10px' }}>+</button>
                     </div>
+                </>
+            )}
 
-                                        {/* Counter Display - positioned relative to the bottom of the image */}
+            {mode === 'checkbox' && (
+                <>
+                    {/* Counter Display for Autonomous */}
                     <div style={{ position: 'absolute', top: '0px', left: '500px', zIndex: '10', fontSize: '24px' }}>
                         <button onClick={decrementCounter2} style={{ fontSize: '14px', padding: '5px 10px' }}>-</button>
-                        <span style={{ margin: '0 10px', fontSize: '20px' }}>{counter}</span>
+                        <span style={{ margin: '0 10px', fontSize: '20px' }}>{counter2}</span>
                         <button onClick={incrementCounter2} style={{ fontSize: '14px', padding: '5px 10px' }}>+</button>
                     </div>
                 </>

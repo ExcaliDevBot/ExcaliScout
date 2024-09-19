@@ -73,47 +73,47 @@ function ScoutingForm() {
     };
 
     return (
-        <div>
-            <h2>Regular Scouting:</h2>
+        <div style={{ fontFamily: 'Assistant', direction: 'rtl' }}>
+            <h2 style={{ fontFamily: 'Assistant' }}>סקאוטינג רגיל:</h2>
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', width: '100%' }}>
-                <label htmlFor="Sname">Name:</label>
+                <label htmlFor="Sname" style={{ fontFamily: 'Assistant' }}>שם:</label>
                 <input
                     type="text"
                     id="Sname"
                     name="Name"
                     value={formData.Name}
                     onChange={handleInputChange}
-                    style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box' }}
+                    style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box', fontFamily: 'Assistant' }}
                 />
 
-                <label htmlFor="Team">Team Number:</label>
+                <label htmlFor="Team" style={{ fontFamily: 'Assistant' }}>מספר קבוצה:</label>
                 <input
                     type="number"
                     id="Team"
                     name="Team"
                     value={formData.Team}
                     onChange={handleInputChange}
-                    style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box' }}
+                    style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box', fontFamily: 'Assistant' }}
                 />
 
-                <label htmlFor="Alliance">Alliance:</label>
+                <label htmlFor="Alliance" style={{ fontFamily: 'Assistant' }}>ברית:</label>
                 <input
                     type="text"
                     id="Alliance"
                     name="Alliance"
                     value={formData.Alliance}
                     onChange={handleInputChange}
-                    style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box' }}
+                    style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box', fontFamily: 'Assistant' }}
                 />
             </form>
 
-            <h3 style={{ color: 'black', textAlign: 'center' }}>Turn your phone sideways to work comfortably with the map.</h3>
+            <h3 style={{ color: 'black', textAlign: 'center', fontFamily: 'Assistant' }}>סובב את הטלפון שלך לרוחב כדי שהטופס יעבוד כמו שצריך.</h3>
 
-            <h3>Map for scouting:</h3>
+            <h3 style={{ fontFamily: 'Assistant' }}>מפת סקאוטינג:</h3>
 
             <div className="button-container" style={{ display: 'flex', justifyContent: 'space-between', padding: '0 10px' }}>
-                <button type="button" className="resizable-button" style={{ flex: 1, margin: '5px' }} onClick={handleAutoClick}>Autonomous</button>
-                <button type="button" className="resizable-button" style={{ flex: 1, margin: '5px' }} onClick={handleTeleopClick}>Teleop</button>
+                <button type="button" className="resizable-button" style={{ flex: 1, margin: '5px', fontFamily: 'Assistant' }} onClick={handleAutoClick}>Autonomous</button>
+                <button type="button" className="resizable-button" style={{ flex: 1, margin: '5px', fontFamily: 'Assistant' }} onClick={handleTeleopClick}>Teleop</button>
             </div>
 
             <br />
@@ -122,11 +122,27 @@ function ScoutingForm() {
 
             <br />
 
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <button type="submit" style={{ padding: '10px 20px' }}>Submit</button>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <label style={{ fontFamily: 'Assistant' }}>
+                    <input type="checkbox" onChange={() => handleCheckboxChange(0)} />
+                     הרובוט טיפס?
+                </label>
+                <label style={{ fontFamily: 'Assistant' }}>
+                    <input type="checkbox" onChange={() => handleCheckboxChange(1)} />
+                     הרובוט טיפס עם עוד רובוט?
+                </label>
+                <label style={{ fontFamily: 'Assistant' }}>
+                    <input type="checkbox" onChange={() => handleCheckboxChange(2)} />
+                    הרובוט קלע לTrap?
+                </label>
+                <br/>
             </div>
 
-            <h3>If there is no Wifi:</h3>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <button type="submit" style={{ padding: '10px 20px', fontFamily: 'Assistant' }}>שליחה</button>
+            </div>
+
+            <h3 style={{ fontFamily: 'Assistant' }}>If there is no Wifi:</h3>
             <QRCodeSection barcodeData={barcodeData} />
             <br />
         </div>
