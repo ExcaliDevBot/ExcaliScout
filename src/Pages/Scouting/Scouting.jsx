@@ -22,7 +22,8 @@ function ScoutingForm() {
     useEffect(() => {
         const generateBarcode = () => {
             const telePointsCSV = formData.TelePoints.map(point => `(${point.x.toFixed(2)},${point.y.toFixed(2)},${point.color === 1 ? 'O' : 'G'})`).join(' ');
-            const barcodeString = `${formData.Name},${formData.Alliance},${formData.Team},${telePointsCSV}`;
+            const checkboxStatuses = formData.checkboxes.map((checked, index) => `Checkbox${index + 1}: ${checked}`).join(', ');
+            const barcodeString = `${formData.Name},${formData.Alliance},${formData.Team},${telePointsCSV},${checkboxStatuses}`;
             return barcodeString;
         };
 
