@@ -75,28 +75,45 @@ function ScoutingForm() {
     return (
         <div>
             <h2>Regular Scouting:</h2>
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="Sname">Name:</label><br />
-                <input type="text" id="Sname" name="Name" value={formData.Name} onChange={handleInputChange} /><br />
-                <br />
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', width: '100%' }}>
+                <label htmlFor="Sname">Name:</label>
+                <input
+                    type="text"
+                    id="Sname"
+                    name="Name"
+                    value={formData.Name}
+                    onChange={handleInputChange}
+                    style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box' }}
+                />
 
-                <label htmlFor="Team">Team Number:</label><br />
-                <input type="number" id="Team" name="Team" value={formData.Team} onChange={handleInputChange} /><br />
-                <br />
+                <label htmlFor="Team">Team Number:</label>
+                <input
+                    type="number"
+                    id="Team"
+                    name="Team"
+                    value={formData.Team}
+                    onChange={handleInputChange}
+                    style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box' }}
+                />
 
-                <label htmlFor="Alliance">Alliance:</label><br />
-                <input type="text" id="Alliance" name="Alliance" value={formData.Alliance} onChange={handleInputChange} /><br />
+                <label htmlFor="Alliance">Alliance:</label>
+                <input
+                    type="text"
+                    id="Alliance"
+                    name="Alliance"
+                    value={formData.Alliance}
+                    onChange={handleInputChange}
+                    style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box' }}
+                />
             </form>
 
-            <br />
-
-            <h3 style={{ color: 'black' }}>Turn your phone sideways to work comfortably with the map.</h3>
+            <h3 style={{ color: 'black', textAlign: 'center' }}>Turn your phone sideways to work comfortably with the map.</h3>
 
             <h3>Map for scouting:</h3>
 
-            <div className="button-container">
-                <button type="button" className="resizable-button" onClick={handleAutoClick}>Autonomous</button>
-                <button type="button" className="resizable-button" onClick={handleTeleopClick}>Teleop</button>
+            <div className="button-container" style={{ display: 'flex', justifyContent: 'space-between', padding: '0 10px' }}>
+                <button type="button" className="resizable-button" style={{ flex: 1, margin: '5px' }} onClick={handleAutoClick}>Autonomous</button>
+                <button type="button" className="resizable-button" style={{ flex: 1, margin: '5px' }} onClick={handleTeleopClick}>Teleop</button>
             </div>
 
             <br />
@@ -105,7 +122,10 @@ function ScoutingForm() {
 
             <br />
 
-            <button type="submit">Submit</button>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <button type="submit" style={{ padding: '10px 20px' }}>Submit</button>
+            </div>
+
             <h3>If there is no Wifi:</h3>
             <QRCodeSection barcodeData={barcodeData} />
             <br />

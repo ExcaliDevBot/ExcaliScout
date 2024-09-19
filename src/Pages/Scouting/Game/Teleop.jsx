@@ -4,8 +4,9 @@ function TeleField({ formData, setFormData, mode, eraserMode, setEraserMode }) {
     const [dotColor, setDotColor] = useState(1);
     const [pointPositions, setPointPositions] = useState([]);
     const [counter, setCounter] = useState(0); // State for the counter
+    const [counter2, setCounter2] = useState(0); // State for the counter
     const imageRef = useRef(null);
-    const pointRadius = 5; // Radius for eraser
+    const pointRadius = 2; // Radius for eraser
 
     const checkboxPositions = [
         { left: '73.8%', top: '23.5%' },
@@ -68,6 +69,14 @@ function TeleField({ formData, setFormData, mode, eraserMode, setEraserMode }) {
         setCounter(prevCounter => Math.max(0, prevCounter - 1)); // Prevent going below 0
     };
 
+    const incrementCounter2 = () => {
+        setCounter2(prevCounter => prevCounter + 1);
+    };
+
+    const decrementCounter2 = () => {
+        setCounter2(prevCounter => Math.max(0, prevCounter - 1)); // Prevent going below 0
+    };
+
     return (
         <div style={{ position: 'relative', width: '100%', maxWidth: '1000px', margin: '0 auto' }}>
             <img
@@ -112,10 +121,17 @@ function TeleField({ formData, setFormData, mode, eraserMode, setEraserMode }) {
                     </button>
 
                     {/* Counter Display - positioned relative to the bottom of the image */}
-                    <div style={{ position: 'absolute', top: 'calc(100% - 70px)', left: '620px', zIndex: '10', fontSize: '24px' }}>
+                    <div style={{ position: 'absolute', top: '0px', left: '500px', zIndex: '10', fontSize: '24px' }}>
                         <button onClick={decrementCounter} style={{ fontSize: '14px', padding: '5px 10px' }}>-</button>
                         <span style={{ margin: '0 10px', fontSize: '20px' }}>{counter}</span>
                         <button onClick={incrementCounter} style={{ fontSize: '14px', padding: '5px 10px' }}>+</button>
+                    </div>
+
+                                        {/* Counter Display - positioned relative to the bottom of the image */}
+                    <div style={{ position: 'absolute', top: '0px', left: '500px', zIndex: '10', fontSize: '24px' }}>
+                        <button onClick={decrementCounter2} style={{ fontSize: '14px', padding: '5px 10px' }}>-</button>
+                        <span style={{ margin: '0 10px', fontSize: '20px' }}>{counter}</span>
+                        <button onClick={incrementCounter2} style={{ fontSize: '14px', padding: '5px 10px' }}>+</button>
                     </div>
                 </>
             )}
