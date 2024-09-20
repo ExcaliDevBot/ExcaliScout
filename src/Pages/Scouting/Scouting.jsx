@@ -185,7 +185,7 @@ function ScoutingForm() {
                 <button type="submit" style={{ padding: '10px 20px', fontFamily: 'Assistant' }}>שליחה</button>
             </div>
 
-            <h3 style={{ fontFamily: 'Assistant' }}>If there is no Wifi:</h3>
+            <h3 style={{ fontFamily: 'Assistant' }}>אם אין אינטרנט:</h3>
             <QRCodeSection barcodeData={barcodeData} />
             <br />
         </div>
