@@ -3,8 +3,8 @@ import React, { useEffect, useState, useRef } from "react";
 function TeleField({ formData, setFormData, mode, eraserMode, setEraserMode }) {
     const [dotColor, setDotColor] = useState(1);
     const [pointPositions, setPointPositions] = useState([]);
-    const [counter, setCounter] = useState(0); // State for the counter
-    const [counter2, setCounter2] = useState(0); // State for the counter
+    const [counter, setCounter] = useState(formData.counter1 || 0); // Initialize from formData
+    const [counter2, setCounter2] = useState(formData.counter2 || 0); // Initialize from formData
     const imageRef = useRef(null);
     const pointRadius = 2; // Radius for eraser
 
@@ -21,6 +21,8 @@ function TeleField({ formData, setFormData, mode, eraserMode, setEraserMode }) {
 
     useEffect(() => {
         setPointPositions(formData.TelePoints);
+        setCounter(formData.counter1 || 0); // Sync with formData
+        setCounter2(formData.counter2 || 0); // Sync with formData
     }, [formData]);
 
     const handleImageClick = (event) => {
@@ -62,19 +64,35 @@ function TeleField({ formData, setFormData, mode, eraserMode, setEraserMode }) {
     };
 
     const incrementCounter = () => {
-        setCounter(prevCounter => prevCounter + 1);
+        setCounter(prevCounter => {
+            const newCounter = prevCounter + 1;
+            setFormData(prevData => ({ ...prevData, counter1: newCounter })); // Update formData
+            return newCounter;
+        });
     };
 
     const decrementCounter = () => {
-        setCounter(prevCounter => Math.max(0, prevCounter - 1)); // Prevent going below 0
+        setCounter(prevCounter => {
+            const newCounter = Math.max(0, prevCounter - 1); // Prevent going below 0
+            setFormData(prevData => ({ ...prevData, counter1: newCounter })); // Update formData
+            return newCounter;
+        });
     };
 
     const incrementCounter2 = () => {
-        setCounter2(prevCounter => prevCounter + 1);
+        setCounter2(prevCounter => {
+            const newCounter = prevCounter + 1;
+            setFormData(prevData => ({ ...prevData, counter2: newCounter })); // Update formData
+            return newCounter;
+        });
     };
 
     const decrementCounter2 = () => {
-        setCounter2(prevCounter => Math.max(0, prevCounter - 1)); // Prevent going below 0
+        setCounter2(prevCounter => {
+            const newCounter = Math.max(0, prevCounter - 1); // Prevent going below 0
+            setFormData(prevData => ({ ...prevData, counter2: newCounter })); // Update formData
+            return newCounter;
+        });
     };
 
     return (

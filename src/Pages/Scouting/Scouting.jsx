@@ -13,17 +13,44 @@ function ScoutingForm() {
         Alliance: match ? match.alliance : '',
         TeleNotes: '',
         checkboxes: Array(8).fill(false),
-        TelePoints: []
+        TelePoints: [],
+        Pcounter: 0,
+        counter1: 0, // Initialize counter1
+        counter2: 0  // Initialize counter2
     });
     const [barcodeData, setBarcodeData] = useState('');
-    const [mode, setMode] = useState('teleop'); // State to track mode
-    const [eraserMode, setEraserMode] = useState(false); // State for eraser mode
+    const [mode, setMode] = useState('teleop');
+    const [eraserMode, setEraserMode] = useState(false);
+
+    const incrementCounter1 = () => {
+        setFormData(prevData => ({ ...prevData, counter1: prevData.counter1 + 1 }));
+    };
+
+    const decrementCounter1 = () => {
+        setFormData(prevData => ({ ...prevData, counter1: Math.max(0, prevData.counter1 - 1) }));
+    };
+
+    const incrementCounter2 = () => {
+        setFormData(prevData => ({ ...prevData, counter2: prevData.counter2 + 1 }));
+    };
+
+    const decrementCounter2 = () => {
+        setFormData(prevData => ({ ...prevData, counter2: Math.max(0, prevData.counter2 - 1) }));
+    };
+
+    const incrementPcounter = () => {
+        setFormData(prevData => ({ ...prevData, Pcounter: prevData.Pcounter + 1 }));
+    };
+
+    const decrementPcounter = () => {
+        setFormData(prevData => ({ ...prevData, Pcounter: Math.max(0, prevData.Pcounter - 1) }));
+    };
 
     useEffect(() => {
         const generateBarcode = () => {
             const telePointsCSV = formData.TelePoints.map(point => `(${point.x.toFixed(2)},${point.y.toFixed(2)},${point.color === 1 ? 'O' : 'G'})`).join(' ');
             const checkboxStatuses = formData.checkboxes.map((checked, index) => `CA${index + 1}: ${checked}`).join(', ');
-            const barcodeString = `${formData.Name},${formData.Alliance},${formData.Team},${telePointsCSV},${checkboxStatuses}`;
+            const barcodeString = `${formData.Name},${formData.Alliance},${formData.Team},${telePointsCSV},${checkboxStatuses},Pcounter: ${formData.Pcounter},Counter1: ${formData.counter1},Counter2: ${formData.counter2}`;
             return barcodeString;
         };
 
@@ -66,11 +93,11 @@ function ScoutingForm() {
     };
 
     const handleAutoClick = () => {
-        setMode('checkbox'); // Switch to checkbox mode
+        setMode('checkbox');
     };
 
     const handleTeleopClick = () => {
-        setMode('teleop'); // Switch to teleop mode
+        setMode('teleop');
     };
 
     return (
@@ -119,23 +146,38 @@ function ScoutingForm() {
 
             <br />
 
-            <TeleField formData={formData} setFormData={setFormData} mode={mode} eraserMode={eraserMode} setEraserMode={setEraserMode} />
+            <TeleField
+                formData={formData}
+                setFormData={setFormData}
+                mode={mode}
+                eraserMode={eraserMode}
+                setEraserMode={setEraserMode}
+                incrementCounter1={incrementCounter1}
+                decrementCounter1={decrementCounter1}
+                incrementCounter2={incrementCounter2}
+                decrementCounter2={decrementCounter2}
+            />
 
             <br />
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <label style={{ fontFamily: 'Assistant' }}>
                     <input type="checkbox" onChange={() => handleCheckboxChange(0)} />
-                     הרובוט טיפס?
+                    הרובוט טיפס?
                 </label>
                 <label style={{ fontFamily: 'Assistant' }}>
                     <input type="checkbox" onChange={() => handleCheckboxChange(1)} />
-                     הרובוט טיפס עם עוד רובוט?
+                    הרובוט טיפס עם עוד רובוט?
                 </label>
+                <br />
                 <label style={{ fontFamily: 'Assistant' }}>
-                    <input type="checkbox" onChange={() => handleCheckboxChange(2)} />
-                    הרובוט קלע לTrap?
+                    קליעות לtrap:
                 </label>
+                <div style={{ display: 'flex', alignItems: 'center', marginTop: '5px' }}>
+                    <button onClick={decrementPcounter} style={{ fontSize: '14px', padding: '5px 10px' }}>-</button>
+                    <span style={{ margin: '0 10px', fontSize: '20px' }}>{formData.Pcounter}</span>
+                    <button onClick={incrementPcounter} style={{ fontSize: '14px', padding: '5px 10px' }}>+</button>
+                </div>
                 <br />
             </div>
 
