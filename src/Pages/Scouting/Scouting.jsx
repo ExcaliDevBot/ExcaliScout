@@ -15,47 +15,43 @@ function ScoutingForm() {
         checkboxes: Array(8).fill(false),
         TelePoints: [],
         Pcounter: 0,
-        counter1: 0, // Initialize counter1
-        counter2: 0  // Initialize counter2
+        counter1: 0,
+        counter2: 0,
+        climbed: false,
+        Makatz: '' // New field for "מקצה"
     });
     const [barcodeData, setBarcodeData] = useState('');
     const [mode, setMode] = useState('teleop');
     const [eraserMode, setEraserMode] = useState(false);
 
-    const incrementCounter1 = () => {
-        setFormData(prevData => ({ ...prevData, counter1: prevData.counter1 + 1 }));
-    };
-
-    const decrementCounter1 = () => {
-        setFormData(prevData => ({ ...prevData, counter1: Math.max(0, prevData.counter1 - 1) }));
-    };
-
-    const incrementCounter2 = () => {
-        setFormData(prevData => ({ ...prevData, counter2: prevData.counter2 + 1 }));
-    };
-
-    const decrementCounter2 = () => {
-        setFormData(prevData => ({ ...prevData, counter2: Math.max(0, prevData.counter2 - 1) }));
-    };
-
-    const incrementPcounter = () => {
-        setFormData(prevData => ({ ...prevData, Pcounter: prevData.Pcounter + 1 }));
-    };
-
-    const decrementPcounter = () => {
-        setFormData(prevData => ({ ...prevData, Pcounter: Math.max(0, prevData.Pcounter - 1) }));
-    };
-
     useEffect(() => {
         const generateBarcode = () => {
-            const telePointsCSV = formData.TelePoints.map(point => `(${point.x.toFixed(2)},${point.y.toFixed(2)},${point.color === 1 ? 'O' : 'G'})`).join(' ');
-            const checkboxStatuses = formData.checkboxes.map((checked, index) => `CA${index + 1}: ${checked}`).join(', ');
-            const barcodeString = `${formData.Name},${formData.Alliance},${formData.Team},${telePointsCSV},${checkboxStatuses},Pcounter: ${formData.Pcounter},Counter1: ${formData.counter1},Counter2: ${formData.counter2}`;
+            const telePointsCSV = formData.TelePoints.map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};G)`).join(';');
+            const missedPointsCSV = formData.TelePoints.filter(point => point.color === 2).map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};O)`).join(';');
+            const checkboxStatuses = formData.checkboxes.map((checked, index) => `CA${index + 1}: ${checked}`).join(';');
+            const checkedCheckboxCount = formData.checkboxes.filter(checked => checked).length;
+            const greenPointsCount = formData.TelePoints.filter(point => point.color === 1).length;
+
+            const barcodeString = `
+                ${formData.Team || 'NULL'},
+                ${formData.counter2},
+                ${mode === 'checkbox' ? checkedCheckboxCount : 'NULL'},
+                ${formData.Pcounter}, 
+                ${greenPointsCount},
+                ${missedPointsCSV ? missedPointsCSV.length : 'NULL'},
+                NULL,
+                ${formData.Pcounter},
+                ${formData.climbed ? 'true' : 'false'}, 
+                ${telePointsCSV || 'NULL'},
+                NULL,
+                ${checkboxStatuses || 'NULL'},
+                ${formData.Makatz || 'NULL'}
+            `.replace(/\n/g, '').replace(/\s+/g, ' ').trim();
             return barcodeString;
         };
 
         setBarcodeData(generateBarcode());
-    }, [formData]);
+    }, [formData, mode]);
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -133,6 +129,16 @@ function ScoutingForm() {
                     onChange={handleInputChange}
                     style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box', fontFamily: 'Assistant' }}
                 />
+
+                <label htmlFor="Makatz" style={{ fontFamily: 'Assistant' }}>מקצה:</label>
+                <input
+                    type="text"
+                    id="Makatz"
+                    name="Makatz"
+                    value={formData.Makatz}
+                    onChange={handleInputChange}
+                    style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box', fontFamily: 'Assistant' }}
+                />
             </form>
 
             <h3 style={{ color: 'black', textAlign: 'center', fontFamily: 'Assistant' }}>סובב את הטלפון שלך לרוחב כדי שהטופס יעבוד כמו שצריך.</h3>
@@ -152,50 +158,40 @@ function ScoutingForm() {
                 mode={mode}
                 eraserMode={eraserMode}
                 setEraserMode={setEraserMode}
-                incrementCounter1={incrementCounter1}
-                decrementCounter1={decrementCounter1}
-                incrementCounter2={incrementCounter2}
-                decrementCounter2={decrementCounter2}
+                incrementCounter1={() => setFormData(prev => ({ ...prev, counter1: prev.counter1 + 1 }))}
+                decrementCounter1={() => setFormData(prev => ({ ...prev, counter1: Math.max(0, prev.counter1 - 1) }))}
+                incrementCounter2={() => setFormData(prev => ({ ...prev, counter2: prev.counter2 + 1 }))}
+                decrementCounter2={() => setFormData(prev => ({ ...prev, counter2: Math.max(0, prev.counter2 - 1) }))}
+                setClimbed={(value) => setFormData(prev => ({ ...prev, climbed: value }))}
             />
 
             <br />
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <label style={{ fontFamily: 'Assistant' }}>
-                    <input type="checkbox" onChange={() => handleCheckboxChange(0)} />
+                    <input
+                        type="checkbox"
+                        checked={formData.climbed}
+                        onChange={() => setFormData(prev => ({ ...prev, climbed: !prev.climbed }))}
+                    />
                     הרובוט טיפס?
-                </label>
-                <label style={{ fontFamily: 'Assistant' }}>
-                    <input type="checkbox" onChange={() => handleCheckboxChange(1)} />
-                    הרובוט טיפס עם עוד רובוט?
                 </label>
                 <br />
                 <label style={{ fontFamily: 'Assistant' }}>
                     קליעות לtrap:
                 </label>
                 <div style={{ display: 'flex', alignItems: 'center', marginTop: '5px' }}>
-                    <button onClick={decrementPcounter} style={{ fontSize: '14px', padding: '5px 10px' }}>-</button>
+                    <button onClick={() => setFormData(prev => ({ ...prev, Pcounter: Math.max(0, prev.Pcounter - 1) }))} style={{ fontSize: '14px', padding: '5px 10px' }}>-</button>
                     <span style={{ margin: '0 10px', fontSize: '20px' }}>{formData.Pcounter}</span>
-                    <button onClick={incrementPcounter} style={{ fontSize: '14px', padding: '5px 10px' }}>+</button>
+                    <button onClick={() => setFormData(prev => ({ ...prev, Pcounter: prev.Pcounter + 1 }))} style={{ fontSize: '14px', padding: '5px 10px' }}>+</button>
                 </div>
-                <br />
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <button type="submit" style={{ padding: '10px 20px', fontFamily: 'Assistant' }}>שליחה</button>
-            </div>
-
-            <h3 style={{ fontFamily: 'Assistant' }}>אם אין אינטרנט:</h3>
-            <QRCodeSection barcodeData={barcodeData} />
             <br />
-        </div>
-    );
-}
 
-function QRCodeSection({ barcodeData }) {
-    return (
-        <div style={{ textAlign: 'center' }}>
-            <QRCode value={barcodeData} size={150} />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <QRCode value={barcodeData} />
+            </div>
         </div>
     );
 }
