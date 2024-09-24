@@ -49,7 +49,7 @@ const Navbar = () => {
                             <button onClick={toggleProfileDropdown} className="dropbtn">Profile</button>
                             {profileDropdownOpen && (
                                 <div className="dropdown-content">
-                                    <Link to="/profile">View Profile</Link>
+                                    <Link to="/profile"> View Profile</Link>
                                     <button onClick={handleLogout}>Logout</button>
                                 </div>
                             )}
