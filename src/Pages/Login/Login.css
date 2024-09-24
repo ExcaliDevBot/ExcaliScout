@@ -1,31 +1,25 @@
-/* src/Pages/Login/Login.css */
-body, html {
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 100vw;
-    background: linear-gradient(135deg, #012265, #d4af37);
-    font-family: "Copperplate Gothic Bold", "Copperplate Gothic", "Copperplate", "Arial Black", sans-serif;
-    color: #d4af37;
-    overflow: hidden;
+h2 {
+    text-align: center;
 }
 
+label {
+    color: #012265;
+    font-family: "Copperplate Gothic Light", serif;
+}
+/* src/Pages/Login/Login.css */
 .login-container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    background-color: #012265; /* Add your desired background color here */
 }
 
 .login-form {
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: white;
     padding: 40px 60px;
     border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
 
@@ -36,14 +30,12 @@ body, html {
 }
 
 .login-form input {
-    margin-bottom: 15px;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-    color: #012265;
-    background-color: #f5f5f5;
     width: 100%;
+    padding: 10px 15px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
 }
 
 .login-form button {
@@ -60,9 +52,4 @@ body, html {
 
 .login-form button:hover {
     background-color: #c0a131;
-}
-
-.login-form p {
-    color: #012265;
-    margin-top: 15px;
 }
