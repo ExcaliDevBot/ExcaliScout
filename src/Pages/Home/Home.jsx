@@ -13,7 +13,7 @@ function Home() {
         <div>
             <div className="home-container">
                 <section className="hero-section">
-                    <h1>Welcome to Our Application</h1>
+                    <h1>Welcome to Our  Application</h1>
                     <p>Your one-stop solution for scouting and managing matches.</p>
                     <button onClick={handleGetStarted} className="cta-button">Get Started</button>
                 </section>
