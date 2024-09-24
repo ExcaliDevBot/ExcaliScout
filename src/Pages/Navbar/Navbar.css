@@ -1,12 +1,18 @@
 /* src/Pages/Navbar/Navbar.css */
+@font-face {
+    font-family: 'Copperplate Gothic Bold';
+    src: url('/fonts/Copperplate Gothic Bold Regular.ttf') format('truetype');
+}
+
 .navbar {
+    margin-top: 1px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: #333;
+    background-color: transparent; /* Make the navbar transparent */
     padding: 10px 20px;
     color: #fff;
-    font-family: Arial, sans-serif;
+    font-family: 'Copperplate Gothic Bold', sans-serif;
 }
 
 .navbar-left, .navbar-right {
@@ -47,12 +53,21 @@
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: #444;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    background-color: rgba(68, 68, 68, 0.9); /* Slightly transparent background */
+    min-width: 200px; /* Increased width */
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.3); /* Slightly darker shadow */
     z-index: 1;
-    border-radius: 4px;
+    border-radius: 8px; /* More rounded corners */
     overflow: hidden;
+    transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition */
+    opacity: 0; /* Initially hidden */
+    transform: translateY(-10px); /* Slightly move up */
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+    opacity: 1; /* Fully visible */
+    transform: translateY(0); /* Move to original position */
 }
 
 .dropdown-content a, .dropdown-content button {

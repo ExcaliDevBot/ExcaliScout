@@ -34,7 +34,7 @@ const Navbar = () => {
                         <button onClick={toggleActionsDropdown} className="dropbtn">Actions</button>
                         {actionsDropdownOpen && (
                             <div className="dropdown-content">
-                                <Link to="/manage-users">Manage Users</Link>
+                                <Link to="/manage-users"> Manage Users</Link>
                                 <Link to="/assign">Assign Matches</Link>
                                 {/* Add more admin actions here */}
                             </div>
@@ -49,7 +49,7 @@ const Navbar = () => {
                             <button onClick={toggleProfileDropdown} className="dropbtn">Profile</button>
                             {profileDropdownOpen && (
                                 <div className="dropdown-content">
-                                    <Link to="/profile">View Profile</Link>
+                                    <Link to="/profile"> View Profile</Link>
                                     <button onClick={handleLogout}>Logout</button>
                                 </div>
                             )}

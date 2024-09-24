@@ -52,7 +52,6 @@ function LoginForm() {
 
     return (
         <div>
-            <h2>Login into your account:</h2>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="UserName">Username:</label><br />
                 <input
