@@ -11,6 +11,8 @@ function Home() {
 
     return (
         <div>
+            <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+                  rel="stylesheet"/>
             <div className="home-container">
                 <section className="hero-section">
                     <h1>Welcome to Our Application</h1>
@@ -18,19 +20,19 @@ function Home() {
                     <button onClick={handleGetStarted} className="cta-button">Get Started</button>
                 </section>
                 <section className="features-section">
-                    <h2>Features</h2>
+                    <h2>Instructions</h2>
                     <div className="features">
                         <div className="feature">
-                            <h3>Feature 1</h3>
-                            <p>Detail about feature 1.</p>
+                            <h3>Login</h3>
+                            <p>Login to the System With Username and Password.</p>
                         </div>
                         <div className="feature">
-                            <h3>Feature 2</h3>
-                            <p>Detail about feature 2.</p>
+                            <h3>Assign Matches</h3>
+                            <p>Get Your Matches That Where Assigned By An Admin .</p>
                         </div>
                         <div className="feature">
-                            <h3>Feature 3</h3>
-                            <p>Detail about feature 3.</p>
+                            <h3>Scout!</h3>
+                            <p>Get The Most Data You Can For The Strategy Team.</p>
                         </div>
                     </div>
                 </section>
