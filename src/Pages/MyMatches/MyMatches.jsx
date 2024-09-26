@@ -38,13 +38,13 @@ function MyMatches() {
                     </thead>
                     <tbody>
                         {matches.map(match => (
-                            <tr key={match.match_id}>
-                                <td>{match.match_id}</td>
+                            <tr key={match.match_number}>
+                                <td>{match.match_number}</td>
                                 <td>{user.username}</td>
                                 <td>{match.alliance}</td>
                                 <td>{match.team_number}</td>
                                 <td>
-                                    <button onClick={() => navigate(`/scout/${match.match_id}`, { state: { match, user } })}>Scout Now</button>
+                                    <button onClick={() => navigate(`/scout/${match.match_number}`, { state: { match, user } })}>Scout Now</button>
                                 </td>
                             </tr>
                         ))}
