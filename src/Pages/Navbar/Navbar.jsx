@@ -5,14 +5,13 @@ import { UserContext } from '../../context/UserContext';
 import './Navbar.css';
 
 const Navbar = () => {
-    const { user, setUser } = useContext(UserContext);
+    const { user, logout } = useContext(UserContext);
     const navigate = useNavigate();
     const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
     const [actionsDropdownOpen, setActionsDropdownOpen] = useState(false);
 
     const handleLogout = () => {
-        setUser(null);
-        localStorage.removeItem('currentUser');
+        logout();
         navigate('/login');
     };
 
@@ -28,7 +27,7 @@ const Navbar = () => {
         <nav className="navbar">
             <div className="navbar-left">
                 <button onClick={() => navigate('/')}>Home</button>
-                {user && <button onClick={() => navigate('/scout')}>Scout</button>}
+                {user && <button onClick={() => navigate('/MyMatches')}>My Matches</button>}
                 {user && user.role === "ADMIN" && (
                     <div className="dropdown">
                         <button onClick={toggleActionsDropdown} className="dropbtn">Actions</button>

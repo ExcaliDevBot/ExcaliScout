@@ -36,12 +36,12 @@ function ScoutingForm() {
                 ${formData.Team || 'NULL'},
                 ${formData.counter2},
                 ${mode === 'checkbox' ? checkedCheckboxCount : 'NULL'},
-                ${formData.Pcounter}, 
+                ${formData.Pcounter},
                 ${greenPointsCount},
                 ${missedPointsCSV ? missedPointsCSV.length : 'NULL'},
                 NULL,
                 ${formData.Pcounter},
-                ${formData.climbed ? 'true' : 'false'}, 
+                ${formData.climbed ? 'true' : 'false'},
                 ${telePointsCSV || 'NULL'},
                 NULL,
                 ${checkboxStatuses || 'NULL'},
@@ -99,43 +99,19 @@ function ScoutingForm() {
     return (
         <div style={{ fontFamily: 'Assistant', direction: 'rtl' }}>
             <h2 style={{ fontFamily: 'Assistant' }}>סקאוטינג רגיל:</h2>
+            <div style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box', fontFamily: 'Assistant' }}>
+                <p>שם: {user.username}</p>
+                <p>מספר קבוצה: {match.team_number}</p>
+                <p>ברית: {formData.Alliance}</p>
+                <p>מקצה: {match.match_number}</p>
+            </div>
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', width: '100%' }}>
-                <label htmlFor="Sname" style={{ fontFamily: 'Assistant' }}>שם:</label>
+                <label htmlFor="TeleNotes" style={{ fontFamily: 'Assistant' }}>הערות טליאופ:</label>
                 <input
                     type="text"
-                    id="Sname"
-                    name="Name"
-                    value={formData.Name}
-                    onChange={handleInputChange}
-                    style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box', fontFamily: 'Assistant' }}
-                />
-
-                <label htmlFor="Team" style={{ fontFamily: 'Assistant' }}>מספר קבוצה:</label>
-                <input
-                    type="number"
-                    id="Team"
-                    name="Team"
-                    value={formData.Team}
-                    onChange={handleInputChange}
-                    style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box', fontFamily: 'Assistant' }}
-                />
-
-                <label htmlFor="Alliance" style={{ fontFamily: 'Assistant' }}>ברית:</label>
-                <input
-                    type="text"
-                    id="Alliance"
-                    name="Alliance"
-                    value={formData.Alliance}
-                    onChange={handleInputChange}
-                    style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box', fontFamily: 'Assistant' }}
-                />
-
-                <label htmlFor="Makatz" style={{ fontFamily: 'Assistant' }}>מקצה:</label>
-                <input
-                    type="text"
-                    id="Makatz"
-                    name="Makatz"
-                    value={formData.Makatz}
+                    id="TeleNotes"
+                    name="TeleNotes"
+                    value={formData.TeleNotes}
                     onChange={handleInputChange}
                     style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box', fontFamily: 'Assistant' }}
                 />

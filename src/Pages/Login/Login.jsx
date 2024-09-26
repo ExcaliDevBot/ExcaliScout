@@ -1,4 +1,3 @@
-// src/Pages/Login/Login.jsx
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
@@ -19,7 +18,7 @@ function LoginForm() {
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
-    const { setUser } = useContext(UserContext);
+    const { login } = useContext(UserContext);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -38,8 +37,7 @@ function LoginForm() {
 
             const data = await response.json();
             if (data.status === 'success') {
-                setUser(data.user);
-                localStorage.setItem('currentUser', JSON.stringify(data.user));
+                login(data.user);
                 navigate('/MyMatches');  // Redirect to My Matches page
             } else {
                 setMessage(data.message);
@@ -54,7 +52,7 @@ function LoginForm() {
         <div>
             <h2>Login into your account:</h2>
             <form onSubmit={handleSubmit}>
-                <label htmlFor="UserName">Username:</label><br />
+                <label htmlFor="username">Username:</label><br />
                 <input
                     type="text"
                     id="username"
@@ -63,7 +61,7 @@ function LoginForm() {
                     onChange={(e) => setUsername(e.target.value)}
                 /><br />
                 <br />
-                <label htmlFor="Password">Password:</label><br />
+                <label htmlFor="password">Password:</label><br />
                 <input
                     type="password"
                     id="password"

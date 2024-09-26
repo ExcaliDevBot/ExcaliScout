@@ -24,33 +24,33 @@ function MyMatches() {
     }, [user]);
 
     return (
-            <div className="container">
-                <h2>My Matches</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Match Number</th>
-                            <th>Scouter</th>
-                            <th>Alliance</th>
-                            <th>Team Number</th>
-                            <th>Actions</th>
+        <div className="container">
+            <h2>My Matches</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Match Number</th>
+                        <th>Scouter</th>
+                        <th>Alliance</th>
+                        <th>Team Number</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {matches.map(match => (
+                        <tr key={match.match_number}>
+                            <td>{match.match_number}</td>
+                            <td>{user.username}</td>
+                            <td>{match.alliance}</td>
+                            <td>{match.team_number}</td>
+                            <td>
+                                <button onClick={() => navigate(`/scout/${match.match_number}`, { state: { match, user } })}>Scout Now</button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {matches.map(match => (
-                            <tr key={match.match_number}>
-                                <td>{match.match_number}</td>
-                                <td>{user.username}</td>
-                                <td>{match.alliance}</td>
-                                <td>{match.team_number}</td>
-                                <td>
-                                    <button onClick={() => navigate(`/scout/${match.match_number}`, { state: { match, user } })}>Scout Now</button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                    ))}
+                </tbody>
+            </table>
+        </div>
     );
 }
 
