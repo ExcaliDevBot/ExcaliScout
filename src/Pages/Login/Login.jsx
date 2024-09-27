@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
 import './Login.css';
@@ -14,11 +14,29 @@ function Login() {
 }
 
 function LoginForm() {
+    const [users, setUsers] = useState([]);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
     const { login } = useContext(UserContext);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await fetch('https://ScoutingSystem.pythonanywhere.com/users');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setUsers(data.users);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        };
+
+        fetchUsers();
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -53,13 +71,19 @@ function LoginForm() {
             <h2>Login into your account:</h2>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="username">Username:</label><br />
-                <input
-                    type="text"
+                <select
                     id="username"
                     name="username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                /><br />
+                >
+                    <option value="">Select a user</option>
+                    {users.map((user) => (
+                        <option key={user.id} value={user.username}>
+                            {user.username}
+                        </option>
+                    ))}
+                </select><br />
                 <br />
                 <label htmlFor="password">Password:</label><br />
                 <input

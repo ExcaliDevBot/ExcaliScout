@@ -58,7 +58,7 @@ function ScoutingForm() {
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleCheckboxChange = (index) => {
+    const handleButtonClick = (index) => {
         const newCheckboxes = [...formData.checkboxes];
         newCheckboxes[index] = !newCheckboxes[index];
         setFormData({ ...formData, checkboxes: newCheckboxes });
@@ -97,33 +97,30 @@ function ScoutingForm() {
     };
 
     return (
-        <div style={{ fontFamily: 'Assistant', direction: 'rtl' }}>
-            <h2 style={{ fontFamily: 'Assistant' }}>סקאוטינג רגיל:</h2>
-            <div style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box', fontFamily: 'Assistant' }}>
+        <div style={{ direction: 'rtl', padding: '10px' }}>
+            <div className="info-container">
                 <p>שם: {user.username}</p>
                 <p>מספר קבוצה: {match.team_number}</p>
                 <p>ברית: {formData.Alliance}</p>
                 <p>מקצה: {match.match_number}</p>
             </div>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', width: '100%' }}>
-                <label htmlFor="TeleNotes" style={{ fontFamily: 'Assistant' }}>הערות טליאופ:</label>
-                <input
-                    type="text"
+            <form onSubmit={handleSubmit} className="form">
+                <label htmlFor="TeleNotes">הערות טליאופ:</label>
+                <textarea
                     id="TeleNotes"
                     name="TeleNotes"
                     value={formData.TeleNotes}
                     onChange={handleInputChange}
-                    style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box', fontFamily: 'Assistant' }}
                 />
             </form>
 
-            <h3 style={{ color: 'black', textAlign: 'center', fontFamily: 'Assistant' }}>סובב את הטלפון שלך לרוחב כדי שהטופס יעבוד כמו שצריך.</h3>
+            <h3 className="rotate-message">סובב את הטלפון שלך לרוחב כדי שהטופס יעבוד כמו שצריך.</h3>
 
-            <h3 style={{ fontFamily: 'Assistant' }}>מפת סקאוטינג:</h3>
+            <h3>מפת סקאוטינג:</h3>
 
-            <div className="button-container" style={{ display: 'flex', justifyContent: 'space-between', padding: '0 10px' }}>
-                <button type="button" className="resizable-button" style={{ flex: 1, margin: '5px', fontFamily: 'Assistant' }} onClick={handleAutoClick}>Autonomous</button>
-                <button type="button" className="resizable-button" style={{ flex: 1, margin: '5px', fontFamily: 'Assistant' }} onClick={handleTeleopClick}>Teleop</button>
+            <div className="button-container">
+                <button type="button" className="resizable-button" onClick={handleAutoClick}>Autonomous</button>
+                <button type="button" className="resizable-button" onClick={handleTeleopClick}>Teleop</button>
             </div>
 
             <br />
@@ -143,29 +140,30 @@ function ScoutingForm() {
 
             <br />
 
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <label style={{ fontFamily: 'Assistant' }}>
-                    <input
-                        type="checkbox"
-                        checked={formData.climbed}
-                        onChange={() => setFormData(prev => ({ ...prev, climbed: !prev.climbed }))}
-                    />
+            <div className="toggle-button-container">
+                <button
+                    type="button"
+                    className={`toggle-button ${formData.climbed ? 'active' : ''}`}
+                    onClick={() => setFormData(prev => ({ ...prev, climbed: !prev.climbed }))}
+                >
                     הרובוט טיפס?
-                </label>
-                <br />
-                <label style={{ fontFamily: 'Assistant' }}>
-                    קליעות לtrap:
-                </label>
-                <div style={{ display: 'flex', alignItems: 'center', marginTop: '5px' }}>
-                    <button onClick={() => setFormData(prev => ({ ...prev, Pcounter: Math.max(0, prev.Pcounter - 1) }))} style={{ fontSize: '14px', padding: '5px 10px' }}>-</button>
-                    <span style={{ margin: '0 10px', fontSize: '20px' }}>{formData.Pcounter}</span>
-                    <button onClick={() => setFormData(prev => ({ ...prev, Pcounter: prev.Pcounter + 1 }))} style={{ fontSize: '14px', padding: '5px 10px' }}>+</button>
+                </button>
+            </div>
+
+            <br />
+
+            <div className="counter-container">
+                <label>קליעות לtrap:</label>
+                <div className="counter-buttons">
+                    <button onClick={() => setFormData(prev => ({ ...prev, Pcounter: Math.max(0, prev.Pcounter - 1) }))} className="counter-button">-</button>
+                    <span className="counter-value">{formData.Pcounter}</span>
+                    <button onClick={() => setFormData(prev => ({ ...prev, Pcounter: prev.Pcounter + 1 }))} className="counter-button">+</button>
                 </div>
             </div>
 
             <br />
 
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div className="qr-code-container">
                 <QRCode value={barcodeData} />
             </div>
         </div>
