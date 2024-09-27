@@ -4,6 +4,7 @@ body {
     background-color: #f4f4f9;
     margin: 0;
     padding: 0;
+        overflow-x: hidden;
 }
 
 label, h3 {
@@ -30,7 +31,7 @@ h2 {
 
 .info-table th, .info-table td {
     border: 1px solid #ddd;
-    padding: 12px;
+    padding: 8px;
     text-align: center;
     vertical-align: middle;
 }
@@ -114,12 +115,10 @@ textarea {
 }
 
 .toggle-button.active {
-    background-color: #b38e30;
+    background-color: #5b2e75;
 }
 
-.toggle-button:hover {
-    background-color: #b38e30;
-}
+
 
 .counter-container {
     display: flex;
@@ -161,17 +160,17 @@ textarea {
 }
 
 .name-color {
-    background-color: #8bbf93;
+    background-color: #278035;
     color: #fff;
 }
 
 .team-color {
-    background-color: #6da6d4;
+    background-color: #0d3556;
     color: #fff;
 }
 
 .match-color {
-    background-color: #a46890;
+    background-color: #461a36;
     color: #fff;
 }
 
@@ -205,5 +204,6 @@ textarea {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 60px;
+    margin-bottom: 110px;
 }
