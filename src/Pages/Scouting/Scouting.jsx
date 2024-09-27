@@ -33,9 +33,9 @@ function ScoutingForm() {
             const greenPointsCount = formData.TelePoints.filter(point => point.color === 1).length;
 
             const barcodeString = `
-                Name: ${formData.Name || 'NULL'},
-                Team: ${formData.Team || 'NULL'},
-                Match: ${formData.Makatz || 'NULL'},
+                Name: ${user.username || 'NULL'},
+                Team: ${match.team_number || 'NULL'},
+                Match: ${match.match_number || 'NULL'},
                 Alliance: ${formData.Alliance || 'NULL'},
                 ${formData.Team || 'NULL'},
                 ${formData.counter2},
@@ -49,13 +49,16 @@ function ScoutingForm() {
                 ${telePointsCSV || 'NULL'},
                 NULL,
                 ${checkboxStatuses || 'NULL'},
-                ${formData.Makatz || 'NULL'}
+                ${formData.Makatz || 'NULL'},
+                User: ${user.username || 'NULL'},
+                Team Number: ${match.team_number || 'NULL'},
+                Match Number: ${match.match_number || 'NULL'}
             `.replace(/\n/g, '').replace(/\s+/g, ' ').trim();
             return barcodeString;
         };
 
         setBarcodeData(generateBarcode());
-    }, [formData, mode]);
+    }, [formData, mode, user, match]);
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -113,9 +116,9 @@ function ScoutingForm() {
                 </thead>
                 <tbody>
                     <tr>
-                        <td><span className="constant-color name-color">{formData.Name}</span></td>
-                        <td><span className="constant-color team-color">{formData.Team}</span></td>
-                        <td><span className="constant-color match-color">{formData.Makatz}</span></td>
+                        <td><span className="constant-color name-color">{user.username}</span></td>
+                        <td><span className="constant-color team-color">{match.team_number}</span></td>
+                        <td><span className="constant-color match-color">{match.match_number}</span></td>
                         <td><span className={`alliance-button ${formData.Alliance.toLowerCase()}`}>{formData.Alliance}</span></td>
                     </tr>
                 </tbody>
