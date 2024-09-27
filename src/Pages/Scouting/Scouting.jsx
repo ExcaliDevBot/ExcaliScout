@@ -98,12 +98,24 @@ function ScoutingForm() {
 
     return (
         <div style={{ direction: 'rtl', padding: '10px' }}>
-            <div className="info-container">
-                <p>שם: {user.username}</p>
-                <p>מספר קבוצה: {match.team_number}</p>
-                <p>ברית: {formData.Alliance}</p>
-                <p>מקצה: {match.match_number}</p>
-            </div>
+            <table className="info-table">
+                <thead>
+                    <tr>
+                        <th>שם</th>
+                        <th>קבוצה</th>
+                        <th>מקצה</th>
+                        <th>ברית</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span className="constant-color name-color">{formData.Name}</span></td>
+                        <td><span className="constant-color team-color">{match.team_number}</span></td>
+                        <td><span className="constant-color match-color">{match.match_number}</span></td>
+                        <td><span className={`alliance-button ${formData.Alliance.toLowerCase()}`}>{formData.Alliance}</span></td>
+                    </tr>
+                </tbody>
+            </table>
             <form onSubmit={handleSubmit} className="form">
                 <label htmlFor="TeleNotes">הערות טליאופ:</label>
                 <textarea

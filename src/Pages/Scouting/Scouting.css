@@ -1,3 +1,4 @@
+/* Scouting.css */
 body {
     font-family: "Roboto", sans-serif;
     background-color: #f4f4f9;
@@ -21,15 +22,22 @@ h2 {
     margin: 20px 0;
 }
 
-.info-container {
-    margin: 10px;
-    padding: 10px;
-    width: calc(100% - 20px);
-    box-sizing: border-box;
-    font-family: "Roboto", sans-serif;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.info-table {
+    width: 100%;
+    margin: 10px 0;
+    border-collapse: collapse;
+}
+
+.info-table th, .info-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.info-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
 }
 
 textarea {
@@ -141,7 +149,53 @@ textarea {
 .counter-button:hover {
     background-color: #b38e30;
 }
+.constant-color {
+    display: inline-block;
+    padding: 15px 17px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 5px;
+    cursor: default;
+    transition: background-color 0.3s ease;
+}
 
+.name-color {
+    background-color: #8bbf93;
+    color: #fff;
+}
+
+.team-color {
+    background-color: #6da6d4;
+    color: #fff;
+}
+
+.match-color {
+    background-color: #a46890;
+    color: #fff;
+}
+
+.alliance-button {
+    display: inline-block;
+    padding: 15px 17px;
+    margin: 10px 0;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 5px;
+    cursor: default;
+    transition: background-color 0.3s ease;
+}
+
+.alliance-button.red {
+    background-color: red;
+    color: white;
+}
+
+.alliance-button.blue {
+    background-color: blue;
+    color: white;
+}
 .counter-value {
     font-size: 24px;
     margin: 0 10px;

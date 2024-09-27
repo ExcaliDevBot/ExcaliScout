@@ -41,7 +41,9 @@ function MyMatches() {
                         <tr key={match.match_number}>
                             <td>{match.match_number}</td>
                             <td>{user.username}</td>
-                            <td>{match.alliance}</td>
+                            <td className={match.alliance === 'Red' ? 'red-text' : 'blue-text'}>
+                                {match.alliance}
+                            </td>
                             <td>{match.team_number}</td>
                             <td>
                                 <button onClick={() => navigate(`/scout/${match.match_number}`, { state: { match, user } })}>Scout Now</button>
