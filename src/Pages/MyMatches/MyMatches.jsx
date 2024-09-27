@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
 import './MyMatches.css';
-import Navbar from "../Navbar/Navbar";
 
 function MyMatches() {
     const [matches, setMatches] = useState([]);
@@ -26,32 +25,20 @@ function MyMatches() {
     return (
         <div className="container">
             <h2>My Matches</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Match Number</th>
-                        <th>Scouter</th>
-                        <th>Alliance</th>
-                        <th>Team Number</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {matches.map(match => (
-                        <tr key={match.match_number}>
-                            <td>{match.match_number}</td>
-                            <td>{user.username}</td>
-                            <td className={match.alliance === 'Red' ? 'red-text' : 'blue-text'}>
-                                {match.alliance}
-                            </td>
-                            <td>{match.team_number}</td>
-                            <td>
-                                <button onClick={() => navigate(`/scout/${match.match_number}`, { state: { match, user } })}>Scout Now</button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <div className="matches-container">
+                {matches.map(match => (
+                    <div key={match.match_number} className="match-card">
+                        <h3>Match {match.match_number}</h3>
+                        <p>Team: {match.team_number}</p>
+                        <p className={match.alliance === 'Red' ? 'red-text' : 'blue-text'}>
+                            Alliance: {match.alliance}
+                        </p>
+                        <button onClick={() => navigate(`/scout/${match.match_number}`, { state: { match, user } })}>
+                            Scout Now
+                        </button>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }

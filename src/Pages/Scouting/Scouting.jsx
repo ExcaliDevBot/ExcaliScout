@@ -33,6 +33,10 @@ function ScoutingForm() {
             const greenPointsCount = formData.TelePoints.filter(point => point.color === 1).length;
 
             const barcodeString = `
+                Name: ${formData.Name || 'NULL'},
+                Team: ${formData.Team || 'NULL'},
+                Match: ${formData.Makatz || 'NULL'},
+                Alliance: ${formData.Alliance || 'NULL'},
                 ${formData.Team || 'NULL'},
                 ${formData.counter2},
                 ${mode === 'checkbox' ? checkedCheckboxCount : 'NULL'},
@@ -110,8 +114,8 @@ function ScoutingForm() {
                 <tbody>
                     <tr>
                         <td><span className="constant-color name-color">{formData.Name}</span></td>
-                        <td><span className="constant-color team-color">{match.team_number}</span></td>
-                        <td><span className="constant-color match-color">{match.match_number}</span></td>
+                        <td><span className="constant-color team-color">{formData.Team}</span></td>
+                        <td><span className="constant-color match-color">{formData.Makatz}</span></td>
                         <td><span className={`alliance-button ${formData.Alliance.toLowerCase()}`}>{formData.Alliance}</span></td>
                     </tr>
                 </tbody>
