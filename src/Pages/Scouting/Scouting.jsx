@@ -7,9 +7,11 @@ import TeleField from "./Game/Teleop";
 function ScoutingForm() {
     const location = useLocation();
     const { match, user } = location.state || {};
+    const isNewForm = !match;
     const [formData, setFormData] = useState({
         Name: user ? user.username : '',
         Team: match ? match[`team${match.robot + 1}`] : '',
+        Match: match ? match.match_number : '',
         Alliance: match ? match.alliance : '',
         TeleNotes: '',
         checkboxes: Array(8).fill(false),
@@ -34,8 +36,8 @@ function ScoutingForm() {
 
             const barcodeString = `
                 Name: ${user.username || 'NULL'},
-                Team: ${match.team_number || 'NULL'},
-                Match: ${match.match_number || 'NULL'},
+                Team: ${formData.Team || 'NULL'},
+                Match: ${formData.Match || 'NULL'},
                 Alliance: ${formData.Alliance || 'NULL'},
                 ${formData.Team || 'NULL'},
                 ${formData.counter2},
@@ -51,14 +53,14 @@ function ScoutingForm() {
                 ${checkboxStatuses || 'NULL'},
                 ${formData.Makatz || 'NULL'},
                 User: ${user.username || 'NULL'},
-                Team Number: ${match.team_number || 'NULL'},
-                Match Number: ${match.match_number || 'NULL'}
+                Team Number: ${formData.Team || 'NULL'},
+                Match Number: ${formData.Match || 'NULL'}
             `.replace(/\n/g, '').replace(/\s+/g, ' ').trim();
             return barcodeString;
         };
 
         setBarcodeData(generateBarcode());
-    }, [formData, mode, user, match]);
+    }, [formData, mode, user]);
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -117,9 +119,31 @@ function ScoutingForm() {
                 <tbody>
                     <tr>
                         <td><span className="constant-color name-color">{user.username}</span></td>
-                        <td><span className="constant-color team-color">{match.team_number}</span></td>
-                        <td><span className="constant-color match-color">{match.match_number}</span></td>
-                        <td><span className={`alliance-button ${formData.Alliance.toLowerCase()}`}>{formData.Alliance}</span></td>
+                        <td>
+                            {isNewForm ? (
+                                <input type="text" name="Team" value={match.team_number} onChange={handleInputChange} />
+                            ) : (
+                                <span className="constant-color team-color">{match.team_number}</span>
+                            )}
+                        </td>
+                        <td>
+                            {isNewForm ? (
+                                <input type="text" name="Match" value={match.match_number} onChange={handleInputChange} />
+                            ) : (
+                                <span className="constant-color match-color">{match.match_number}</span>
+                            )}
+                        </td>
+                        <td>
+                            {isNewForm ? (
+                                <select name="Alliance" value={formData.Alliance} onChange={handleInputChange}>
+                                    <option value="">Select Alliance</option>
+                                    <option value="Red">Red</option>
+                                    <option value="Blue">Blue</option>
+                                </select>
+                            ) : (
+                                <span className={`alliance-button ${formData.Alliance.toLowerCase()}`}>{formData.Alliance}</span>
+                            )}
+                        </td>
                     </tr>
                 </tbody>
             </table>

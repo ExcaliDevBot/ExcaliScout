@@ -45,7 +45,6 @@ const Navbar = () => {
                                 <div className="dropdown-content">
                                     <Link to="/manage-users">Manage Users</Link>
                                     <Link to="/assign">Assign Matches</Link>
-                                    {/* Add more admin actions here */}
                                 </div>
                             )}
                         </div>
@@ -65,8 +64,7 @@ const Navbar = () => {
                             </div>
                         </>
                     ) : (
-                        <Link to="/login">Login</Link>
-                    )}
+                    <button onClick={() => navigate('/login')}>Login</button>)}
                 </div>
             </div>
         </nav>

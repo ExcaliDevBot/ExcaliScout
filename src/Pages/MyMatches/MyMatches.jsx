@@ -24,11 +24,11 @@ function MyMatches() {
 
     return (
         <div className="container">
-            <h2>My Matches</h2>
+            <h1>My Matches</h1>
             <div className="matches-container">
                 {matches.map(match => (
                     <div key={match.match_number} className="match-card">
-                        <h3>Match {match.match_number}</h3>
+                        <h2>Match {match.match_number}</h2>
                         <p>Team: {match.team_number}</p>
                         <p className={match.alliance === 'Red' ? 'red-text' : 'blue-text'}>
                             Alliance: {match.alliance}
@@ -39,6 +39,9 @@ function MyMatches() {
                     </div>
                 ))}
             </div>
+            <button onClick={() => navigate('/scout/new', { state: { user } })}>
+                New Scouting Form
+            </button>
         </div>
     );
 }

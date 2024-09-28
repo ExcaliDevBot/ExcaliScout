@@ -16,7 +16,7 @@ body, html {
 .blue-text {
     color: blue;
 }
-h2 {
+h1 {
     text-align: center;
     color: #012265;
     margin-bottom: 20px;
@@ -92,11 +92,13 @@ button:hover {
     border-radius: 5px;
     background-color: #fff;
     text-align: center;
+    font-weight: bold;
 }
 
-.match-card h3 {
+.match-card h2 {
     margin: 0 0 10px;
     font-size: 1.2em;
+    color: #d4af37;
 }
 
 .match-card p {

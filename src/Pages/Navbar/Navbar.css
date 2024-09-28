@@ -27,6 +27,7 @@
 
 .navbar a:hover, .navbar button:hover {
     background-color: #d4af37;
+    animation: color-change 4s;
     text-decoration: none; /* Remove underline */
 }
 
