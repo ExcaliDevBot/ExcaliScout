@@ -9,7 +9,7 @@ html, body {
 }
 
 .home-container {
-    max-width: 1200px;
+    max-width: 1100px;
     margin: 0 auto;
     padding: 20px;
     background-size: cover;
@@ -20,17 +20,21 @@ html, body {
 .hero-section {
     text-align: center;
     padding: 50px 20px;
-    color: black;
+    color: #d4af37;
 }
 
 .hero-section h1 {
-    color: black;
+    color: #d4af37;
     margin-bottom: 20px;
+    font-size: 32px;
+    font-family: "Copperplate Gothic Light", serif;
+    font-weight: bold;
 }
 
 .hero-section p {
-    color: black;
+    color: #d4af37;
     font-size: 18px;
+    font-family: "Copperplate Gothic Light", serif;
     margin-bottom: 20px;
 }
 
@@ -38,30 +42,30 @@ html, body {
     padding: 10px 20px;
     font-size: 16px;
     color: #fff;
+    font-family: "Copperplate Gothic Light", serif;
     background-color: #012265;
     border: none;
     border-radius: 4px;
     cursor: pointer;
 }
 
-.cta-button:hover {
-    background-color: #012265;
-}
-
 .features-section {
-    margin: 50px 0;
+    margin: 20px 0;
     text-align: center;
+    font-family: "Copperplate Gothic Light", serif;
 }
 
 .features-section h2 {
     color: black;
     margin-bottom: 20px;
+    font-family: "Copperplate Gothic Light", serif;
 }
 
 .features {
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
+        font-family: "Copperplate Gothic Light", serif;
 }
 
 .feature {
@@ -78,6 +82,8 @@ html, body {
 .feature h3 {
     color: #012265;
     margin-bottom: 10px;
+        font-family: "Copperplate Gothic Light", serif;
+
 }
 
 .feature p {
@@ -92,19 +98,4 @@ html, body {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin-top: 50px;
-}
-
-.footer p {
-    color: #666;
-    margin-bottom: 10px;
-}
-
-.footer-links a {
-    color: #012265;
-    margin: 0 10px;
-    text-decoration: none;
-}
-
-.footer-links a:hover {
-    text-decoration: underline;
 }

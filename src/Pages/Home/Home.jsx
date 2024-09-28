@@ -14,8 +14,8 @@ function Home() {
             <div className="home-container">
                 <section className="hero-section">
                     <h1>Welcome to Excalibur's Scouting System</h1>
-                    <p>Your one-stop solution for scouting and managing matches.</p>
-                    <button onClick={handleGetStarted} className="cta-button">Get Started</button>
+                    <p>Scout.Sleep.Eat.</p>
+                    <button onClick={handleGetStarted} className="cta-button">Get Started!</button>
                 </section>
                 <section className="features-section">
                     <h2>Instuctions</h2>
