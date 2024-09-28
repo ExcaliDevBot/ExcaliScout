@@ -1,7 +1,9 @@
+// src/Pages/MyMatches/MyMatches.jsx
+
 import React, { useState, useEffect, useContext } from 'react';
+import Papa from 'papaparse';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
-import Papa from 'papaparse';
 import './MyMatches.css';
 
 function MyMatches() {
@@ -27,6 +29,7 @@ function MyMatches() {
                             name: row[0], // Column A for names
                             match_number: row[1], // Column B for match numbers
                             team_number: row[2], // Column C for team numbers
+                            questions: row.slice(3), // Columns D onwards for questions
                             index: index,
                             isSuperScouting: true // Mark as super scouting match
                         }))
@@ -100,7 +103,16 @@ function MyMatches() {
                                     Alliance: {match.alliance}
                                 </p>
                             )}
-                            <button className={match.isSuperScouting ? 'super-scouting-button' : 'normal-scouting-button'} onClick={() => navigate(`/scout/${match.match_number}`, { state: { match, user } })}>
+                            <button
+                                className={match.isSuperScouting ? 'super-scouting-button' : 'normal-scouting-button'}
+                                onClick={() => {
+                                    if (match.isSuperScouting) {
+                                        navigate(`/super-scout`, { state: { match, user, questions: match.questions } });
+                                    } else {
+                                        navigate(`/scout/${match.match_number}`, { state: { match, user } });
+                                    }
+                                }}
+                            >
                                 Scout Now
                             </button>
                         </div>
