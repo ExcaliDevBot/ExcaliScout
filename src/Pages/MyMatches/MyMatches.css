@@ -105,3 +105,47 @@ button:hover {
     margin: 5px 0;
     font-size: 1em;
 }
+/* MyMatches.css */
+/* MyMatches.css */
+/* MyMatches.css */
+.super-scouting {
+    border: 4px solid #d4af37; /* Border for super scouting matches */
+}
+
+.super-scouting-button {
+    background-color: #045404; /* Green background for the button */
+    color: #ffffff;
+    padding: 12px 24px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.super-scouting-button:hover {
+    background-color: #d4af37;
+    color: #012265;
+}
+
+.normal-scouting-button {
+    background-color: #012265; /* Blue background for the button */
+    color: #ffffff;
+    padding: 12px 24px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.normal-scouting-button:hover {
+    background-color: #d4af37;
+    color: #012265;
+}
