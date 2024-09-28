@@ -1,31 +1,60 @@
-# Create React App
+# Excalibur's Scouting System
 
-This directory is a brief example of a [Create React App](https://github.com/facebook/create-react-app) site that can be deployed to Vercel with zero configuration.
+## Overview
 
-## Deploy Your Own
+Excalibur's Scouting System is a web application designed to facilitate scouting activities. It includes features for user management, match assignments, and various scouting forms.
 
-Deploy your own Create React App project with Vercel.
+## Features
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vercel/vercel/tree/main/examples/create-react-app&template=create-react-app)
+- User Authentication
+- User Management (Admin)
+- Match Assignments (Admin)
+- Scouting Forms (Super Scouting, Pit Scouting)
+- Profile Management
+- Actions and My Matches
 
-_Live Example: https://create-react-template.vercel.app/_
+## Technologies Used
 
-## Available Scripts
+- JavaScript
+- React
+- npm
+- react-router-dom
 
-In the project directory, you can run:
+## Installation
 
-### `npm start`
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/YehudaRothstein/excalibur-scouting-system.git
+    cd excalibur-scouting-system
+    ```
 
-Runs the app in the development mode. Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+2. Install dependencies:
+    ```bash
+    npm install
+    ```
 
-The page will reload when you make changes. You may also see any lint errors in the console.
+3. Start the development server:
+    ```bash
+    npm start
+    ```
 
-### `npm test`
+## Project Structure
 
-Launches the test runner in the interactive watch mode. See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.
-
-It correctly bundles React in production mode and optimizes the build for the best performance. The build is minified and the filenames include the hashes.
+```plaintext
+src/
+├── App.js
+├── Pages/
+│   ├── Actions/
+│   ├── Home/
+│   ├── Login/
+│   ├── ManageUsers/
+│   ├── MatchAssign/
+│   ├── MyMatches/
+│   ├── Nav/
+│   ├── Profile/
+│   ├── Scouting/
+│   │   ├── Pit/
+│   │   └── Super/
+├── context/
+├── AdminRoute.js
+├── ProtectedRoute.js
