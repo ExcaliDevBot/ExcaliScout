@@ -3,12 +3,16 @@ import { useLocation } from "react-router-dom";
 import "./SuperScouting.css";
 
 const questionsList = {
-    1: "What did the robot do autonomous?",
-    2: "How did the robot deal with defense?",
-    3: "How was the driving quality?",
-    4: "How was the robot's performance in teleop?",
-    5: "How was the robot's endgame performance?",
-    6: "Any additional comments?"
+    0: "תאר אוטונומי?",
+    1: "תאר טלאופ + אנדגיים",
+    2: "תאר שימוש בטראפ",
+    3: "תאר הגנה",
+    4: "תאר התמודוות מול הגנה",
+    5: "פרט רוטיישנס",
+    6: "ירי - מיקום + גובה + זמן",
+    7: "איסוף - רצפה/פידר + זמן",
+    8: "תאר כימיה עם שאר הברית",
+    9: "הערות"
 };
 
 function SuperScouting() {
