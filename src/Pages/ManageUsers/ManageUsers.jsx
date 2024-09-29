@@ -6,6 +6,9 @@ function ManageUsers() {
     const [searchTerm, setSearchTerm] = useState('');
     const [newUser, setNewUser] = useState({ username: '', role: '', password: '' });
     const [editingUser, setEditingUser] = useState(null);
+    const [deletedUserId, setDeletedUserId] = useState(null);
+    const [addSuccess, setAddSuccess] = useState(false);
+    const [editSuccess, setEditSuccess] = useState(false);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -34,8 +37,10 @@ function ManageUsers() {
             });
             const data = await response.json();
             if (data.status === 'success') {
-                setUsers([...users, data.user]);
+                setUsers([...users, { ...newUser, user_id: data.user_id }]);
                 setNewUser({ username: '', role: '', password: '' });
+                setAddSuccess(true);
+                setTimeout(() => setAddSuccess(false), 3000); // Show success message for 3 seconds
             } else {
                 alert('Failed to add user');
             }
@@ -47,17 +52,19 @@ function ManageUsers() {
 
     const handleEditUser = async (userId) => {
         try {
-            const response = await fetch(`https://ScoutingSystem.pythonanywhere.com/edit_user/${userId}`, {
+            const response = await fetch('https://ScoutingSystem.pythonanywhere.com/update_user', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(editingUser),
+                body: JSON.stringify({ ...editingUser, user_id: userId }),
             });
             const data = await response.json();
             if (data.status === 'success') {
-                setUsers(users.map(user => (user.user_id === userId ? data.user : user)));
+                setUsers(users.map(user => (user.user_id === userId ? editingUser : user)));
                 setEditingUser(null);
+                setEditSuccess(true);
+                setTimeout(() => setEditSuccess(false), 3000); // Show success message for 3 seconds
             } else {
                 alert('Failed to edit user');
             }
@@ -67,22 +74,30 @@ function ManageUsers() {
         }
     };
 
-    const handleDeleteUser = async (userId) => {
-        try {
-            const response = await fetch(`https://ScoutingSystem.pythonanywhere.com/delete_user/${userId}`, {
-                method: 'DELETE',
-            });
-            const data = await response.json();
-            if (data.status === 'success') {
+const handleDeleteUser = async (userId) => {
+    try {
+        const response = await fetch('https://ScoutingSystem.pythonanywhere.com/delete_user', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_id: userId }),
+        });
+        const data = await response.json();
+        if (data.status === 'success') {
+            setDeletedUserId(userId);
+            setTimeout(() => {
                 setUsers(users.filter(user => user.user_id !== userId));
-            } else {
-                alert('Failed to delete user');
-            }
-        } catch (error) {
-            console.error('Error:', error);
+                setDeletedUserId(null);
+            }, 500); // Delay to allow the fade-out effect
+        } else {
             alert('Failed to delete user');
         }
-    };
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to delete user');
+    }
+};
 
     const filteredUsers = users.filter(user => user.username && user.username.toLowerCase().includes(searchTerm.toLowerCase()));
 
@@ -110,10 +125,10 @@ function ManageUsers() {
                     onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
                 >
                     <option value="">Select Role</option>
-                    <option value="ADMIN">ADMIN</option>
-                    <option value="normal_scouter">normal\_scouter</option>
-                    <option value="pit_scouter">pit\_scouter</option>
-                    <option value="super_scouter">super\_scouter</option>
+                    <option value="ADMIN">Admin</option>
+                    <option value="normal_scouter">Normal Scouter</option>
+                    <option value="pit_scouter">Pit Scouter</option>
+                    <option value="super_scouter">Super Scouter</option>
                 </select>
                 <input
                     type="password"
@@ -122,6 +137,7 @@ function ManageUsers() {
                     onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
                 />
                 <button onClick={handleAddUser}>Add User</button>
+                {addSuccess && <p className="success-message">User added successfully!</p>}
             </div>
             <table>
                 <thead>
@@ -133,7 +149,7 @@ function ManageUsers() {
                 </thead>
                 <tbody>
                     {filteredUsers.map(user => (
-                        <tr key={user.user_id}>
+                        <tr key={user.user_id} className={deletedUserId === user.user_id ? 'fade-out' : ''}>
                             <td>
                                 {editingUser && editingUser.user_id === user.user_id ? (
                                     <input
@@ -171,6 +187,7 @@ function ManageUsers() {
                                         />
                                         <button onClick={() => handleEditUser(user.user_id)}>Save</button>
                                         <button onClick={() => setEditingUser(null)}>Cancel</button>
+                                        {editSuccess && <p className="success-message">User edited successfully!</p>}
                                     </>
                                 ) : (
                                     <>
