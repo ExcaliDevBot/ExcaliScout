@@ -1,38 +1,44 @@
+/* Scouting.css */
 body {
-    font-family: "Assistant SemiBold", serif;
+    font-family: "Roboto", sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+        overflow-x: hidden;
 }
 
 label, h3 {
-    font-family: "Copperplate Gothic Light", serif;
+    font-family: "Roboto", sans-serif;
     color: #d4af37;
     font-weight: bold;
     display: block;
     text-align: center;
+    margin: 10px 0;
 }
 
-.button-container {
-    max-width: 780px;
+h2 {
+    font-family: "Roboto", sans-serif;
+    color: #333;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.info-table {
     width: 100%;
-    margin: 0 auto;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    padding: 0 10px;
-
+    margin: 10px 0;
+    border-collapse: collapse;
 }
 
-.resizable-button {
-    width: 30%;
-    max-width: 250px;
-    height: auto;
-    font-size: larger;
-    margin: 10px;
-    box-sizing: border-box;
+.info-table th, .info-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    vertical-align: middle;
 }
 
-.Autonomus {
-    width: 80px;
-    height: 40px;
+.info-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
 }
 
 textarea {
@@ -43,62 +49,161 @@ textarea {
     padding: 0.5em;
     font-size: 1em;
     margin: 0px 20px 20px;
-    font-family: "Assistant SemiBold", serif;
+    font-family: "Roboto", sans-serif;
     direction: rtl;
     overflow: hidden;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
-.center-button {
-    display: flex;
-    justify-content: center;
-    margin-top: 30px;
-}
-
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
+.rotate-message {
+    color: black;
     text-align: center;
+    font-family: "Roboto", sans-serif;
 }
 
-.content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.button-container {
+    max-width: 780px;
     width: 100%;
-    max-width: 800px;
-}
-
-.form {
+    margin: 20px auto;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 10px;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 0 10px;
 }
 
-.question-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
+.resizable-button {
+    width: 45%;
+    max-width: 250px;
+    height: auto;
+    font-size: larger;
+    margin: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #012265;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-.question {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.resizable-button:hover {
+    background-color: #b38e30;
 }
 
-.question label {
-    margin-bottom: 5px;
-    display: block;
-    text-align: center;
-}
-
-.submit-container {
+.toggle-button-container {
     display: flex;
     justify-content: center;
+    margin-top: 20px;
+}
+
+.toggle-button {
     width: 100%;
+    max-width: 250px;
+    height: auto;
+    font-size: larger;
+    margin: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #d4af37;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.toggle-button.active {
+    background-color: #5b2e75;
+}
+
+
+
+.counter-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.counter-buttons {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.counter-button {
+    font-size: 20px;
+    padding: 10px 20px;
+    margin: 0 10px;
+    background-color: #d4af37;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.counter-button:hover {
+    background-color: #b38e30;
+}
+.constant-color {
+    display: inline-block;
+    padding: 15px 17px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 5px;
+    cursor: default;
+    transition: background-color 0.3s ease;
+}
+
+.name-color {
+    background-color: #278035;
+    color: #fff;
+}
+
+.team-color {
+    background-color: #0d3556;
+    color: #fff;
+}
+
+.match-color {
+    background-color: #461a36;
+    color: #fff;
+}
+
+.alliance-button {
+    display: inline-block;
+    padding: 15px 17px;
+    margin: 10px 0;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 5px;
+    cursor: default;
+    transition: background-color 0.3s ease;
+}
+
+.alliance-button.red {
+    background-color: red;
+    color: white;
+}
+
+.alliance-button.blue {
+    background-color: blue;
+    color: white;
+}
+.counter-value {
+    font-size: 24px;
+    margin: 0 10px;
+}
+
+.qr-code-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 60px;
+    margin-bottom: 110px;
 }

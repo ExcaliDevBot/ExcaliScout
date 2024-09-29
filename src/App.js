@@ -26,7 +26,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/ScoutNav" element={<ProtectedRoute><ScoutNav /></ProtectedRoute>} />
                     <Route path="/Pit-Scouting" element={<ProtectedRoute><PitScouting /></ProtectedRoute>} />
-                    <Route path="/Super-scouting" element={<ProtectedRoute><SuperScouting /></ProtectedRoute>} />
+                    <Route path="/super-scout" element={<ProtectedRoute><SuperScouting /></ProtectedRoute>} />
                     <Route path="/assign" element={<AdminRoute><MatchAssign /></AdminRoute>} />
                     <Route path="/MyMatches" element={<ProtectedRoute><MyMatches /></ProtectedRoute>} />
                     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />

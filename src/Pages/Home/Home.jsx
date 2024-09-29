@@ -13,15 +13,15 @@ function Home() {
         <div>
             <div className="home-container">
                 <section className="hero-section">
-                    <h1>Welcome to Our A pplication</h1>
-                    <p>Your one-stop solution for scouting and managing matches.</p>
-                    <button onClick={handleGetStarted} className="cta-button">Get Started</button>
+                    <h1>Welcome to Excalibur's Scouting System</h1>
+                    <p>Scout.Sleep.Eat.</p>
+                    <button onClick={handleGetStarted} className="cta-button">Get Started!</button>
                 </section>
                 <section className="features-section">
-                    <h2>Features</h2>
+                    <h2>Instuctions</h2>
                     <div className="features">
                         <div className="feature">
-                            <h3>Feature 1</h3>
+                            <h3>Login</h3>
                             <p>Detail about feature 1.</p>
                         </div>
                         <div className="feature">

@@ -7,9 +7,11 @@ import TeleField from "./Game/Teleop";
 function ScoutingForm() {
     const location = useLocation();
     const { match, user } = location.state || {};
+    const isNewForm = !match;
     const [formData, setFormData] = useState({
         Name: user ? user.username : '',
         Team: match ? match[`team${match.robot + 1}`] : '',
+        Match: match ? match.match_number : '',
         Alliance: match ? match.alliance : '',
         TeleNotes: '',
         checkboxes: Array(8).fill(false),
@@ -33,32 +35,39 @@ function ScoutingForm() {
             const greenPointsCount = formData.TelePoints.filter(point => point.color === 1).length;
 
             const barcodeString = `
+                Name: ${user.username || 'NULL'},
+                Team: ${formData.Team || 'NULL'},
+                Match: ${formData.Match || 'NULL'},
+                Alliance: ${formData.Alliance || 'NULL'},
                 ${formData.Team || 'NULL'},
                 ${formData.counter2},
                 ${mode === 'checkbox' ? checkedCheckboxCount : 'NULL'},
-                ${formData.Pcounter}, 
+                ${formData.Pcounter},
                 ${greenPointsCount},
                 ${missedPointsCSV ? missedPointsCSV.length : 'NULL'},
                 NULL,
                 ${formData.Pcounter},
-                ${formData.climbed ? 'true' : 'false'}, 
+                ${formData.climbed ? 'true' : 'false'},
                 ${telePointsCSV || 'NULL'},
                 NULL,
                 ${checkboxStatuses || 'NULL'},
-                ${formData.Makatz || 'NULL'}
+                ${formData.Makatz || 'NULL'},
+                User: ${user.username || 'NULL'},
+                Team Number: ${formData.Team || 'NULL'},
+                Match Number: ${formData.Match || 'NULL'}
             `.replace(/\n/g, '').replace(/\s+/g, ' ').trim();
             return barcodeString;
         };
 
         setBarcodeData(generateBarcode());
-    }, [formData, mode]);
+    }, [formData, mode, user]);
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleCheckboxChange = (index) => {
+    const handleButtonClick = (index) => {
         const newCheckboxes = [...formData.checkboxes];
         newCheckboxes[index] = !newCheckboxes[index];
         setFormData({ ...formData, checkboxes: newCheckboxes });
@@ -97,57 +106,64 @@ function ScoutingForm() {
     };
 
     return (
-        <div style={{ fontFamily: 'Assistant', direction: 'rtl' }}>
-            <h2 style={{ fontFamily: 'Assistant' }}>סקאוטינג רגיל:</h2>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', width: '100%' }}>
-                <label htmlFor="Sname" style={{ fontFamily: 'Assistant' }}>שם:</label>
-                <input
-                    type="text"
-                    id="Sname"
-                    name="Name"
-                    value={formData.Name}
+        <div style={{ direction: 'rtl', padding: '10px' }}>
+            <table className="info-table">
+                <thead>
+                    <tr>
+                        <th>שם</th>
+                        <th>קבוצה</th>
+                        <th>מקצה</th>
+                        <th>ברית</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span className="constant-color name-color">{user.username}</span></td>
+                        <td>
+                            {isNewForm ? (
+                                <input type="text" name="Team" value={match.team_number} onChange={handleInputChange} />
+                            ) : (
+                                <span className="constant-color team-color">{match.team_number}</span>
+                            )}
+                        </td>
+                        <td>
+                            {isNewForm ? (
+                                <input type="text" name="Match" value={match.match_number} onChange={handleInputChange} />
+                            ) : (
+                                <span className="constant-color match-color">{match.match_number}</span>
+                            )}
+                        </td>
+                        <td>
+                            {isNewForm ? (
+                                <select name="Alliance" value={formData.Alliance} onChange={handleInputChange}>
+                                    <option value="">Select Alliance</option>
+                                    <option value="Red">Red</option>
+                                    <option value="Blue">Blue</option>
+                                </select>
+                            ) : (
+                                <span className={`alliance-button ${formData.Alliance.toLowerCase()}`}>{formData.Alliance}</span>
+                            )}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <form onSubmit={handleSubmit} className="form">
+                <label htmlFor="TeleNotes">הערות טליאופ:</label>
+                <textarea
+                    id="TeleNotes"
+                    name="TeleNotes"
+                    value={formData.TeleNotes}
                     onChange={handleInputChange}
-                    style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box', fontFamily: 'Assistant' }}
-                />
-
-                <label htmlFor="Team" style={{ fontFamily: 'Assistant' }}>מספר קבוצה:</label>
-                <input
-                    type="number"
-                    id="Team"
-                    name="Team"
-                    value={formData.Team}
-                    onChange={handleInputChange}
-                    style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box', fontFamily: 'Assistant' }}
-                />
-
-                <label htmlFor="Alliance" style={{ fontFamily: 'Assistant' }}>ברית:</label>
-                <input
-                    type="text"
-                    id="Alliance"
-                    name="Alliance"
-                    value={formData.Alliance}
-                    onChange={handleInputChange}
-                    style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box', fontFamily: 'Assistant' }}
-                />
-
-                <label htmlFor="Makatz" style={{ fontFamily: 'Assistant' }}>מקצה:</label>
-                <input
-                    type="text"
-                    id="Makatz"
-                    name="Makatz"
-                    value={formData.Makatz}
-                    onChange={handleInputChange}
-                    style={{ margin: '10px', padding: '10px', width: 'calc(100% - 20px)', boxSizing: 'border-box', fontFamily: 'Assistant' }}
                 />
             </form>
 
-            <h3 style={{ color: 'black', textAlign: 'center', fontFamily: 'Assistant' }}>סובב את הטלפון שלך לרוחב כדי שהטופס יעבוד כמו שצריך.</h3>
+            <h3 className="rotate-message">סובב את הטלפון שלך לרוחב כדי שהטופס יעבוד כמו שצריך.</h3>
 
-            <h3 style={{ fontFamily: 'Assistant' }}>מפת סקאוטינג:</h3>
+            <h3>מפת סקאוטינג:</h3>
 
-            <div className="button-container" style={{ display: 'flex', justifyContent: 'space-between', padding: '0 10px' }}>
-                <button type="button" className="resizable-button" style={{ flex: 1, margin: '5px', fontFamily: 'Assistant' }} onClick={handleAutoClick}>Autonomous</button>
-                <button type="button" className="resizable-button" style={{ flex: 1, margin: '5px', fontFamily: 'Assistant' }} onClick={handleTeleopClick}>Teleop</button>
+            <div className="button-container">
+                <button type="button" className="resizable-button" onClick={handleAutoClick}>Autonomous</button>
+                <button type="button" className="resizable-button" onClick={handleTeleopClick}>Teleop</button>
             </div>
 
             <br />
@@ -167,29 +183,30 @@ function ScoutingForm() {
 
             <br />
 
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <label style={{ fontFamily: 'Assistant' }}>
-                    <input
-                        type="checkbox"
-                        checked={formData.climbed}
-                        onChange={() => setFormData(prev => ({ ...prev, climbed: !prev.climbed }))}
-                    />
+            <div className="toggle-button-container">
+                <button
+                    type="button"
+                    className={`toggle-button ${formData.climbed ? 'active' : ''}`}
+                    onClick={() => setFormData(prev => ({ ...prev, climbed: !prev.climbed }))}
+                >
                     הרובוט טיפס?
-                </label>
-                <br />
-                <label style={{ fontFamily: 'Assistant' }}>
-                    קליעות לtrap:
-                </label>
-                <div style={{ display: 'flex', alignItems: 'center', marginTop: '5px' }}>
-                    <button onClick={() => setFormData(prev => ({ ...prev, Pcounter: Math.max(0, prev.Pcounter - 1) }))} style={{ fontSize: '14px', padding: '5px 10px' }}>-</button>
-                    <span style={{ margin: '0 10px', fontSize: '20px' }}>{formData.Pcounter}</span>
-                    <button onClick={() => setFormData(prev => ({ ...prev, Pcounter: prev.Pcounter + 1 }))} style={{ fontSize: '14px', padding: '5px 10px' }}>+</button>
+                </button>
+            </div>
+
+            <br />
+
+            <div className="counter-container">
+                <label>קליעות לtrap:</label>
+                <div className="counter-buttons">
+                    <button onClick={() => setFormData(prev => ({ ...prev, Pcounter: Math.max(0, prev.Pcounter - 1) }))} className="counter-button">-</button>
+                    <span className="counter-value">{formData.Pcounter}</span>
+                    <button onClick={() => setFormData(prev => ({ ...prev, Pcounter: prev.Pcounter + 1 }))} className="counter-button">+</button>
                 </div>
             </div>
 
             <br />
 
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div className="qr-code-container">
                 <QRCode value={barcodeData} />
             </div>
         </div>

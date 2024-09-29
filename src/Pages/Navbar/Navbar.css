@@ -3,7 +3,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: #333;
+    background-color: #012265;
     padding: 10px 20px;
     color: #fff;
     font-family: Arial, sans-serif;
@@ -27,6 +27,7 @@
 
 .navbar a:hover, .navbar button:hover {
     background-color: #d4af37;
+    animation: color-change 4s;
     text-decoration: none; /* Remove underline */
 }
 
@@ -73,4 +74,39 @@
 
 .dropdown:hover .dropdown-content {
     display: block;
+}
+
+.hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.hamburger div {
+    width: 25px;
+    height: 3px;
+    background-color: #fff;
+    margin: 4px 0;
+    transition: 0.4s;
+}
+
+/* Hide the navbar items on mobile */
+.navbar-items {
+    display: flex;
+}
+
+@media (max-width: 768px) {
+    .navbar-items {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .navbar-items.active {
+        display: flex;
+    }
+
+    .hamburger {
+        display: flex;
+    }
 }

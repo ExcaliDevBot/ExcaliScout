@@ -4,9 +4,6 @@ import './MatchAssign.css';
 function MatchAssign() {
     const [matches, setMatches] = useState([]);
     const [scouters, setScouters] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [teamNumber, setTeamNumber] = useState('');
-    const [scouterUsername, setScouterUsername] = useState('');
 
     useEffect(() => {
         const fetchMatches = async () => {
@@ -88,55 +85,28 @@ function MatchAssign() {
         }
     };
 
-    const filteredMatches = matches.filter(match => {
-        const matchNumberMatches = match.match_number && match.match_number.toString().includes(searchTerm);
-        const teamNumberMatches = teamNumber && Object.values(match).some(value => value && value.toString().includes(teamNumber));
-        const scouterUsernameMatches = scouterUsername && Object.values(match).some(value => {
-            const scouter = scouters.find(s => s.user_id === value);
-            return scouter && scouter.username.toLowerCase().includes(scouterUsername.toLowerCase());
-        });
-        return matchNumberMatches || teamNumberMatches || scouterUsernameMatches;
-    });
-
     return (
         <div className="match-assign-container">
             <header>
                 <h2>Match Assignment</h2>
-                <input
-                    type="text"
-                    placeholder="Search by match number"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <input
-                    type="text"
-                    placeholder="Search by team number"
-                    value={teamNumber}
-                    onChange={(e) => setTeamNumber(e.target.value)}
-                />
-                <input
-                    type="text"
-                    placeholder="Search by scouter username"
-                    value={scouterUsername}
-                    onChange={(e) => setScouterUsername(e.target.value)}
-                />
-                <button onClick={() => { setSearchTerm(''); setTeamNumber(''); setScouterUsername(''); }}>Clear</button>
+                <button onClick={handleManualAssign} className="save-button">Save Assignments</button>
+                <button onClick={handleReassign} className="reassign-button">Reassign Scouters</button>
             </header>
             <div className="table-container">
                 <table>
                     <thead>
-                        <tr>
-                            <th>Match Number</th>
-                            <th>Scouter 1 / Team 1</th>
-                            <th>Scouter 2 / Team 2</th>
-                            <th>Scouter 3 / Team 3</th>
-                            <th>Scouter 4 / Team 4</th>
-                            <th>Scouter 5 / Team 5</th>
-                            <th>Scouter 6 / Team 6</th>
+                    <tr>
+                        <th>Match Number</th>
+                        <th>Scouter 1</th>
+                            <th>Scouter 2</th>
+                            <th>Scouter 3</th>
+                            <th>Scouter 4</th>
+                            <th>Scouter 5</th>
+                            <th>Scouter 6</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredMatches.map(match => (
+                        {matches.map(match => (
                             <tr key={match.id}>
                                 <td>{match.id}</td>
                                 {[1, 2, 3, 4, 5, 6].map(index => (
@@ -161,8 +131,7 @@ function MatchAssign() {
                 </table>
             </div>
             <footer>
-                <button onClick={handleManualAssign} className="save-button">Save Assignments</button>
-                <button onClick={handleReassign} className="reassign-button">Reassign Scouters</button>
+
             </footer>
         </div>
     );
