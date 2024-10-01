@@ -20,7 +20,6 @@ function ScoutingForm() {
         counter1: 0,
         counter2: 0,
         climbed: false,
-        Makatz: '' // New field for "מקצה"
     });
     const [barcodeData, setBarcodeData] = useState('');
     const [mode, setMode] = useState('teleop');
@@ -36,9 +35,8 @@ function ScoutingForm() {
 
             const barcodeString = `
                 Name: ${user.username || 'NULL'},
-                Team: ${formData.Team || 'NULL'},
+                Team: ${Match.team_number || 'NULL'},
                 Match: ${formData.Match || 'NULL'},
-                Alliance: ${formData.Alliance || 'NULL'},
                 ${formData.Team || 'NULL'},
                 ${formData.counter2},
                 ${mode === 'checkbox' ? checkedCheckboxCount : 'NULL'},
@@ -51,10 +49,7 @@ function ScoutingForm() {
                 ${telePointsCSV || 'NULL'},
                 NULL,
                 ${checkboxStatuses || 'NULL'},
-                ${formData.Makatz || 'NULL'},
-                User: ${user.username || 'NULL'},
-                Team Number: ${formData.Team || 'NULL'},
-                Match Number: ${formData.Match || 'NULL'}
+
             `.replace(/\n/g, '').replace(/\s+/g, ' ').trim();
             return barcodeString;
         };
