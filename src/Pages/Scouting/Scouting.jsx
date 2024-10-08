@@ -35,7 +35,7 @@ function ScoutingForm() {
 
             const barcodeString = `
                 Name: ${user.username || 'NULL'},
-                Team: ${Match.team_number || 'NULL'},
+                Team: ${match.team_number|| 'NULL'},
                 Match: ${formData.Match || 'NULL'},
                 ${formData.Team || 'NULL'},
                 ${formData.counter2},
