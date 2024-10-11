@@ -29,17 +29,19 @@ function ScoutingForm() {
         const generateBarcode = () => {
             const telePointsCSV = formData.TelePoints.map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};G)`).join(';');
             const missedPointsCSV = formData.TelePoints.filter(point => point.color === 2).map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};O)`).join(';');
-            const checkboxStatuses = formData.checkboxes.map((checked, index) => `CA${index + 1}: ${checked}`).join(';');
-            const checkedCheckboxCount = formData.checkboxes.filter(checked => checked).length;
+            const checkedCheckboxes = formData.checkboxes
+                .map((checked, index) => checked ? `CA${index + 1}: ${checked}` : null)
+                .filter(Boolean)
+                .join(';');
             const greenPointsCount = formData.TelePoints.filter(point => point.color === 1).length;
 
             const barcodeString = `
                 Name: ${user.username || 'NULL'},
-                Team: ${match.team_number|| 'NULL'},
+                Team: ${match.team_number || 'NULL'},
                 Match: ${formData.Match || 'NULL'},
                 ${formData.Team || 'NULL'},
                 ${formData.counter2},
-                ${mode === 'checkbox' ? checkedCheckboxCount : 'NULL'},
+                ${mode === 'checkbox' ? checkedCheckboxes : 'NULL'},
                 ${formData.Pcounter},
                 ${greenPointsCount},
                 ${missedPointsCSV ? missedPointsCSV.length : 'NULL'},
@@ -48,8 +50,6 @@ function ScoutingForm() {
                 ${formData.climbed ? 'true' : 'false'},
                 ${telePointsCSV || 'NULL'},
                 NULL,
-                ${checkboxStatuses || 'NULL'},
-
             `.replace(/\n/g, '').replace(/\s+/g, ' ').trim();
             return barcodeString;
         };
@@ -143,12 +143,12 @@ function ScoutingForm() {
                 </tbody>
             </table>
             <form onSubmit={handleSubmit} className="form">
-                <label htmlFor="TeleNotes">הערות טליאופ:</label>
                 <textarea
                     id="TeleNotes"
                     name="TeleNotes"
                     value={formData.TeleNotes}
                     onChange={handleInputChange}
+                    style={{ display: 'none' }} // Hide the textarea
                 />
             </form>
 
@@ -195,8 +195,22 @@ function ScoutingForm() {
                 <div className="counter-buttons">
                     <button onClick={() => setFormData(prev => ({ ...prev, Pcounter: Math.max(0, prev.Pcounter - 1) }))} className="counter-button">-</button>
                     <span className="counter-value">{formData.Pcounter}</span>
-                    <button onClick={() => setFormData(prev => ({ ...prev, Pcounter: prev.Pcounter + 1 }))} className="counter-button">+</button>
+                    <button onClick={() => setFormData(prev => ({ ...prev, Pcounter: Math.min(3, prev.Pcounter + 1) }))} className="counter-button">+</button>
                 </div>
+            </div>
+
+            <br />
+
+            <div className="checkbox-container">
+                {formData.checkboxes.map((checked, index) => (
+                    <input
+                        key={index}
+                        type="checkbox"
+                        className="checkbox"
+                        checked={checked}
+                        onChange={() => handleButtonClick(index)}
+                    />
+                ))}
             </div>
 
             <br />

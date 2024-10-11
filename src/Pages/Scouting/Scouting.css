@@ -199,7 +199,10 @@ textarea {
     font-size: 24px;
     margin: 0 10px;
 }
-
+.input[type="checkbox"] {    width: 30px;
+    height: 30px;
+    border: 2px solid #f15a00;
+}
 .qr-code-container {
     display: flex;
     flex-direction: column;
