@@ -90,7 +90,16 @@ function ScoutingForm() {
             formData.TelePoints.filter(point => point.color === 2).map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};O)`).join(';'), // L - missed Speaker coordinates
             formData.deliveryCount // M - delivery count
         ];
+            const username = user.username;
+            const matchNumber = match.match_number;
+            const teamNumber = match.team_number;
+            const alliance = formData.Alliance;
+            const authNumber = Math.floor(1000000 + Math.random() * 9000000);
 
+            alert(`Hello ${username}, we got your submission for match number ${matchNumber} about team ${teamNumber} with alliance ${alliance} successfully. Authentication submission ${authNumber}`);
+
+            // Redirect to home page
+            window.location.href = "/";
         const value = removeUnwantedCharacters(JSON.stringify(valuesArray));
         fetch('https://script.google.com/macros/s/AKfycbzxJmqZyvvPHM01FOFTnlGtUFxoslmNOJTUT0QccjLQsK5uQAHHhe_HfYFO2BxyK7Y_/exec', {
             method: 'POST',
@@ -103,6 +112,7 @@ function ScoutingForm() {
             .then(response => response.json())
             .then(data => console.log('Success:', data))
             .catch(error => console.error('Error:', error));
+
     };
 
     const removeUnwantedCharacters = (value) => {

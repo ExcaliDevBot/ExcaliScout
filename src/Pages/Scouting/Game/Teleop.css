@@ -1,13 +1,3 @@
-.tele-field {
-    position: relative;
-    width: 100%;
-    height: 500px;
-    background-color: #f4f4f9;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    overflow: hidden;
-}
-
 .counter-container {
     position: absolute;
     top: 10px;
@@ -37,4 +27,22 @@
 .counter-value {
     font-size: 20px;
     margin: 0 10px;
+}
+
+@media (max-width: 600px) {
+    .counter-button {
+        width: 30px;
+        height: 30px;
+        font-size: 16px;
+    }
+
+    .counter-value {
+        font-size: 16px;
+    }
+
+    .counter-container {
+        top: 5px;
+        right: 5px;
+        padding: 5px;
+    }
 }
