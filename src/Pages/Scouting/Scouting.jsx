@@ -196,10 +196,10 @@ const sendDataToSheet = (formData) => {
             <div className="toggle-button-container">
                 <button
                     type="button"
-                    className={`toggle-button ${formData.climbed ? 'active' : ''}`}
+                    className={`toggle-button ${formData.climbed ? 'active' : 'inactive'}`}
                     onClick={() => setFormData(prev => ({...prev, climbed: !prev.climbed}))}
                 >
-                    הרובוט טיפס?
+                    {formData.climbed ? 'הרובוט טיפס' : 'הרובוט לא טיפס'}
                 </button>
             </div>
 

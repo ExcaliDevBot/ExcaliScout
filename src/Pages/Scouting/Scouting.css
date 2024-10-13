@@ -106,8 +106,7 @@ textarea {
     margin: 10px;
     padding: 10px;
     box-sizing: border-box;
-    background-color: #d4af37;
-    color: #fff;
+    color: #ffffff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -115,7 +114,15 @@ textarea {
 }
 
 .toggle-button.active {
-    background-color: #5b2e75;
+    background-color: green;
+}
+
+.toggle-button.inactive {
+    background-color: red;
+}
+
+.toggle-button:hover {
+    background-color: red; /* Remove hover effect */
 }
 
 .counter-container {
