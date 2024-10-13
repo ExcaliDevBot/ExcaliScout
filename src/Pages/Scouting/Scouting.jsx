@@ -20,6 +20,7 @@ function ScoutingForm() {
         counter1: 0,
         counter2: 0,
         climbed: false,
+        deliveryCount: 0, // New counter
     });
     const [barcodeData, setBarcodeData] = useState('');
     const [mode, setMode] = useState('teleop');
@@ -73,35 +74,37 @@ function ScoutingForm() {
         sendDataToSheet(JSON.stringify(formData));
     };
 
-const sendDataToSheet = (formData) => {
-    const valuesArray = [
-        user.username, // A - name
-        match.team_number, // B - Team number
-        match.match_number, // C - match number
-        formData.checkboxes.filter(checked => checked).length, // D - Speaker Auto (count of true checkboxes)
-        formData.counter1, // E - tele AMP (a counter on the map)
-        formData.TelePoints.filter(point => point.color === 1).length, // F - tele Speaker (number of scored shots)
-        formData.defensivePins, // G - defensive pins
-        formData.TelePoints.filter(point => point.color === 2).length, // H - missed shots (number)
-        formData.Pcounter, // I - shots to trap (the counter)
-        formData.climbed, // J - Climed - boolean
-        formData.TelePoints.map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};G)`).join(';'), // K - Speaker coordinates
-        formData.TelePoints.filter(point => point.color === 2).map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};O)`).join(';') // L - missed Speaker coordinates
-    ];
+    const sendDataToSheet = (formData) => {
+        const valuesArray = [
+            user.username, // A - name
+            match.team_number, // B - Team number
+            match.match_number, // C - match number
+            formData.checkboxes.filter(checked => checked).length, // D - Speaker Auto (count of true checkboxes)
+            formData.counter1, // E - tele AMP (a counter on the map)
+            formData.TelePoints.filter(point => point.color === 1).length, // F - tele Speaker (number of scored shots)
+            formData.defensivePins, // G - defensive pins
+            formData.TelePoints.filter(point => point.color === 2).length, // H - missed shots (number)
+            formData.Pcounter, // I - shots to trap (the counter)
+            formData.climbed, // J - Climed - boolean
+            formData.TelePoints.map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};G)`).join(';'), // K - Speaker coordinates
+            formData.TelePoints.filter(point => point.color === 2).map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};O)`).join(';'), // L - missed Speaker coordinates
+            formData.deliveryCount // M - delivery count
+        ];
 
-    const value = removeUnwantedCharacters(JSON.stringify(valuesArray));
-    fetch('https://script.google.com/macros/s/AKfycbzxJmqZyvvPHM01FOFTnlGtUFxoslmNOJTUT0QccjLQsK5uQAHHhe_HfYFO2BxyK7Y_/exec', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        mode: 'no-cors',
-        body: JSON.stringify({ value: value })
-    })
-        .then(response => response.json())
-        .then(data => console.log('Success:', data))
-        .catch(error => console.error('Error:', error));
-};
+        const value = removeUnwantedCharacters(JSON.stringify(valuesArray));
+        fetch('https://script.google.com/macros/s/AKfycbzxJmqZyvvPHM01FOFTnlGtUFxoslmNOJTUT0QccjLQsK5uQAHHhe_HfYFO2BxyK7Y_/exec', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            mode: 'no-cors',
+            body: JSON.stringify({ value: value })
+        })
+            .then(response => response.json())
+            .then(data => console.log('Success:', data))
+            .catch(error => console.error('Error:', error));
+    };
+
     const removeUnwantedCharacters = (value) => {
         return value.replace(/[{}\[\]]/g, '');
     };
@@ -167,7 +170,6 @@ const sendDataToSheet = (formData) => {
                 />
             </form>
 
-
             <h3>מפת סקאוטינג:</h3>
 
             <div className="button-container">
@@ -187,6 +189,8 @@ const sendDataToSheet = (formData) => {
                 decrementCounter1={() => setFormData(prev => ({...prev, counter1: Math.max(0, prev.counter1 - 1)}))}
                 incrementCounter2={() => setFormData(prev => ({...prev, counter2: prev.counter2 + 1}))}
                 decrementCounter2={() => setFormData(prev => ({...prev, counter2: Math.max(0, prev.counter2 - 1)}))}
+                incrementDeliveryCount={() => setFormData(prev => ({...prev, deliveryCount: prev.deliveryCount + 1}))} // New increment function
+                decrementDeliveryCount={() => setFormData(prev => ({...prev, deliveryCount: Math.max(0, prev.deliveryCount - 1)}))} // New decrement function
                 setClimbed={(value) => setFormData(prev => ({...prev, climbed: value}))}
             />
 
@@ -204,27 +208,6 @@ const sendDataToSheet = (formData) => {
 
             <br/>
 
-            <div className="counter-container">
-                <label>קליעות לtrap:</label>
-                <div className="counter-buttons">
-                    <button onClick={() => setFormData(prev => ({...prev, Pcounter: Math.max(0, prev.Pcounter - 1)}))}
-                            className="counter-button">-
-                    </button>
-                    <span className="counter-value">{formData.Pcounter}</span>
-                    <button onClick={() => setFormData(prev => ({...prev, Pcounter: Math.min(3, prev.Pcounter + 1)}))}
-                            className="counter-button">+
-                    </button>
-                </div>
-            </div>
-
-            <br/>
-
-            <div className="qr-code-container">
-                <QRCode value={barcodeData}/>
-            </div>
-
-            <br/>
-
             <div className="send-button-container">
                 <button
                     type="button"
@@ -233,6 +216,12 @@ const sendDataToSheet = (formData) => {
                 >
                     Send Data to Google Sheets
                 </button>
+            </div>
+
+            <br/>
+
+            <div className="qr-code-container">
+                <QRCode value={barcodeData}/>
             </div>
         </div>
     );
