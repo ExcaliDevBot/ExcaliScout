@@ -4,7 +4,7 @@ body {
     background-color: #f4f4f9;
     margin: 0;
     padding: 0;
-        overflow-x: hidden;
+    overflow-x: hidden;
 }
 
 label, h3 {
@@ -106,8 +106,7 @@ textarea {
     margin: 10px;
     padding: 10px;
     box-sizing: border-box;
-    background-color: #d4af37;
-    color: #fff;
+    color: #ffffff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -115,10 +114,16 @@ textarea {
 }
 
 .toggle-button.active {
-    background-color: #5b2e75;
+    background-color: green;
 }
 
+.toggle-button.inactive {
+    background-color: red;
+}
 
+.toggle-button:hover {
+    background-color: red; /* Remove hover effect */
+}
 
 .counter-container {
     display: flex;
@@ -145,9 +150,6 @@ textarea {
     transition: background-color 0.3s ease;
 }
 
-.counter-button:hover {
-    background-color: #b38e30;
-}
 .constant-color {
     display: inline-block;
     padding: 15px 17px;
@@ -195,14 +197,18 @@ textarea {
     background-color: blue;
     color: white;
 }
+
 .counter-value {
     font-size: 24px;
     margin: 0 10px;
 }
-.input[type="checkbox"] {    width: 30px;
+
+.input[type="checkbox"] {
+    width: 30px;
     height: 30px;
     border: 2px solid #f15a00;
 }
+
 .qr-code-container {
     display: flex;
     flex-direction: column;
