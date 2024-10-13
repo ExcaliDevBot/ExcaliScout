@@ -9,19 +9,20 @@ function ScoutingForm() {
     const { match, user } = location.state || {};
     const isNewForm = !match;
     const [formData, setFormData] = useState({
-        Name: user ? user.username : '',
-        Team: match ? match[`team${match.robot + 1}`] : '',
-        Match: match ? match.match_number : '',
-        Alliance: match ? match.alliance : '',
-        TeleNotes: '',
-        checkboxes: Array(8).fill(false),
-        TelePoints: [],
-        Pcounter: 0,
-        counter1: 0,
-        counter2: 0,
-        climbed: false,
-        deliveryCount: 0, // New counter
-    });
+    Name: user ? user.username : '',
+    Team: match ? match[`team${match.robot + 1}`] : '',
+    Match: match ? match.match_number : '',
+    Alliance: match ? match.alliance : '',
+    TeleNotes: '',
+    checkboxes: Array(8).fill(false),
+    TelePoints: [],
+    Pcounter: 0,
+    counter1: 0,
+    counter2: 0,
+    climbed: false,
+    deliveryCount: 0,
+    trapCounter: 0, // Add trapCounter
+});
     const [barcodeData, setBarcodeData] = useState('');
     const [mode, setMode] = useState('teleop');
     const [eraserMode, setEraserMode] = useState(false);
@@ -127,6 +128,13 @@ function ScoutingForm() {
         setMode('teleop');
     };
 
+    const incrementTrapCounter = () => {
+            setFormData(prev => ({ ...prev, trapCounter: prev.trapCounter < 3 ? prev.trapCounter + 1 : prev.trapCounter }));
+        };
+
+    const decrementTrapCounter = () => {
+            setFormData(prev => ({ ...prev, trapCounter: Math.max(0, prev.trapCounter - 1) }));
+        };
     return (
         <div style={{direction: 'rtl', padding: '10px'}}>
             <table className="info-table">
@@ -199,8 +207,14 @@ function ScoutingForm() {
                 decrementCounter1={() => setFormData(prev => ({...prev, counter1: Math.max(0, prev.counter1 - 1)}))}
                 incrementCounter2={() => setFormData(prev => ({...prev, counter2: prev.counter2 + 1}))}
                 decrementCounter2={() => setFormData(prev => ({...prev, counter2: Math.max(0, prev.counter2 - 1)}))}
-                incrementDeliveryCount={() => setFormData(prev => ({...prev, deliveryCount: prev.deliveryCount + 1}))} // New increment function
-                decrementDeliveryCount={() => setFormData(prev => ({...prev, deliveryCount: Math.max(0, prev.deliveryCount - 1)}))} // New decrement function
+                incrementDeliveryCount={() => setFormData(prev => ({
+                    ...prev,
+                    deliveryCount: prev.deliveryCount + 1
+                }))} // New increment function
+                decrementDeliveryCount={() => setFormData(prev => ({
+                    ...prev,
+                    deliveryCount: Math.max(0, prev.deliveryCount - 1)
+                }))} // New decrement function
                 setClimbed={(value) => setFormData(prev => ({...prev, climbed: value}))}
             />
 
@@ -215,7 +229,14 @@ function ScoutingForm() {
                     {formData.climbed ? 'הרובוט טיפס' : 'הרובוט לא טיפס'}
                 </button>
             </div>
-
+            <div className="counter-container">
+                <h3>Trap Counter</h3>
+                <div className="counter-buttons">
+                    <button className="counter-button" onClick={decrementTrapCounter}>-</button>
+                    <span className="counter-value">{formData.trapCounter}</span>
+                    <button className="counter-button" onClick={incrementTrapCounter}>+</button>
+                </div>
+            </div>
             <br/>
 
             <div className="send-button-container">
@@ -224,7 +245,7 @@ function ScoutingForm() {
                     className="send-button"
                     onClick={() => sendDataToSheet(formData)}
                 >
-                    Send Data to Google Sheets
+                    Send Data
                 </button>
             </div>
 
