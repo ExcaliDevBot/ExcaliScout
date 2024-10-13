@@ -167,7 +167,6 @@ const sendDataToSheet = (formData) => {
                 />
             </form>
 
-            <h3 className="rotate-message">סובב את הטלפון שלך לרוחב כדי שהטופס יעבוד כמו שצריך.</h3>
 
             <h3>מפת סקאוטינג:</h3>
 
