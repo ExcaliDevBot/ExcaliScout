@@ -208,7 +208,26 @@ textarea {
     height: 30px;
     border: 2px solid #f15a00;
 }
-
+.send-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+.send-button{
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+    font-size: larger;
+    margin: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #012265;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
 .qr-code-container {
     display: flex;
     flex-direction: column;
