@@ -81,7 +81,7 @@ const sendDataToSheet = (formData) => {
         formData.checkboxes.filter(checked => checked).length, // D - Speaker Auto (count of true checkboxes)
         formData.counter1, // E - tele AMP (a counter on the map)
         formData.TelePoints.filter(point => point.color === 1).length, // F - tele Speaker (number of scored shots)
-        0, // G - defensive pins (placeholder for now)
+        formData.defensivePins, // G - defensive pins
         formData.TelePoints.filter(point => point.color === 2).length, // H - missed shots (number)
         formData.Pcounter, // I - shots to trap (the counter)
         formData.climbed, // J - Climed - boolean

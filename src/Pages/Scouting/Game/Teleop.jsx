@@ -5,6 +5,7 @@ function TeleField({ formData, setFormData, mode, eraserMode, setEraserMode }) {
     const [pointPositions, setPointPositions] = useState([]);
     const [counter, setCounter] = useState(formData.counter1 || 0); // Initialize from formData
     const [counter2, setCounter2] = useState(formData.counter2 || 0); // Initialize from formData
+    const [defensivePins, setDefensivePins] = useState(0); // New state for defensive pins
     const imageRef = useRef(null);
     const pointRadius = 2; // Radius for eraser
 
@@ -95,6 +96,14 @@ function TeleField({ formData, setFormData, mode, eraserMode, setEraserMode }) {
         });
     };
 
+    const incrementDefensivePins = () => {
+        setDefensivePins(prev => prev + 1);
+    };
+
+    const decrementDefensivePins = () => {
+        setDefensivePins(prev => Math.max(0, prev - 1));
+    };
+
     return (
         <div style={{ position: 'relative', width: '100%', maxWidth: '1000px', margin: '0 auto' }}>
             <img
@@ -143,6 +152,13 @@ function TeleField({ formData, setFormData, mode, eraserMode, setEraserMode }) {
                         <button onClick={decrementCounter} style={{ fontSize: '14px', padding: '5px 10px' }}>-</button>
                         <span style={{ margin: '0 10px', fontSize: '20px' }}>{counter}</span>
                         <button onClick={incrementCounter} style={{ fontSize: '14px', padding: '5px 10px' }}>+</button>
+                    </div>
+
+                    {/* Defensive Pins Counter */}
+                    <div style={{ position: 'absolute', top: '150px', left: '10px', zIndex: '10', fontSize: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <button onClick={incrementDefensivePins} style={{ fontSize: '18px', padding: '10px 20px', marginBottom: '5px' }}>+</button>
+                        <span style={{ margin: '0 10px', fontSize: '20px' }}>{defensivePins}</span>
+                        <button onClick={decrementDefensivePins} style={{ fontSize: '18px', padding: '10px 20px', marginTop: '5px' }}>-</button>
                     </div>
                 </>
             )}
