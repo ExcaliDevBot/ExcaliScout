@@ -184,7 +184,7 @@ const decrementTrapCounter = () => {
                         <button onClick={decrementDefensivePins} style={{ fontSize: '18px', padding: '10px 20px', marginTop: '5px', backgroundColor: 'red' }}>-</button>
                     </div>
 
-                    <div style={{ position: 'absolute', top: '110px', left: '600px', zIndex: '10', fontSize: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'blue' }}>
+                    <div style={{ position: 'absolute', top: '110px', left: '630px', zIndex: '10', fontSize: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'blue' }}>
                         <span>Delivery</span>
                         <button onClick={incrementDeliveryCount} style={{ fontSize: '18px', padding: '10px 20px', marginBottom: '5px', backgroundColor: 'blue', color: 'white' }}>+</button>
                         <span style={{ margin: '0 2px', fontSize: '20px', fontWeight:"bold" }}>{deliveryCount}</span>
