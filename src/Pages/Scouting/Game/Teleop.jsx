@@ -15,6 +15,10 @@ function TeleField({ formData, setFormData, mode, eraserMode, setEraserMode }) {
         { left: '73.8%', top: '38.5%' },
         { left: '73.8%', top: '53.5%' },
         { left: '50%', top: '19%' },
+        { left: '50%', top: '36%' },
+        { left: '50%', top: '53%' },
+        { left: '50%', top: '70%' },
+        { left: '50%', top: '87.5%' },
     ];
 
     useEffect(() => {
@@ -167,7 +171,7 @@ const decrementTrapCounter = () => {
                         {eraserMode ? 'Disable Eraser' : 'Eraser Mode'}
                     </button>
 
-                    <div style={{ position: 'absolute', top: '0px', left: '725px', zIndex: '10', fontSize: '24px', padding: '6px', backgroundColor: "#d4af37" }}>
+                    <div style={{ position: 'absolute', top: '0px', left: '600px', zIndex: '10', fontSize: '24px', padding: '6px', backgroundColor: "#d4af37" }}>
                         <button onClick={decrementCounter} style={{ fontSize: '18px', padding: '10px 20px', backgroundColor:"#012265" }}>-</button>
                         <span style={{ margin: '0 10px', fontSize: '20px', fontWeight:"bold"}}>{counter}</span>
                         <button onClick={incrementCounter} style={{ fontSize: '18px', padding: '10px 20px', backgroundColor:"#012265" }}>+</button>
@@ -180,7 +184,7 @@ const decrementTrapCounter = () => {
                         <button onClick={decrementDefensivePins} style={{ fontSize: '18px', padding: '10px 20px', marginTop: '5px', backgroundColor: 'red' }}>-</button>
                     </div>
 
-                    <div style={{ position: 'absolute', top: '270px', left: '10px', zIndex: '10', fontSize: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'blue' }}>
+                    <div style={{ position: 'absolute', top: '110px', left: '800px', zIndex: '10', fontSize: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'blue' }}>
                         <span>Delivery</span>
                         <button onClick={incrementDeliveryCount} style={{ fontSize: '18px', padding: '10px 20px', marginBottom: '5px', backgroundColor: 'blue', color: 'white' }}>+</button>
                         <span style={{ margin: '0 2px', fontSize: '20px', fontWeight:"bold" }}>{deliveryCount}</span>
@@ -189,7 +193,7 @@ const decrementTrapCounter = () => {
                 </>
             )}
 
-            {mode === 'checkbox' && (
+             {mode === 'checkbox' && (
                 <div>
                     {formData.checkboxes.map((checked, index) => {
                         const position = checkboxPositions[index];
@@ -197,6 +201,7 @@ const decrementTrapCounter = () => {
                         return (
                             <div
                                 key={index}
+                                className="checkbox-container"
                                 style={{
                                     position: 'absolute',
                                     left: position.left,
