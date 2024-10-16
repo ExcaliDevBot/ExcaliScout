@@ -38,19 +38,19 @@ function ScoutingForm() {
             const greenPointsCount = formData.TelePoints.filter(point => point.color === 1).length;
 
             const barcodeString = `
-                Name: ${user.username || 'NULL'},
-                Team: ${match.team_number || 'NULL'},
-                Match: ${formData.Match || 'NULL'},
-                ${formData.Team || 'NULL'},
-                ${formData.counter2},
-                ${mode === 'checkbox' ? checkedCheckboxes : 'NULL'},
+                ${user.username || 'NULL'},
+                ${match.team_number || 'NULL'},
+                ${match.match_number || 'NULL'},
+                ${formData.checkboxes.filter(checked => checked).length || 'NULL'},
+                ${formData.counter1},
+                ${formData.TelePoints.filter(point => point.color === 1).length},
+                ${formData.defensivePins},
+                ${formData.TelePoints.filter(point => point.color === 2).length},
                 ${formData.Pcounter},
-                ${greenPointsCount},
-                ${missedPointsCSV ? missedPointsCSV.length : 'NULL'},
-                NULL,
-                ${formData.Pcounter},
-                ${formData.climbed ? 'true' : 'false'},
-                ${telePointsCSV || 'NULL'},
+                ${formData.climbed},
+                ${formData.TelePoints.map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};G)`).join(';')},
+                ${formData.TelePoints.filter(point => point.color === 2).map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};O)`).join(';')},
+                ${formData.deliveryCount},
                 NULL,
             `.replace(/\n/g, '').replace(/\s+/g, ' ').trim();
             return barcodeString;
