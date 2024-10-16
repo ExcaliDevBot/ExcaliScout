@@ -1,9 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
 import './Login.css';
 
 function Login() {
+    const { user } = useContext(UserContext);
+
+    // If user is already logged in, redirect to the MyMatches page
+    if (user) {
+        return <Navigate to="/MyMatches" />;
+    }
+
     return (
         <div className="login-container">
             <div className="login-form">
@@ -55,8 +62,8 @@ function LoginForm() {
 
             const data = await response.json();
             if (data.status === 'success') {
-                login(data.user);
-                navigate('/MyMatches');  // Redirect to My Matches page
+                login(data.user); // Login the user
+                navigate('/MyMatches');  // Redirect to MyMatches page
             } else {
                 setMessage(data.message);
             }

@@ -6,6 +6,7 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
 
+    // Check localStorage for the user on app load
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
@@ -13,13 +14,16 @@ export const UserProvider = ({ children }) => {
         }
     }, []);
 
+    // Save user to both state and localStorage upon login
     const login = (userData) => {
         setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData)); // Store user in localStorage
     };
 
+    // Clear user from both state and localStorage upon logout
     const logout = () => {
         setUser(null);
-        localStorage.removeItem('user');
+        localStorage.removeItem('user'); // Remove user from localStorage
     };
 
     return (

@@ -6,7 +6,7 @@ import ScoutingForm from './Pages/Scouting/Scouting';
 import MatchAssign from './Pages/MatchAssign/MatchAssign';
 import Profile from './Pages/Profile/Profile';
 import ManageUsers from './Pages/ManageUsers/ManageUsers';
-import { UserProvider } from './context/UserContext';
+import { UserProvider } from './context/UserContext'; // Make sure this is correctly imported
 import SuperScouting from "./Pages/Scouting/Super/SuperScouting";
 import PitScouting from "./Pages/Scouting/Pit/PitScouting";
 import ScoutNav from "./Pages/Nav/ScoutNav";

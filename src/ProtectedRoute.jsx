@@ -1,12 +1,21 @@
 // src/components/ProtectedRoute.js
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { UserContext } from './context/UserContext';
 
 const ProtectedRoute = ({ children }) => {
-    const { user } = useContext(UserContext);
+    const { user, login } = useContext(UserContext);
 
-    if (!user) {
+    useEffect(() => {
+        // Check if there's a stored user in localStorage and login the user if available
+        const storedUser = localStorage.getItem('user');
+        if (storedUser && !user) {
+            login(JSON.parse(storedUser)); // Re-authenticate using localStorage data
+        }
+    }, [user, login]);
+
+    // If no user in context or localStorage, redirect to login
+    if (!user && !localStorage.getItem('user')) {
         return <Navigate to="/login" />;
     }
 
