@@ -1,51 +1,40 @@
 .counter-container {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.counter-buttons {
+    z-index: 10;
+    font-size: 14px;
+    padding: 2px;
+    background-color: #d4af37;
     display: flex;
+    flex-direction: column;
     align-items: center;
 }
-.checkbox-container input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-}
+
 .counter-button {
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
-    margin: 0 10px;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    cursor: pointer;
+    font-size: 12px;
+    padding: 4px 8px;
+    background-color: #012265;
+    color: white;
+    margin: 2px 0;
 }
 
 .counter-value {
-    font-size: 20px;
-    margin: 0 10px;
+    margin: 0 5px;
+    font-size: 14px;
+    font-weight: bold;
 }
 
 @media (max-width: 600px) {
+    .counter-container {
+        font-size: 12px;
+        padding: 1px;
+    }
+
     .counter-button {
-        width: 30px;
-        height: 30px;
-        font-size: 16px;
+        font-size: 10px;
+        padding: 3px 6px;
     }
 
     .counter-value {
-        font-size: 16px;
-    }
-
-    .counter-container {
-        top: 5px;
-        right: 5px;
-        padding: 5px;
+        font-size: 12px;
     }
 }
