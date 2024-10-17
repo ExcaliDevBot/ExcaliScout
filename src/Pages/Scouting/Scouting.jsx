@@ -75,45 +75,43 @@ function ScoutingForm() {
         sendDataToSheet(JSON.stringify(formData));
     };
 
-    const sendDataToSheet = (formData) => {
-        const valuesArray = [
-            user.username, // A - name
-            match.team_number, // B - Team number
-            match.match_number, // C - match number
-            formData.checkboxes.filter(checked => checked).length, // D - Speaker Auto (count of true checkboxes)
-            formData.counter1, // E - tele AMP (a counter on the map)
-            formData.TelePoints.filter(point => point.color === 1).length, // F - tele Speaker (number of scored shots)
-            formData.defensivePins, // G - defensive pins
-            formData.TelePoints.filter(point => point.color === 2).length, // H - missed shots (number)
-            formData.Pcounter, // I - shots to trap (the counter)
-            formData.climbed, // J - Climed - boolean
-            formData.TelePoints.map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};G)`).join(';'), // K - Speaker coordinates
-            formData.TelePoints.filter(point => point.color === 2).map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};O)`).join(';'), // L - missed Speaker coordinates
-            formData.deliveryCount // M - delivery count
-        ];
-            const username = user.username;
-            const matchNumber = match.match_number;
-            const teamNumber = match.team_number;
-            const alliance = formData.Alliance;
-            const authNumber = Math.floor(1000000 + Math.random() * 9000000);
+const sendDataToSheet = (formData) => {
+    const valuesArray = [
+        user.username.replace(/"/g, ''), // A - name without double quotes
+        match.team_number, // B - Team number
+        match.match_number, // C - match number
+        formData.checkboxes.filter(checked => checked).length, // D - Speaker Auto (count of true checkboxes)
+        formData.counter1, // E - tele AMP (a counter on the map)
+        formData.TelePoints.filter(point => point.color === 1).length, // F - tele Speaker (number of scored shots)
+        formData.defensivePins, // G - defensive pins
+        formData.TelePoints.filter(point => point.color === 2).length, // H - missed shots (number)
+        formData.Pcounter, // I - shots to trap (the counter)
+        formData.climbed, // J - Climed - boolean
+        formData.TelePoints.map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};G)`).join(';'), // K - Speaker coordinates
+        formData.TelePoints.filter(point => point.color === 2).map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};O)`).join(';'), // L - missed Speaker coordinates
+        formData.deliveryCount // M - delivery count
+    ];
+    const username = user.username.replace(/"/g, ''); // Remove double quotes from username
+    const matchNumber = match.match_number;
+    const teamNumber = match.team_number;
+    const alliance = formData.Alliance;
+    const authNumber = Math.floor(1000000 + Math.random() * 9000000);
 
-            alert(`Hello ${username}, we got your submission for match number ${matchNumber} about team ${teamNumber} with alliance ${alliance} successfully. Authentication submission ${authNumber}`);
+    alert(`Hello ${username}, we got your submission for match number ${matchNumber} about team ${teamNumber} with alliance ${alliance} successfully. Authentication submission ${authNumber}`);
 
-
-        const value = removeUnwantedCharacters(JSON.stringify(valuesArray));
-        fetch('https://script.google.com/macros/s/AKfycbzxJmqZyvvPHM01FOFTnlGtUFxoslmNOJTUT0QccjLQsK5uQAHHhe_HfYFO2BxyK7Y_/exec', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            mode: 'no-cors',
-            body: JSON.stringify({ value: value })
-        })
-            .then(response => response.json())
-            .then(data => console.log('Success:', data))
-            .catch(error => console.error('Error:', error));
-
-    };
+    const value = removeUnwantedCharacters(JSON.stringify(valuesArray));
+    fetch('https://script.google.com/macros/s/AKfycbzxJmqZyvvPHM01FOFTnlGtUFxoslmNOJTUT0QccjLQsK5uQAHHhe_HfYFO2BxyK7Y_/exec', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        mode: 'no-cors',
+        body: JSON.stringify({ value: value })
+    })
+        .then(response => response.json())
+        .then(data => console.log('Success:', data))
+        .catch(error => console.error('Error:', error));
+};
 
     const removeUnwantedCharacters = (value) => {
         return value.replace(/[{}\[\]]/g, '');

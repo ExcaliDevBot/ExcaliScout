@@ -22,15 +22,15 @@ function Home() {
                     <div className="features">
                         <div className="feature">
                             <h3>Login</h3>
-                            <p>Detail about feature 1.</p>
+                            <p>Select Your Name And Enter Team Passward.</p>
                         </div>
                         <div className="feature">
-                            <h3>Feature 2</h3>
-                            <p>Detail about feature 2.</p>
+                            <h3>Scout</h3>
+                            <p>Select your match and start Entering Data</p>
                         </div>
                         <div className="feature">
-                            <h3>Feature 3</h3>
-                            <p>Detail about feature 3.</p>
+                            <h3>Repeat</h3>
+                            <p>Give The best Data To Strategy Team.</p>
                         </div>
                     </div>
                 </section>

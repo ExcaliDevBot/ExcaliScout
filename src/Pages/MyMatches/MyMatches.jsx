@@ -1,5 +1,3 @@
-// src/Pages/MyMatches/MyMatches.jsx
-
 import React, { useState, useEffect, useContext } from 'react';
 import Papa from 'papaparse';
 import { useNavigate } from 'react-router-dom';
@@ -21,7 +19,7 @@ function MyMatches() {
         return new Promise((resolve, reject) => {
             Papa.parse(urlWithCacheBuster, {
                 download: true,
-                header: false, // Set header to false to use column indices
+                header: false,
                 complete: function (results) {
                     const uniqueMatches = new Set();
                     const superScoutingMatches = results.data
@@ -103,18 +101,22 @@ function MyMatches() {
                                     Alliance: {match.alliance}
                                 </p>
                             )}
-                            <button
-                                className={match.isSuperScouting ? 'super-scouting-button' : 'normal-scouting-button'}
-                                onClick={() => {
-                                    if (match.isSuperScouting) {
-                                        navigate(`/super-scout`, { state: { match, user, questions: match.questions } });
-                                    } else {
-                                        navigate(`/scout/${match.match_number}`, { state: { match, user } });
-                                    }
-                                }}
-                            >
-                                Scout Now
-                            </button>
+                            {match.completed ? (
+                                <span style={{ color: 'green' }}>Completed!</span>
+                            ) : (
+                                <button
+                                    className={match.isSuperScouting ? 'super-scouting-button' : 'normal-scouting-button'}
+                                    onClick={() => {
+                                        if (match.isSuperScouting) {
+                                            navigate(`/super-scout`, { state: { match, user, questions: match.questions } });
+                                        } else {
+                                            navigate(`/scout/${match.match_number}`, { state: { match, user } });
+                                        }
+                                    }}
+                                >
+                                    Scout Now
+                                </button>
+                            )}
                         </div>
                     ))}
                 </div>

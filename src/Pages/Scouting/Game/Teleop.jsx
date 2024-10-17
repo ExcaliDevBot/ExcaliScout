@@ -171,10 +171,10 @@ const decrementTrapCounter = () => {
                         {eraserMode ? 'Disable Eraser' : 'Eraser Mode'}
                     </button>
 
-                    <div style={{ position: 'absolute', top: '0px', left: '450px', zIndex: '10', fontSize: '24px', padding: '6px', backgroundColor: "#d4af37" }}>
-                        <button onClick={decrementCounter} style={{ fontSize: '18px', padding: '10px 20px', backgroundColor:"#012265" }}>-</button>
+                    <div style={{ position: 'absolute', top: '0px', left: '450px', zIndex: '10', fontSize: '12px', padding: '6px', backgroundColor: "#d4af37" }}>
+                        <button onClick={decrementCounter} style={{ fontSize: '10px', padding: '10px 20px', backgroundColor:"#012265" }}>-</button>
                         <span style={{ margin: '0 10px', fontSize: '20px', fontWeight:"bold"}}>{counter}</span>
-                        <button onClick={incrementCounter} style={{ fontSize: '18px', padding: '10px 20px', backgroundColor:"#012265" }}>+</button>
+                        <button onClick={incrementCounter} style={{ fontSize: '10px', padding: '10px 20px', backgroundColor:"#012265" }}>+</button>
                     </div>
 
                     <div style={{ position: 'absolute', top: '110px', left: '10px', zIndex: '10', fontSize: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'red' }}>
