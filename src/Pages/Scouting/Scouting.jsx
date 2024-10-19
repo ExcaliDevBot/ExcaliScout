@@ -22,6 +22,7 @@ function ScoutingForm() {
         climbed: false,
         deliveryCount: 0,
         trapCounter: 0,
+        defensivePins: 0, // Initialize defensivePins
     });
     const [barcodeData, setBarcodeData] = useState('');
     const [mode, setMode] = useState('teleop');
@@ -41,7 +42,7 @@ function ScoutingForm() {
                 ${user.username || 'NULL'},
                 ${formData.Team || 'NULL'},
                 ${formData.Match || 'NULL'},
-                ${formData.checkboxes.filter(checked => checked).length || 'NULL'},
+                ${formData.checkboxes.filter(checked => checked).length},
                 ${formData.counter1},
                 ${formData.TelePoints.filter(point => point.color === 1).length},
                 ${formData.defensivePins},
@@ -51,7 +52,6 @@ function ScoutingForm() {
                 ${formData.TelePoints.map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};G)`).join(';')},
                 ${formData.TelePoints.filter(point => point.color === 2).map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};O)`).join(';')},
                 ${formData.deliveryCount},
-                NULL,
             `.replace(/\n/g, '').replace(/\s+/g, ' ').trim();
 
             return barcodeString.replace(/true/g, 'TRUE');
@@ -77,9 +77,10 @@ function ScoutingForm() {
     };
 
     const sendDataToSheet = (formData) => {
+        const teamNumber = formData.Team || match.team_number; // Use formData.Team if available, otherwise use match.team_number
         const valuesArray = [
             user.username.replace(/"/g, '').replace(/[()]/g, ''), // A - name without double quotes and parentheses
-            formData.Team, // B - Team number
+            teamNumber, // B - Team number
             formData.Match, // C - match number
             formData.checkboxes.filter(checked => checked).length, // D - Speaker Auto (count of true checkboxes)
             formData.counter1, // E - tele AMP (a counter on the map)
@@ -94,7 +95,6 @@ function ScoutingForm() {
         ];
         const username = user.username.replace(/"/g, '').replace(/[()]/g, ''); // Remove double quotes and parentheses from username
         const matchNumber = formData.Match;
-        const teamNumber = formData.Team;
         const alliance = formData.Alliance;
         const authNumber = Math.floor(1000000 + Math.random() * 9000000);
 
