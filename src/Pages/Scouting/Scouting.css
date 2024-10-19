@@ -121,9 +121,7 @@ textarea {
     background-color: red;
 }
 
-.toggle-button:hover {
-    background-color: red; /* Remove hover effect */
-}
+
 
 .counter-container {
     display: flex;
