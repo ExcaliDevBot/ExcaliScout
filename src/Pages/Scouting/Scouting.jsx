@@ -22,11 +22,12 @@ function ScoutingForm() {
         climbed: false,
         deliveryCount: 0,
         trapCounter: 0,
-        defensivePins: 0, // Initialize defensivePins
+        defensivePins: 0,
     });
     const [barcodeData, setBarcodeData] = useState('');
     const [mode, setMode] = useState('teleop');
     const [eraserMode, setEraserMode] = useState(false);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
     useEffect(() => {
         const generateBarcode = () => {
@@ -76,43 +77,50 @@ function ScoutingForm() {
         sendDataToSheet(JSON.stringify(formData));
     };
 
-    const sendDataToSheet = (formData) => {
-        const teamNumber = formData.Team || match.team_number; // Use formData.Team if available, otherwise use match.team_number
-        const valuesArray = [
-            user.username.replace(/"/g, '').replace(/[()]/g, ''), // A - name without double quotes and parentheses
-            teamNumber, // B - Team number
-            formData.Match, // C - match number
-            formData.checkboxes.filter(checked => checked).length, // D - Speaker Auto (count of true checkboxes)
-            formData.counter1, // E - tele AMP (a counter on the map)
-            formData.TelePoints.filter(point => point.color === 1).length, // F - tele Speaker (number of scored shots)
-            formData.defensivePins, // G - defensive pins
-            formData.TelePoints.filter(point => point.color === 2).length, // H - missed shots (number)
-            formData.Pcounter, // I - shots to trap (the counter)
-            formData.climbed, // J - Climed - boolean
-            formData.TelePoints.map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};G)`).join(';'), // K - Speaker coordinates
-            formData.TelePoints.filter(point => point.color === 2).map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};O)`).join(';'), // L - missed Speaker coordinates
-            formData.deliveryCount // M - delivery count
-        ];
-        const username = user.username.replace(/"/g, '').replace(/[()]/g, ''); // Remove double quotes and parentheses from username
-        const matchNumber = formData.Match;
-        const alliance = formData.Alliance;
-        const authNumber = Math.floor(1000000 + Math.random() * 9000000);
+ const sendDataToSheet = (formData) => {
+    const teamNumber = parseInt(formData.Team, 10);
+    if (isNaN(teamNumber) || !teamNumber) {
+        alert('Team number must be a valid integer.');
+        return;
+    }
 
-        alert(`Hello ${username}, we got your submission for match number ${matchNumber} about team ${teamNumber} with alliance ${alliance} successfully. Authentication submission ${authNumber}`);
+    const valuesArray = [
+        user.username.replace(/"/g, '').replace(/[()]/g, ''),
+        teamNumber,
+        formData.Match,
+        formData.checkboxes.filter(checked => checked).length,
+        formData.counter1,
+        formData.TelePoints.filter(point => point.color === 1).length,
+        formData.defensivePins,
+        formData.TelePoints.filter(point => point.color === 2).length,
+        formData.Pcounter,
+        formData.climbed,
+        formData.TelePoints.map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};G)`).join(';'),
+        formData.TelePoints.filter(point => point.color === 2).map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};O)`).join(';'),
+        formData.deliveryCount
+    ];
+    const username = user.username.replace(/"/g, '').replace(/[()]/g, '');
+    const matchNumber = formData.Match;
+    const alliance = formData.Alliance;
+    const authNumber = Math.floor(1000000 + Math.random() * 9000000);
 
-        const value = removeUnwantedCharacters(JSON.stringify(valuesArray));
-        fetch('https://script.google.com/macros/s/AKfycbzxJmqZyvvPHM01FOFTnlGtUFxoslmNOJTUT0QccjLQsK5uQAHHhe_HfYFO2BxyK7Y_/exec', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            mode: 'no-cors',
-            body: JSON.stringify({ value: value })
+    alert(`Hello ${username}, we got your submission for match number ${matchNumber} about team ${teamNumber} with alliance ${alliance} successfully. Authentication submission ${authNumber}`);
+
+    const value = removeUnwantedCharacters(JSON.stringify(valuesArray));
+    fetch('https://script.google.com/macros/s/AKfycbzxJmqZyvvPHM01FOFTnlGtUFxoslmNOJTUT0QccjLQsK5uQAHHhe_HfYFO2BxyK7Y_/exec', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        mode: 'no-cors',
+        body: JSON.stringify({ value: value })
+    })
+        .then(response => {
+            console.log('Success:', response);
+            setIsButtonDisabled(true); // Disable the button
         })
-            .then(response => response.json())
-            .then(data => console.log('Success:', data))
-            .catch(error => console.error('Error:', error));
-    };
+        .catch(error => console.error('Error:', error));
+};
 
     const removeUnwantedCharacters = (value) => {
         return value.replace(/[{}\[\]]/g, '');
@@ -135,45 +143,46 @@ function ScoutingForm() {
     };
 
     return (
-        <div style={{ direction: 'rtl', padding: '10px' }}>
+        <div style={{direction: 'rtl', padding: '10px'}}>
             <table className="info-table">
                 <thead>
-                    <tr>
-                        <th>שם</th>
-                        <th>קבוצה</th>
-                        <th>מקצה</th>
-                        <th>ברית</th>
-                    </tr>
+                <tr>
+                    <th>שם</th>
+                    <th>קבוצה</th>
+                    <th>מקצה</th>
+                    <th>ברית</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td><span className="constant-color name-color">{user.username}</span></td>
-                        <td>
-                            {isNewForm || ["center", "close", "dar"].includes(match.team_number?.toLowerCase()) ? (
-                                <input type="text" name="Team" value={formData.Team} onChange={handleInputChange} />
-                            ) : (
-                                <span className="constant-color team-color">{match.team_number}</span>
-                            )}
-                        </td>
-                        <td>
-                            {isNewForm ? (
-                                <input type="text" name="Match" value={formData.Match} onChange={handleInputChange} />
-                            ) : (
-                                <span className="constant-color match-color">{match.match_number}</span>
-                            )}
-                        </td>
-                        <td>
-                            {isNewForm ? (
-                                <select name="Alliance" value={formData.Alliance} onChange={handleInputChange}>
-                                    <option value="">Select Alliance</option>
-                                    <option value="Red">Red</option>
-                                    <option value="Blue">Blue</option>
-                                </select>
-                            ) : (
-                                <span className={`alliance-button ${formData.Alliance.toLowerCase()}`}>{formData.Alliance}</span>
-                            )}
-                        </td>
-                    </tr>
+                <tr>
+                    <td><span className="constant-color name-color">{user.username}</span></td>
+                    <td>
+                        {isNewForm || ["center", "close", "dar"].includes(match.team_number?.toLowerCase()) ? (
+                            <input type="text" name="Team" value={formData.Team} onChange={handleInputChange}/>
+                        ) : (
+                            <span className="constant-color team-color">{match.team_number}</span>
+                        )}
+                    </td>
+                    <td>
+                        {isNewForm ? (
+                            <input type="text" name="Match" value={formData.Match} onChange={handleInputChange}/>
+                        ) : (
+                            <span className="constant-color match-color">{match.match_number}</span>
+                        )}
+                    </td>
+                    <td>
+                        {isNewForm ? (
+                            <select name="Alliance" value={formData.Alliance} onChange={handleInputChange}>
+                                <option value="">Select Alliance</option>
+                                <option value="Red">Red</option>
+                                <option value="Blue">Blue</option>
+                            </select>
+                        ) : (
+                            <span
+                                className={`alliance-button ${formData.Alliance.toLowerCase()}`}>{formData.Alliance}</span>
+                        )}
+                    </td>
+                </tr>
                 </tbody>
             </table>
             <form onSubmit={handleSubmit} className="form">
@@ -182,7 +191,7 @@ function ScoutingForm() {
                     name="TeleNotes"
                     value={formData.TeleNotes}
                     onChange={handleInputChange}
-                    style={{ display: 'none' }} // Hide the textarea
+                    style={{display: 'none'}}
                 />
             </form>
 
@@ -193,7 +202,7 @@ function ScoutingForm() {
                 <button type="button" className="resizable-button" onClick={handleTeleopClick}>Teleop</button>
             </div>
 
-            <br />
+            <br/>
 
             <TeleField
                 formData={formData}
@@ -201,22 +210,25 @@ function ScoutingForm() {
                 mode={mode}
                 eraserMode={eraserMode}
                 setEraserMode={setEraserMode}
-                incrementCounter1={() => setFormData(prev => ({ ...prev, counter1: prev.counter1 + 1 }))}
-                decrementCounter1={() => setFormData(prev => ({ ...prev, counter1: Math.max(0, prev.counter1 - 1) }))}
-                incrementCounter2={() => setFormData(prev => ({ ...prev, counter2: prev.counter2 + 1 }))}
-                decrementCounter2={() => setFormData(prev => ({ ...prev, counter2: Math.max(0, prev.counter2 - 1) }))}
-                incrementDeliveryCount={() => setFormData(prev => ({ ...prev, deliveryCount: prev.deliveryCount + 1 }))}
-                decrementDeliveryCount={() => setFormData(prev => ({ ...prev, deliveryCount: Math.max(0, prev.deliveryCount - 1) }))}
-                setClimbed={(value) => setFormData(prev => ({ ...prev, climbed: value }))}
+                incrementCounter1={() => setFormData(prev => ({...prev, counter1: prev.counter1 + 1}))}
+                decrementCounter1={() => setFormData(prev => ({...prev, counter1: Math.max(0, prev.counter1 - 1)}))}
+                incrementCounter2={() => setFormData(prev => ({...prev, counter2: prev.counter2 + 1}))}
+                decrementCounter2={() => setFormData(prev => ({...prev, counter2: Math.max(0, prev.counter2 - 1)}))}
+                incrementDeliveryCount={() => setFormData(prev => ({...prev, deliveryCount: prev.deliveryCount + 1}))}
+                decrementDeliveryCount={() => setFormData(prev => ({
+                    ...prev,
+                    deliveryCount: Math.max(0, prev.deliveryCount - 1)
+                }))}
+                setClimbed={(value) => setFormData(prev => ({...prev, climbed: value}))}
             />
 
-            <br />
+            <br/>
 
             <div className="toggle-button-container">
                 <button
                     type="button"
                     className={`toggle-button ${formData.climbed ? 'active' : 'inactive'}`}
-                    onClick={() => setFormData(prev => ({ ...prev, climbed: !prev.climbed }))}
+                    onClick={() => setFormData(prev => ({...prev, climbed: !prev.climbed}))}
                 >
                     {formData.climbed ? 'הרובוט טיפס' : 'הרובוט לא טיפס'}
                 </button>
@@ -229,22 +241,26 @@ function ScoutingForm() {
                     <button className="counter-button" onClick={incrementTrapCounter}>+</button>
                 </div>
             </div>
-            <br />
+            <br/>
 
             <div className="send-button-container">
                 <button
                     type="button"
                     className="send-button"
-                    onClick={() => sendDataToSheet(formData)}
+                    onClick={() => {
+                        if (!isButtonDisabled) {
+                            sendDataToSheet(formData);
+                        }
+                    }}
+                    disabled={isButtonDisabled}
                 >
                     Send Data
                 </button>
             </div>
-
-            <br />
+            <br/>
 
             <div className="qr-code-container">
-                <QRCode value={barcodeData} />
+                <QRCode value={barcodeData}/>
             </div>
         </div>
     );
