@@ -77,11 +77,23 @@ function ScoutingForm() {
         sendDataToSheet(JSON.stringify(formData));
     };
 
- const sendDataToSheet = (formData) => {
-    const teamNumber = parseInt(formData.Team, 10);
-    if (isNaN(teamNumber) || !teamNumber) {
-        alert('Team number must be a valid integer.');
-        return;
+const sendDataToSheet = (formData) => {
+    let teamNumber;
+
+    if (match && match.team_number && !isNaN(parseInt(match.team_number, 10))) {
+        teamNumber = parseInt(match.team_number, 10);
+    } else {
+        if (!formData.Team) {
+            alert('Team number must be provided.');
+            return;
+        }
+
+        const cleanedTeamNumber = formData.Team.replace(/"/g, '').replace(/[()]/g, '');
+        teamNumber = parseInt(cleanedTeamNumber, 10);
+        if (isNaN(teamNumber) || !teamNumber) {
+            alert('Team number must be a valid integer.');
+            return;
+        }
     }
 
     const valuesArray = [
@@ -121,7 +133,6 @@ function ScoutingForm() {
         })
         .catch(error => console.error('Error:', error));
 };
-
     const removeUnwantedCharacters = (value) => {
         return value.replace(/[{}\[\]]/g, '');
     };
