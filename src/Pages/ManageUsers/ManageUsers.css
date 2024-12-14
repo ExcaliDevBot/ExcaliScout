@@ -1,4 +1,3 @@
-/* ManageUsers.css */
 .manage-users-container {
     padding: 20px;
     max-width: 800px;
@@ -10,13 +9,13 @@
     margin-bottom: 20px;
 }
 
-.search-container, option, select{
+.search-container {
     display: flex;
     align-items: center;
     margin-bottom: 20px;
 }
 
-.search-container input[type="text"], option, select {
+.search-container input[type="text"] {
     padding: 10px;
     width: 100%;
     box-sizing: border-box;
@@ -27,20 +26,6 @@
     cursor: pointer;
 }
 
-.manage-users-container input[type="text"],
-.manage-users-container input[type="password"], option, select {
-    margin: 5px;
-    padding: 10px;
-    width: calc(100% - 22px);
-    box-sizing: border-box;
-}
-
-.manage-users-container button {
-    margin: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-}
-
 .add-user-form {
     display: flex;
     flex-direction: column;
@@ -48,12 +33,18 @@
     margin-bottom: 20px;
 }
 
-.add-user-form input {
+.add-user-form input,
+.add-user-form select {
     margin: 5px;
+    padding: 10px;
+    width: calc(100% - 22px);
+    box-sizing: border-box;
 }
 
 .add-user-form button {
     margin-top: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
 }
 
 table {
@@ -73,21 +64,19 @@ table tr:hover {
     color: #000000;
 }
 
-table tr:nth-child(even):hover {
-    background-color: #ffffff;
-    color: #000000;
-}
-
 table button {
     margin: 0 5px;
     background-color: #012265;
 }
+
 table button:hover {
     background-color: #d4af37;
 }
+
 .fade-out {
     animation: fadeOut 0.5s forwards;
 }
+
 .success-message {
     color: green;
     font-size: 0.9em;
@@ -103,14 +92,6 @@ table button:hover {
         opacity: 1;
     }
     100% {
-        opacity: 0;
-    }
-}
-@keyframes fadeOut {
-    from {
-        opacity: 1;
-    }
-    to {
         opacity: 0;
     }
 }

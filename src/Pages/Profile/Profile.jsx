@@ -1,4 +1,3 @@
-// src/Pages/Profile/Profile.jsx
 import React from 'react';
 import { useCurrentUser } from '../hooks/useCurrentUser';
 import './Profile.css';
@@ -7,15 +6,22 @@ function Profile() {
     const user = useCurrentUser();
 
     if (!user) {
-        return <div>Loading...</div>;
+        return <div className="loading">Loading...</div>;
     }
 
     return (
-        <div>
-            <div className="profile-container">
-                <h1>Welcome, {user.username}</h1>
-                <p>Role: {user.role}</p>
-                <p>User ID: {user.user_id}</p>
+        <div className="profile-page">
+            <div className="profile-card">
+                <div className="profile-header">
+                    <h1>Welcome, {user.username}</h1>
+                    <p className="role-tag">{user.role}</p>
+                </div>
+                <div className="profile-info">
+                    <p><strong>User ID:</strong> {user.user_id}</p>
+                </div>
+                <div className="profile-footer">
+                    <button className="edit-btn">Edit Profile</button>
+                </div>
             </div>
         </div>
     );

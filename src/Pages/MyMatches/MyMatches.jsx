@@ -2,7 +2,14 @@ import React, { useState, useEffect, useContext } from 'react';
 import Papa from 'papaparse';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
-import './MyMatches.css';
+import {
+    Box,
+    Button,
+    Card,
+    CardContent,
+    CircularProgress,
+    Typography,
+} from '@mui/material';
 
 function MyMatches() {
     const [matches, setMatches] = useState([]);
@@ -11,7 +18,7 @@ function MyMatches() {
     const navigate = useNavigate();
 
     const fetchSuperScoutingMatches = async () => {
-        const gid = '21713347'; // GID for the superScoutingAdmin sheet
+        const gid = '21713347';
         const publicSpreadsheetUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRojRhLgZSPXJopPdni1V4Z-inXXY3a__2NaVMsoJHPs9d25ZQ7t56QX67mncr6yo-w4B8WCWyHFe2m/pub?output=csv&gid=${gid}`;
         const cacheBuster = `cacheBuster=${new Date().getTime()}`;
         const urlWithCacheBuster = `${publicSpreadsheetUrl}&${cacheBuster}`;
@@ -20,19 +27,18 @@ function MyMatches() {
             Papa.parse(urlWithCacheBuster, {
                 download: true,
                 header: false,
-                complete: function (results) {
+                complete: (results) => {
                     const uniqueMatches = new Set();
                     const superScoutingMatches = results.data
                         .map((row, index) => ({
-                            name: row[0], // Column A for names
-                            match_number: row[1], // Column B for match numbers
-                            team_number: row[2], // Column C for team numbers
-                            questions: row.slice(3), // Columns D onwards for questions
+                            name: row[0],
+                            match_number: row[1],
+                            team_number: row[2],
+                            questions: row.slice(3),
                             index: index,
-                            isSuperScouting: true // Mark as super scouting match
+                            isSuperScouting: true,
                         }))
-                        .filter(match => {
-                            // Exclude rows with empty name, match number, or team number
+                        .filter((match) => {
                             if (!user.username || !match.match_number || !match.team_number || match.name !== user.username) {
                                 return false;
                             }
@@ -46,7 +52,7 @@ function MyMatches() {
                         });
                     resolve(superScoutingMatches);
                 },
-                error: function (error) {
+                error: (error) => {
                     reject(error);
                 },
             });
@@ -62,7 +68,7 @@ function MyMatches() {
                     const data = await response.json();
                     let dbMatches = [];
                     if (data.status === 'success') {
-                        dbMatches = data.matches.map(match => ({ ...match, isSuperScouting: false })); // Mark as normal match
+                        dbMatches = data.matches.map((match) => ({ ...match, isSuperScouting: false }));
                     }
 
                     let superScoutingMatches = [];
@@ -71,7 +77,7 @@ function MyMatches() {
                     }
 
                     const combinedMatches = [...dbMatches, ...superScoutingMatches];
-                    combinedMatches.sort((a, b) => a.match_number - b.match_number); // Sort by match number
+                    combinedMatches.sort((a, b) => a.match_number - b.match_number);
 
                     setMatches(combinedMatches);
                 } catch (error) {
@@ -86,45 +92,95 @@ function MyMatches() {
     }, [user]);
 
     return (
-        <div className="container">
-            <h1>My Matches</h1>
+        <Box sx={{ p: 4 }}>
+            <Typography variant="h4" sx={{ textAlign: 'center', mb: 4, color: '#012265' }}>
+                My Matches
+            </Typography>
             {loading ? (
-                <p>Loading...</p>
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                    <CircularProgress />
+                </Box>
             ) : (
-                <div className="matches-container">
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 2,
+                    }}
+                >
                     {matches.map((match, index) => (
-                        <div key={index} className={`match-card ${match.isSuperScouting ? 'super-scouting' : ''}`}>
-                            <h2>Match {match.match_number}</h2>
-                            <p>Team: {match.team_number}</p>
-                            {!match.isSuperScouting && (
-                                <p className={match.alliance === 'Red' ? 'red-text' : 'blue-text'}>
-                                    Alliance: {match.alliance}
-                                </p>
-                            )}
-                            {match.completed ? (
-                                <span style={{ color: 'green' }}>Completed!</span>
-                            ) : (
-                                <button
-                                    className={match.isSuperScouting ? 'super-scouting-button' : 'normal-scouting-button'}
-                                    onClick={() => {
-                                        if (match.isSuperScouting) {
-                                            navigate(`/super-scout`, { state: { match, user, questions: match.questions } });
-                                        } else {
-                                            navigate(`/scout/${match.match_number}`, { state: { match, user } });
-                                        }
-                                    }}
-                                >
-                                    Scout Now
-                                </button>
-                            )}
-                        </div>
+                        <Card
+                            key={index}
+                            sx={{
+                                width: '100%',
+                                maxWidth: 400,
+                                boxShadow: 3,
+                                borderRadius: 2,
+                                border: match.isSuperScouting ? '4px solid #d4af37' : 'none',
+                            }}
+                        >
+                            <CardContent>
+                                <Typography variant="h6" sx={{ color: '#d4af37', mb: 1 }}>
+                                    Match {match.match_number}
+                                </Typography>
+                                <Typography variant="body1">Team: {match.team_number}</Typography>
+                                {!match.isSuperScouting && (
+                                    <Typography
+                                        variant="body2"
+                                        sx={{ color: match.alliance === 'Red' ? 'red' : 'blue', fontWeight: 'bold' }}
+                                    >
+                                        Alliance: {match.alliance}
+                                    </Typography>
+                                )}
+                                {match.completed ? (
+                                    <Typography sx={{ color: 'green', mt: 2 }}>Completed!</Typography>
+                                ) : (
+                                    <Button
+                                        variant="contained"
+                                        sx={{
+                                            mt: 2,
+                                            backgroundColor: match.isSuperScouting ? '#045404' : '#012265',
+                                            '&:hover': {
+                                                backgroundColor: '#d4af37',
+                                                color: '#012265',
+                                            },
+                                        }}
+                                        onClick={() => {
+                                            if (match.isSuperScouting) {
+                                                navigate(`/super-scout`, { state: { match, user, questions: match.questions } });
+                                            } else {
+                                                navigate(`/scout/${match.match_number}`, { state: { match, user } });
+                                            }
+                                        }}
+                                    >
+                                        Scout Now
+                                    </Button>
+                                )}
+                            </CardContent>
+                        </Card>
                     ))}
-                </div>
+                </Box>
             )}
-            <button onClick={() => navigate('/scout/new', { state: { user } })}>
+            <Button
+                variant="outlined"
+                sx={{
+                    mt: 4,
+                    display: 'block',
+                    mx: 'auto',
+                    color: '#012265',
+                    borderColor: '#012265',
+                    '&:hover': {
+                        backgroundColor: '#d4af37',
+                        color: '#012265',
+                        borderColor: '#d4af37',
+                    },
+                }}
+                onClick={() => navigate('/scout/new', { state: { user } })}
+            >
                 New Scouting Form
-            </button>
-        </div>
+            </Button>
+        </Box>
     );
 }
 

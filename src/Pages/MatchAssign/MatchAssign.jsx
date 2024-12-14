@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './MatchAssign.css';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Select, MenuItem, Button, Typography, Box } from '@mui/material';
 
 function MatchAssign() {
     const [matches, setMatches] = useState([]);
@@ -45,13 +45,10 @@ function MatchAssign() {
         try {
             const response = await fetch('https://ScoutingSystem.pythonanywhere.com/manual_assign', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ matches }),
             });
             const data = await response.json();
-            console.log('Manual Assign Response:', data);
             if (data.status === 'success') {
                 alert('Assignments saved successfully');
             } else {
@@ -67,14 +64,11 @@ function MatchAssign() {
         try {
             const response = await fetch('https://ScoutingSystem.pythonanywhere.com/reassign_scouts', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
             });
             const data = await response.json();
-            console.log('Reassign Response:', data);
             if (data.status === 'success') {
-                setMatches(data.matches); // Update the matches with reassigned scouters
+                setMatches(data.matches);
                 alert('Scouters reassigned successfully');
             } else {
                 alert('Failed to reassign scouters');
@@ -86,54 +80,60 @@ function MatchAssign() {
     };
 
     return (
-        <div className="match-assign-container">
-            <header>
-                <h2>Match Assignment</h2>
-                <button onClick={handleManualAssign} className="save-button">Save Assignments</button>
-                <button onClick={handleReassign} className="reassign-button">Reassign Scouters</button>
-            </header>
-            <div className="table-container">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Match Number</th>
-                        <th>Scouter 1</th>
-                            <th>Scouter 2</th>
-                            <th>Scouter 3</th>
-                            <th>Scouter 4</th>
-                            <th>Scouter 5</th>
-                            <th>Scouter 6</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {matches.map(match => (
-                            <tr key={match.id}>
-                                <td>{match.id}</td>
-                                {[1, 2, 3, 4, 5, 6].map(index => (
-                                    <td key={index}>
-                                        <select
-                                            value={match[`scouter${index}`] || ""}
-                                            onChange={(e) => handleScouterChange(match.id, index, e.target.value)}
-                                        >
-                                            <option value="">Select Scouter</option>
-                                            {scouters.map(scouter => (
-                                                <option key={scouter.user_id} value={scouter.user_id}>
-                                                    {scouter.username}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <div>{match[`team${index}`]}</div>
-                                    </td>
-                                ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            <footer>
+        <Box sx={{ padding: 3, maxWidth: '1200px', margin: 'auto', fontFamily: 'sans-serif' }}>
+            <Typography variant="h4" align="center" sx={{ mb: 3, color: '#012265' }}>
+                Match Assignment
+            </Typography>
 
-            </footer>
-        </div>
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 3 }}>
+                <Button variant="contained" color="primary" onClick={handleManualAssign} sx={{ width: 200 }}>
+                    Save Assignments
+                </Button>
+                <Button variant="outlined" color="primary" onClick={handleReassign} sx={{ width: 200 }}>
+                    Reassign Scouters
+                </Button>
+            </Box>
+
+            <TableContainer sx={{ overflowX: 'auto' }}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell align="center" sx={{ backgroundColor: '#012265', color: '#d4af37' }}>Match Number</TableCell>
+                            {[1, 2, 3, 4, 5, 6].map(index => (
+                                <TableCell key={index} align="center" sx={{ backgroundColor: '#012265', color: '#d4af37' }}>
+                                    Scouter {index}
+                                </TableCell>
+                            ))}
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {matches.map(match => (
+                            <TableRow key={match.id}>
+                                <TableCell align="center">{match.id}</TableCell>
+                                {[1, 2, 3, 4, 5, 6].map(index => (
+                                    <TableCell key={index} align="center">
+                                        <Select
+                                            value={match[`scouter${index}`] || ''}
+                                            onChange={(e) => handleScouterChange(match.id, index, e.target.value)}
+                                            fullWidth
+                                        >
+                                            <MenuItem value="">
+                                                <em>Select Scouter</em>
+                                            </MenuItem>
+                                            {scouters.map(scouter => (
+                                                <MenuItem key={scouter.user_id} value={scouter.user_id}>
+                                                    {scouter.username}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </Box>
     );
 }
 
