@@ -4,7 +4,7 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(15deg, #012265, #012265);
+    background: linear-gradient(15deg, #d4af37, #012265);
     padding: 20px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -22,10 +22,6 @@
     position: relative;
 }
 
-.profile-card:hover {
-    transform: translateY(-12px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-}
 
 /* Profile Header */
 .profile-header {

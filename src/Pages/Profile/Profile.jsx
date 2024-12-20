@@ -19,9 +19,6 @@ function Profile() {
                 <div className="profile-info">
                     <p><strong>User ID:</strong> {user.user_id}</p>
                 </div>
-                <div className="profile-footer">
-                    <button className="edit-btn">Edit Profile</button>
-                </div>
             </div>
         </div>
     );

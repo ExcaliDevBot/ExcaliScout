@@ -12,7 +12,8 @@ import {
     Drawer,
     List,
     ListItem,
-    ListItemText
+    ListItemText,
+    Box
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -54,7 +55,7 @@ const Navbar = () => {
     };
 
     return (
-        <AppBar position="static" sx={{ backgroundColor: '#d4af37' }}>
+        <AppBar position="static" sx={{ backgroundColor: '#012265' }}>
             <Toolbar>
                 {/* Hamburger Menu for small screens */}
                 <IconButton
@@ -88,15 +89,26 @@ const Navbar = () => {
                     </List>
                 </Drawer>
 
-                {/* Title and main links for larger screens */}
-                <Typography
-                    variant="h6"
-                    component="div"
-                    color = "#012265"
-                    sx={{ flexGrow: 1, display: { xs: 'none', md: 'block' } }}
+                {/* Logo linking to home */}
+                <Box
+                    component={Link}
+                    to="/"
+                    sx={{
+                        display: { xs: 'none', md: 'block' },
+                        flexGrow: 1,
+                        textDecoration: 'none',
+                    }}
                 >
-                    Excalibur's Scouting System
-                </Typography>
+                    <Box
+                        component="img"
+                        src="https://www.excaliburfrc.com/static/img/logo_bg_removed.png"
+                        alt="Logo"
+                        sx={{
+                            height: 40, // Adjust height as needed
+                            width: 'auto',
+                        }}
+                    />
+                </Box>
 
                 <Button color="#012265" onClick={() => navigate('/')}>Home</Button>
                 {user && (
@@ -121,6 +133,7 @@ const Navbar = () => {
                     onClose={handleMenuClose}
                 >
                     <MenuItem onClick={() => navigate('/manage-users')}>Manage Users</MenuItem>
+                    <MenuItem onClick={() => navigate('/ScouterPerformance')}>performance</MenuItem>
                     <MenuItem onClick={() => navigate('/assign')}>Assign Matches</MenuItem>
                 </Menu>
 

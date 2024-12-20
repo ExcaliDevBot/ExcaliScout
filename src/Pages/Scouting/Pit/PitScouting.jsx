@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Navbar from "../../Navbar/Navbar.jsx";
 
 function Button() {
     const [isTrue, setIsTrue] = useState(false);
@@ -18,7 +17,6 @@ function Button() {
 function PitScouting() {
     return (
         <div>
-            <Navbar/>
             <h2>Pit Scouting:</h2>
             <form>
                 <label htmlFor="Sname">Name:</label><br/>

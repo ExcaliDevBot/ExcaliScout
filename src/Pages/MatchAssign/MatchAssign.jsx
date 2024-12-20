@@ -50,7 +50,6 @@ function MatchAssign() {
             });
             const data = await response.json();
             if (data.status === 'success') {
-                alert('Assignments saved successfully');
             } else {
                 alert('Failed to save assignments');
             }
@@ -69,7 +68,6 @@ function MatchAssign() {
             const data = await response.json();
             if (data.status === 'success') {
                 setMatches(data.matches);
-                alert('Scouters reassigned successfully');
             } else {
                 alert('Failed to reassign scouters');
             }

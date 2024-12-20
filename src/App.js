@@ -15,6 +15,10 @@ import AdminRoute from './AdminRoute';
 import ProtectedRoute from './ProtectedRoute';
 import Navbar from './Pages/Navbar/Navbar';
 import Home from "./Pages/Home/Home";
+import ScouterPerformance from "./Pages/ScouterPerformance/ScouterPerformance";
+// src/App.js
+
+// Add the new route
 
 function App() {
     return (
@@ -27,6 +31,7 @@ function App() {
                     <Route path="/ScoutNav" element={<ProtectedRoute><ScoutNav /></ProtectedRoute>} />
                     <Route path="/Pit-Scouting" element={<ProtectedRoute><PitScouting /></ProtectedRoute>} />
                     <Route path="/super-scout" element={<ProtectedRoute><SuperScouting /></ProtectedRoute>} />
+                    <Route path="/ScouterPerformance" element={<ProtectedRoute><ScouterPerformance /></ProtectedRoute>} />
                     <Route path="/assign" element={<AdminRoute><MatchAssign /></AdminRoute>} />
                     <Route path="/MyMatches" element={<ProtectedRoute><MyMatches /></ProtectedRoute>} />
                     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />

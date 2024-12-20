@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import QRCode from "qrcode.react";
-import { Button, TextField, Select, MenuItem, Typography, FormControl, InputLabel, Box, Grid } from "@mui/material";
+import {
+    Button, TextField, Select, MenuItem, Typography, FormControl, InputLabel, Box, Grid,
+} from "@mui/material";
 import TeleField from "./Game/Teleop";
+import { db } from "../../firebase-config";
+import {ref, set} from "firebase/database";
 
 function ScoutingForm() {
     const location = useLocation();
@@ -10,7 +14,7 @@ function ScoutingForm() {
     const isNewForm = !match;
     const [formData, setFormData] = useState({
         Name: user ? user.username : '',
-        Team: match ? match[`team${match.robot + 1}`] : '',
+        Team: match ? match.team_number : '',
         Match: match ? match.match_number : '',
         Alliance: match ? match.alliance : '',
         TeleNotes: '',
@@ -31,27 +35,19 @@ function ScoutingForm() {
 
     useEffect(() => {
         const generateBarcode = () => {
-            const telePointsCSV = formData.TelePoints.map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};G)`).join(';');
-            const missedPointsCSV = formData.TelePoints.filter(point => point.color === 2).map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};O)`).join(';');
-            const checkedCheckboxes = formData.checkboxes
-                .map((checked, index) => checked ? `CA${index + 1}: ${checked}` : null)
-                .filter(Boolean)
-                .join(';');
-            const greenPointsCount = formData.TelePoints.filter(point => point.color === 1).length;
-
             const barcodeString = `
-                ${user.username || 'NULL'},
-                ${formData.Team || 'NULL'},
-                ${formData.Match || 'NULL'},
-                ${formData.checkboxes.filter(checked => checked).length},
+                ${user.username},
+                ${match.team_number},
+                ${match.match_number},
+                ${formData.checkboxes.filter((checked) => checked).length},
                 ${formData.counter1},
-                ${formData.TelePoints.filter(point => point.color === 1).length},
+                ${formData.TelePoints.filter((point) => point.color === 1).length},
                 ${formData.defensivePins},
-                ${formData.TelePoints.filter(point => point.color === 2).length},
+                ${formData.TelePoints.filter((point) => point.color === 2).length},
                 ${formData.Pcounter},
                 ${formData.climbed},
-                ${formData.TelePoints.map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};G)`).join(';')},
-                ${formData.TelePoints.filter(point => point.color === 2).map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};O)`).join(';')},
+                ${formData.TelePoints.map((point) => `(${point.x.toFixed(2)};${point.y.toFixed(2)};G)`).join(';')},
+                ${formData.TelePoints.filter((point) => point.color === 2).map((point) => `(${point.x.toFixed(2)};${point.y.toFixed(2)};O)`).join(';')},
                 ${formData.deliveryCount},
             `.replace(/\n/g, '').replace(/\s+/g, ' ').trim();
 
@@ -66,94 +62,36 @@ function ScoutingForm() {
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleButtonClick = (index) => {
-        const newCheckboxes = [...formData.checkboxes];
-        newCheckboxes[index] = !newCheckboxes[index];
-        setFormData({ ...formData, checkboxes: newCheckboxes });
-    };
-
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        sendDataToSheet(JSON.stringify(formData));
-    };
+        const { Team, Match, Alliance, Name } = formData;
 
-    const sendDataToSheet = (formData) => {
-        let teamNumber;
-
-        if (match && match.team_number && !isNaN(parseInt(match.team_number, 10))) {
-            teamNumber = parseInt(match.team_number, 10);
-        } else {
-            if (!formData.Team) {
-                alert('Team number must be provided.');
-                return;
-            }
-
-            const cleanedTeamNumber = formData.Team.replace(/"/g, '').replace(/[()]/g, '');
-            teamNumber = parseInt(cleanedTeamNumber, 10);
-            if (isNaN(teamNumber) || !teamNumber) {
-                alert('Team number must be a valid integer.');
-                return;
-            }
+        if (!Team || !Match || !Alliance || !Name) {
+            alert("Please ensure all required fields are filled out.");
         }
 
-        const valuesArray = [
-            user.username.replace(/"/g, '').replace(/[()]/g, ''),
-            teamNumber,
-            formData.Match,
-            formData.checkboxes.filter(checked => checked).length,
-            formData.counter1,
-            formData.TelePoints.filter(point => point.color === 1).length,
-            formData.defensivePins,
-            formData.TelePoints.filter(point => point.color === 2).length,
-            formData.Pcounter,
-            formData.climbed,
-            formData.TelePoints.map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};G)`).join(';'),
-            formData.TelePoints.filter(point => point.color === 2).map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};O)`).join(';'),
-            formData.deliveryCount
-        ];
-
-        const username = user.username.replace(/"/g, '').replace(/[()]/g, '');
-        const matchNumber = formData.Match;
-        const alliance = formData.Alliance;
-        const authNumber = Math.floor(1000000 + Math.random() * 9000000);
-
-        alert(`Hello ${username}, we got your submission for match number ${matchNumber} about team ${teamNumber} with alliance ${alliance} successfully. Authentication submission ${authNumber}`);
-
-        const value = removeUnwantedCharacters(JSON.stringify(valuesArray));
-        fetch('https://script.google.com/macros/s/AKfycbzxJmqZyvvPHM01FOFTnlGtUFxoslmNOJTUT0QccjLQsK5uQAHHhe_HfYFO2BxyK7Y_/exec', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            mode: 'no-cors',
-            body: JSON.stringify({ value: value })
-        })
-            .then(response => {
-                console.log('Success:', response);
-                setIsButtonDisabled(true); // Disable the button
-            })
-            .catch(error => console.error('Error:', error));
+        try {
+            // Get a reference to the scoutingData node in Realtime Database
+            const dbRef = ref(db, 'scoutingData/' + new Date().getTime());
+            await set(dbRef, {
+                ...formData,
+                Team: match.team_number,
+                Match: Match || "Unknown",
+                Alliance: Alliance || "Unknown",
+                Name: user.username || "Unknown",
+                submittedAt: new Date().toISOString(),
+            });
+            alert("Submission successful!");
+            setIsButtonDisabled(true);
+        } catch (error) {
+            console.error("Error submitting data:", error);
+            alert(`Error submitting data: ${error.message}`);
+        }
     };
 
-    const removeUnwantedCharacters = (value) => {
-        return value.replace(/[{}\[\]]/g, '');
-    };
 
-    const handleAutoClick = () => {
-        setMode('checkbox');
-    };
-
-    const handleTeleopClick = () => {
-        setMode('teleop');
-    };
-
-    const incrementTrapCounter = () => {
-        setFormData(prev => ({ ...prev, trapCounter: prev.trapCounter < 3 ? prev.trapCounter + 1 : prev.trapCounter }));
-    };
-
-    const decrementTrapCounter = () => {
-        setFormData(prev => ({ ...prev, trapCounter: Math.max(0, prev.trapCounter - 1) }));
-    };
+    const handleAutoClick = () => setMode('checkbox');
+    const handleTeleopClick = () => setMode('teleop');
 
     return (
         <Box sx={{ padding: '20px', maxWidth: '1200px', margin: 'auto' }}>
@@ -223,7 +161,7 @@ function ScoutingForm() {
                     sx={{
                         backgroundColor: '#3f51b5',
                         '&:active': { backgroundColor: '#303f9f' },
-                        '&:disabled': { backgroundColor: '#c5cae9' }
+                        '&:disabled': { backgroundColor: '#c5cae9' },
                     }}
                 >
                     Autonomous
@@ -234,7 +172,7 @@ function ScoutingForm() {
                     sx={{
                         backgroundColor: '#f44336',
                         '&:active': { backgroundColor: '#d32f2f' },
-                        '&:disabled': { backgroundColor: '#ffebee' }
+                        '&:disabled': { backgroundColor: '#ffebee' },
                     }}
                 >
                     Teleop
@@ -247,20 +185,7 @@ function ScoutingForm() {
                 mode={mode}
                 eraserMode={eraserMode}
                 setEraserMode={setEraserMode}
-                incrementCounter1={() => setFormData(prev => ({ ...prev, counter1: prev.counter1 + 1 }))}
-                decrementCounter1={() => setFormData(prev => ({ ...prev, counter1: Math.max(0, prev.counter1 - 1) }))}
-                incrementCounter2={() => setFormData(prev => ({ ...prev, counter2: prev.counter2 + 1 }))}
-                decrementCounter2={() => setFormData(prev => ({ ...prev, counter2: Math.max(0, prev.counter2 - 1) }))}
-                incrementDeliveryCount={() => setFormData(prev => ({ ...prev, deliveryCount: prev.deliveryCount + 1 }))}
-                decrementDeliveryCount={() => setFormData(prev => ({ ...prev, deliveryCount: Math.max(0, prev.deliveryCount - 1) }))}
-                setClimbed={(value) => setFormData(prev => ({ ...prev, climbed: value }))}
             />
-
-            <div className="counter-container" style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-                <Button onClick={incrementTrapCounter}>+</Button>
-                <Typography sx={{ margin: '0 20px' }}>{formData.trapCounter}</Typography>
-                <Button onClick={decrementTrapCounter}>-</Button>
-            </div>
 
             <div className="submit-container" style={{ textAlign: 'center', marginTop: '20px' }}>
                 <Button
@@ -271,8 +196,9 @@ function ScoutingForm() {
                     sx={{
                         backgroundColor: '#4caf50',
                         '&:active': { backgroundColor: '#388e3c' },
-                        '&:disabled': { backgroundColor: '#c8e6c9' }
+                        '&:disabled': { backgroundColor: '#c8e6c9' },
                     }}
+                    onClick={handleSubmit}
                 >
                     Send Data
                 </Button>
