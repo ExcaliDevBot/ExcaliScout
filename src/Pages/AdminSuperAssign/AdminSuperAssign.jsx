@@ -12,6 +12,7 @@ import {
     Checkbox,
     ListItemText,
     TextField,
+    CircularProgress,
 } from "@mui/material";
 
 const questionsList = {
@@ -34,8 +35,9 @@ const AdminSuperAssign = () => {
     const [matchNumber, setMatchNumber] = useState("");
     const [teamNumber, setTeamNumber] = useState("");
     const [selectedQuestions, setSelectedQuestions] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-    // Fetch users and matches (dummy implementation, replace with actual data fetching)
+    // Fetch users and matches
     useEffect(() => {
         const usersRef = ref(db, "users"); // Replace with actual Firebase path for users
         onValue(usersRef, (snapshot) => {
@@ -50,29 +52,36 @@ const AdminSuperAssign = () => {
         });
     }, []);
 
-    const handleAssign = () => {
+    const handleAssign = async () => {
         if (!selectedUser || !matchNumber || !teamNumber || selectedQuestions.length === 0) {
             alert("Please select a user, match, and questions.");
             return;
         }
 
+        setLoading(true);
         const assignmentRef = ref(db, "superScoutingAssignments");
-        push(assignmentRef, {
-            user: selectedUser,
-            match: { match_number: matchNumber, team_number: teamNumber },
-            questions: selectedQuestions,
-        });
-
-        alert("Assignment successfully added!");
-        setSelectedUser("");
-        setMatchNumber("");
-        setTeamNumber("");
-        setSelectedQuestions([]);
+        try {
+            await push(assignmentRef, {
+                user: selectedUser,
+                match: { match_number: matchNumber, team_number: teamNumber },
+                questions: selectedQuestions,
+            });
+            alert("Assignment successfully added!");
+            setSelectedUser("");
+            setMatchNumber("");
+            setTeamNumber("");
+            setSelectedQuestions([]);
+        } catch (error) {
+            console.error("Error assigning match:", error);
+            alert("Error assigning match.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <Box sx={{ padding: "20px" }}>
-            <Typography variant="h4" gutterBottom>
+        <Box sx={{ p: 4, maxWidth: 600, margin: "auto", backgroundColor: "#fff", borderRadius: 2, boxShadow: 3 }}>
+            <Typography variant="h4" align="center" sx={{ color: "#012265", mb: 4 }}>
                 Assign Super Scouting Matches
             </Typography>
 
@@ -81,6 +90,7 @@ const AdminSuperAssign = () => {
                 <Select
                     value={selectedUser}
                     onChange={(e) => setSelectedUser(e.target.value)}
+                    label="Select Super Scouter"
                 >
                     {users.map((user) => (
                         <MenuItem key={user.id} value={user.username}>
@@ -90,7 +100,6 @@ const AdminSuperAssign = () => {
                 </Select>
             </FormControl>
 
-            {/* Text fields for Match Number and Team Number */}
             <TextField
                 label="Match Number"
                 type="number"
@@ -108,7 +117,7 @@ const AdminSuperAssign = () => {
                 sx={{ marginBottom: 3 }}
             />
 
-            <FormControl fullWidth>
+            <FormControl fullWidth sx={{ marginBottom: 3 }}>
                 <InputLabel>Select Questions</InputLabel>
                 <Select
                     multiple
@@ -125,14 +134,23 @@ const AdminSuperAssign = () => {
                 </Select>
             </FormControl>
 
-            <Button
-                variant="contained"
-                color="primary"
-                sx={{ marginTop: 3 }}
-                onClick={handleAssign}
-            >
-                Assign Match
-            </Button>
+            <Box sx={{ textAlign: "center" }}>
+                <Button
+                    variant="contained"
+                    sx={{
+                        mt: 2,
+                        backgroundColor: "#012265",
+                        '&:hover': { backgroundColor: "#d4af37", color: "#012265" },
+                        paddingX: 4,
+                        paddingY: 2,
+                        fontSize: 16,
+                    }}
+                    onClick={handleAssign}
+                    disabled={loading}
+                >
+                    {loading ? <CircularProgress size={24} color="inherit" /> : "Assign Match"}
+                </Button>
+            </Box>
         </Box>
     );
 };
