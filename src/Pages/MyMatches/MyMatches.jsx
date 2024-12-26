@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getDatabase, ref, get } from 'firebase/database'; // Remove onValue as it's not needed for fetching here
+import { getDatabase, ref, get } from 'firebase/database';
 import { UserContext } from '../../context/UserContext';
 import {
     Box,
@@ -55,6 +55,10 @@ function MyMatches() {
                                             team_number: match[position]?.team_number,
                                             alliance: position.startsWith('red') ? 'Red' : 'Blue',
                                             isSuperScouting, // Set the flag based on the super scouting assignment data
+                                            superScoutingQuestions: isSuperScouting
+                                                ? Object.values(allSuperScoutingAssignments.find(assignment =>
+                                                    assignment.match.match_number === match.match_id)?.questions || {})
+                                                : [],
                                         };
                                     }
                                 }
@@ -70,8 +74,8 @@ function MyMatches() {
                                 return {
                                     match_number: match.match_number,
                                     team_number: match.team_number,
-                                    alliance: match.alliance,
                                     isSuperScouting: true, // Mark as super scouting
+                                    superScoutingQuestions: Object.values(assignment.questions || []), // Get relevant questions
                                 };
                             });
 
@@ -129,12 +133,14 @@ function MyMatches() {
                                     Match {match.match_number}
                                 </Typography>
                                 <Typography variant="body1">Team: {match.team_number}</Typography>
-                                <Typography
-                                    variant="body1"
-                                    sx={{ color: match.alliance === 'Red' ? 'red' : 'blue' }}
-                                >
-                                    Alliance: {match.alliance}
-                                </Typography>
+                                {!match.isSuperScouting && (
+                                    <Typography
+                                        variant="body1"
+                                        sx={{ color: match.alliance === 'Red' ? 'red' : 'blue' }}
+                                    >
+                                        Alliance: {match.alliance}
+                                    </Typography>
+                                )}
                                 <Button
                                     variant="contained"
                                     sx={{
@@ -142,9 +148,13 @@ function MyMatches() {
                                         backgroundColor: '#012265',
                                         '&:hover': { backgroundColor: '#d4af37', color: '#012265' },
                                     }}
-                                    onClick={() =>
-                                        navigate(`/scout/${match.match_number}`, { state: { match, user } })
-                                    }
+                                    onClick={() => {
+                                        if (match.isSuperScouting) {
+                                            navigate(`/super-scout`, { state: { match, questions: match.superScoutingQuestions } });
+                                        } else {
+                                            navigate(`/scout/${match.match_number}`, { state: { match, user } });
+                                        }
+                                    }}
                                 >
                                     Scout Now
                                 </Button>
