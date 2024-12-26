@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import Papa from 'papaparse';
 import { useNavigate } from 'react-router-dom';
+import { getDatabase, ref, get } from 'firebase/database'; // Remove onValue as it's not needed for fetching here
 import { UserContext } from '../../context/UserContext';
 import {
     Box,
@@ -14,74 +14,78 @@ import {
 function MyMatches() {
     const [matches, setMatches] = useState([]);
     const [loading, setLoading] = useState(false);
-    const { user } = useContext(UserContext);
+    const { user } = useContext(UserContext);  // Get current user
     const navigate = useNavigate();
-
-    const fetchSuperScoutingMatches = async () => {
-        const gid = '21713347';
-        const publicSpreadsheetUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRojRhLgZSPXJopPdni1V4Z-inXXY3a__2NaVMsoJHPs9d25ZQ7t56QX67mncr6yo-w4B8WCWyHFe2m/pub?output=csv&gid=${gid}`;
-        const cacheBuster = `cacheBuster=${new Date().getTime()}`;
-        const urlWithCacheBuster = `${publicSpreadsheetUrl}&${cacheBuster}`;
-
-        return new Promise((resolve, reject) => {
-            Papa.parse(urlWithCacheBuster, {
-                download: true,
-                header: false,
-                complete: (results) => {
-                    const uniqueMatches = new Set();
-                    const superScoutingMatches = results.data
-                        .map((row, index) => ({
-                            name: row[0],
-                            match_number: row[1],
-                            team_number: row[2],
-                            questions: row.slice(3),
-                            index: index,
-                            isSuperScouting: true,
-                        }))
-                        .filter((match) => {
-                            if (!user.username || !match.match_number || !match.team_number || match.name !== user.username) {
-                                return false;
-                            }
-                            const key = `${user.username}-${match.match_number}-${match.team_number}`;
-                            if (uniqueMatches.has(key)) {
-                                return false;
-                            } else {
-                                uniqueMatches.add(key);
-                                return true;
-                            }
-                        });
-                    resolve(superScoutingMatches);
-                },
-                error: (error) => {
-                    reject(error);
-                },
-            });
-        });
-    };
+    const db = getDatabase();
 
     useEffect(() => {
         if (user) {
             const fetchMatches = async () => {
                 setLoading(true);
                 try {
-                    const response = await fetch(`https://ScoutingSystem.pythonanywhere.com/matches_assignments?user_id=${user.user_id}`);
-                    const data = await response.json();
-                    let dbMatches = [];
-                    if (data.status === 'success') {
-                        dbMatches = data.matches.map((match) => ({ ...match, isSuperScouting: false }));
+                    const matchesRef = ref(db, `matches`);
+                    const superScoutingAssignmentsRef = ref(db, `superScoutingAssignments`);
+                    const snapshotMatches = await get(matchesRef);
+                    const snapshotSuperScouting = await get(superScoutingAssignmentsRef);
+
+                    if (snapshotMatches.exists() && snapshotSuperScouting.exists()) {
+                        const allMatches = Object.values(snapshotMatches.val());
+                        const allSuperScoutingAssignments = Object.values(snapshotSuperScouting.val());
+
+                        console.log('Fetched matches from Firebase:', allMatches);
+                        console.log('Fetched super scouting assignments from Firebase:', allSuperScoutingAssignments);
+
+                        // Combine regular matches with super scouting assignments
+                        const userMatches = allMatches
+                            .map((match) => {
+                                const positions = ['red1', 'red2', 'red3', 'blue1', 'blue2', 'blue3'];
+                                let isSuperScouting = false;
+
+                                // Check if the match is assigned for super scouting for the current user
+                                for (const position of positions) {
+                                    if (match[position]?.scouter_name === user.username) {
+                                        // Check if the current match is assigned for super scouting
+                                        isSuperScouting = allSuperScoutingAssignments.some(
+                                            (assignment) =>
+                                                assignment.user === user.username &&
+                                                String(assignment.match.match_number) === String(match.match_id)
+                                        );
+                                        return {
+                                            match_number: match.match_id,
+                                            team_number: match[position]?.team_number,
+                                            alliance: position.startsWith('red') ? 'Red' : 'Blue',
+                                            isSuperScouting, // Set the flag based on the super scouting assignment data
+                                        };
+                                    }
+                                }
+                                return null;
+                            })
+                            .filter(Boolean); // Remove any null values
+
+                        // Include super scouting matches where the user is assigned
+                        const superScoutingMatches = allSuperScoutingAssignments
+                            .filter(assignment => assignment.user === user.username)
+                            .map((assignment) => {
+                                const match = assignment.match; // The match assigned to the user
+                                return {
+                                    match_number: match.match_number,
+                                    team_number: match.team_number,
+                                    alliance: match.alliance,
+                                    isSuperScouting: true, // Mark as super scouting
+                                };
+                            });
+
+                        // Merge user-specific matches and super scouting matches
+                        const mergedMatches = [...userMatches, ...superScoutingMatches];
+                        mergedMatches.sort((a, b) => a.match_number - b.match_number); // Sort by match number
+
+                        setMatches(mergedMatches);
+                    } else {
+                        console.log('No matches or super scouting assignments found in Firebase.');
+                        setMatches([]);
                     }
-
-                    let superScoutingMatches = [];
-                    if (user.role === 'super_scouter') {
-                        superScoutingMatches = await fetchSuperScoutingMatches();
-                    }
-
-                    const combinedMatches = [...dbMatches, ...superScoutingMatches];
-                    combinedMatches.sort((a, b) => a.match_number - b.match_number);
-
-                    setMatches(combinedMatches);
                 } catch (error) {
-                    console.error('Fetching data failed', error);
+                    console.error('Error fetching matches:', error);
                 } finally {
                     setLoading(false);
                 }
@@ -89,7 +93,7 @@ function MyMatches() {
 
             fetchMatches();
         }
-    }, [user]);
+    }, [user, db]);
 
     return (
         <Box sx={{ p: 4 }}>
@@ -100,7 +104,7 @@ function MyMatches() {
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
                     <CircularProgress />
                 </Box>
-            ) : (
+            ) : matches.length > 0 ? (
                 <Box
                     sx={{
                         display: 'flex',
@@ -117,7 +121,7 @@ function MyMatches() {
                                 maxWidth: 400,
                                 boxShadow: 3,
                                 borderRadius: 2,
-                                border: match.isSuperScouting ? '4px solid #d4af37' : 'none',
+                                border: match.isSuperScouting ? '4px solid #d4af37' : 'none', // Apply golden border if super scouting
                             }}
                         >
                             <CardContent>
@@ -125,42 +129,33 @@ function MyMatches() {
                                     Match {match.match_number}
                                 </Typography>
                                 <Typography variant="body1">Team: {match.team_number}</Typography>
-                                {!match.isSuperScouting && (
-                                    <Typography
-                                        variant="body2"
-                                        sx={{ color: match.alliance === 'Red' ? 'red' : 'blue', fontWeight: 'bold' }}
-                                    >
-                                        Alliance: {match.alliance}
-                                    </Typography>
-                                )}
-                                {match.completed ? (
-                                    <Typography sx={{ color: 'green', mt: 2 }}>Completed!</Typography>
-                                ) : (
-                                    <Button
-                                        variant="contained"
-                                        sx={{
-                                            mt: 2,
-                                            backgroundColor: match.isSuperScouting ? '#045404' : '#012265',
-                                            '&:hover': {
-                                                backgroundColor: '#d4af37',
-                                                color: '#012265',
-                                            },
-                                        }}
-                                        onClick={() => {
-                                            if (match.isSuperScouting) {
-                                                navigate(`/super-scout`, { state: { match, user, questions: match.questions } });
-                                            } else {
-                                                navigate(`/scout/${match.match_number}`, { state: { match, user } });
-                                            }
-                                        }}
-                                    >
-                                        Scout Now
-                                    </Button>
-                                )}
+                                <Typography
+                                    variant="body1"
+                                    sx={{ color: match.alliance === 'Red' ? 'red' : 'blue' }}
+                                >
+                                    Alliance: {match.alliance}
+                                </Typography>
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        mt: 2,
+                                        backgroundColor: '#012265',
+                                        '&:hover': { backgroundColor: '#d4af37', color: '#012265' },
+                                    }}
+                                    onClick={() =>
+                                        navigate(`/scout/${match.match_number}`, { state: { match, user } })
+                                    }
+                                >
+                                    Scout Now
+                                </Button>
                             </CardContent>
                         </Card>
                     ))}
                 </Box>
+            ) : (
+                <Typography variant="body1" sx={{ textAlign: 'center', mt: 2 }}>
+                    No matches assigned to you.
+                </Typography>
             )}
             <Button
                 variant="outlined"

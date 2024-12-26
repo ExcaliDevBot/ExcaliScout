@@ -6,12 +6,13 @@ import {
 } from "@mui/material";
 import TeleField from "./Game/Teleop";
 import { db } from "../../firebase-config";
-import {ref, set} from "firebase/database";
+import { ref, set } from "firebase/database";
 
 function ScoutingForm() {
     const location = useLocation();
     const { match, user } = location.state || {};
     const isNewForm = !match;
+
     const [formData, setFormData] = useState({
         Name: user ? user.username : '',
         Team: match ? match.team_number : '',
@@ -28,6 +29,7 @@ function ScoutingForm() {
         trapCounter: 0,
         defensivePins: 0,
     });
+
     const [barcodeData, setBarcodeData] = useState('');
     const [mode, setMode] = useState('teleop');
     const [eraserMode, setEraserMode] = useState(false);
@@ -36,62 +38,50 @@ function ScoutingForm() {
     useEffect(() => {
         const generateBarcode = () => {
             const barcodeString = `
-                ${user.username},
-                ${match.team_number},
-                ${match.match_number},
-                ${formData.checkboxes.filter((checked) => checked).length},
+                ${formData.Name || "Unknown"},
+                ${formData.Team || "Unknown"},
+                ${formData.Match || "Unknown"},
+                ${formData.checkboxes.filter(Boolean).length},
                 ${formData.counter1},
-                ${formData.TelePoints.filter((point) => point.color === 1).length},
+                ${formData.TelePoints.filter(point => point.color === 1).length},
                 ${formData.defensivePins},
-                ${formData.TelePoints.filter((point) => point.color === 2).length},
+                ${formData.TelePoints.filter(point => point.color === 2).length},
                 ${formData.Pcounter},
                 ${formData.climbed},
-                ${formData.TelePoints.map((point) => `(${point.x.toFixed(2)};${point.y.toFixed(2)};G)`).join(';')},
-                ${formData.TelePoints.filter((point) => point.color === 2).map((point) => `(${point.x.toFixed(2)};${point.y.toFixed(2)};O)`).join(';')},
-                ${formData.deliveryCount},
+                ${formData.TelePoints.map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};G)`).join(';')},
+                ${formData.TelePoints.filter(point => point.color === 2).map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};O)`).join(';')},
+                ${formData.deliveryCount}
             `.replace(/\n/g, '').replace(/\s+/g, ' ').trim();
 
             return barcodeString.replace(/true/g, 'TRUE');
         };
 
         setBarcodeData(generateBarcode());
-    }, [formData, mode, user]);
+    }, [formData]);
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const { Team, Match, Alliance, Name } = formData;
 
-        if (!Team || !Match || !Alliance || !Name) {
-            alert("Please ensure all required fields are filled out.");
+        if (!formData.Team || !formData.Match || !formData.Alliance || !formData.Name) {
+            alert("Please fill in all required fields.");
+            return;
         }
 
         try {
-            // Get a reference to the scoutingData node in Realtime Database
-            const dbRef = ref(db, 'scoutingData/' + new Date().getTime());
-            await set(dbRef, {
-                ...formData,
-                Team: match.team_number,
-                Match: Match || "Unknown",
-                Alliance: Alliance || "Unknown",
-                Name: user.username || "Unknown",
-                submittedAt: new Date().toISOString(),
-            });
+            const dbRef = ref(db, `scoutingData/${new Date().getTime()}`);
+            await set(dbRef, { ...formData, submittedAt: new Date().toISOString() });
             alert("Submission successful!");
             setIsButtonDisabled(true);
         } catch (error) {
             console.error("Error submitting data:", error);
-            alert(`Error submitting data: ${error.message}`);
+            alert("Error submitting data. Please try again.");
         }
     };
-
-
-    const handleAutoClick = () => setMode('checkbox');
-    const handleTeleopClick = () => setMode('teleop');
 
     return (
         <Box sx={{ padding: '20px', maxWidth: '1200px', margin: 'auto' }}>
@@ -102,11 +92,11 @@ function ScoutingForm() {
             <Grid container spacing={3}>
                 <Grid item xs={12} md={6}>
                     <TextField
-                        label=""
+                        label="Team"
                         variant="outlined"
                         fullWidth
                         name="Team"
-                        value={match.team_number}
+                        value={formData.Team}
                         onChange={handleInputChange}
                         disabled={!isNewForm}
                     />
@@ -154,31 +144,6 @@ function ScoutingForm() {
                 </Grid>
             </Grid>
 
-            <div className="button-container" style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-evenly' }}>
-                <Button
-                    variant="contained"
-                    onClick={handleAutoClick}
-                    sx={{
-                        backgroundColor: '#3f51b5',
-                        '&:active': { backgroundColor: '#303f9f' },
-                        '&:disabled': { backgroundColor: '#c5cae9' },
-                    }}
-                >
-                    Autonomous
-                </Button>
-                <Button
-                    variant="contained"
-                    onClick={handleTeleopClick}
-                    sx={{
-                        backgroundColor: '#f44336',
-                        '&:active': { backgroundColor: '#d32f2f' },
-                        '&:disabled': { backgroundColor: '#ffebee' },
-                    }}
-                >
-                    Teleop
-                </Button>
-            </div>
-
             <TeleField
                 formData={formData}
                 setFormData={setFormData}
@@ -187,26 +152,21 @@ function ScoutingForm() {
                 setEraserMode={setEraserMode}
             />
 
-            <div className="submit-container" style={{ textAlign: 'center', marginTop: '20px' }}>
+            <Box sx={{ textAlign: 'center', marginTop: '20px' }}>
                 <Button
-                    type="submit"
                     variant="contained"
                     color="primary"
-                    disabled={isButtonDisabled}
-                    sx={{
-                        backgroundColor: '#4caf50',
-                        '&:active': { backgroundColor: '#388e3c' },
-                        '&:disabled': { backgroundColor: '#c8e6c9' },
-                    }}
                     onClick={handleSubmit}
+                    disabled={isButtonDisabled}
+                    sx={{ backgroundColor: '#4caf50' }}
                 >
-                    Send Data
+                    Submit
                 </Button>
-            </div>
+            </Box>
 
-            <div className="barcode-container" style={{ textAlign: 'center', marginTop: '30px' }}>
+            <Box sx={{ textAlign: 'center', marginTop: '30px' }}>
                 <QRCode value={barcodeData} size={256} />
-            </div>
+            </Box>
         </Box>
     );
 }

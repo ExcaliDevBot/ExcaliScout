@@ -1,47 +1,32 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
-import { UserContext } from '../../context/UserContext';
-import { TextField, Select, MenuItem, Button, Typography, Box, CircularProgress, Grid } from '@mui/material';
-
-function Login() {
-    const { user } = useContext(UserContext);
-
-    // If user is already logged in, redirect to the MyMatches page
-    if (user) {
-        return <Navigate to="/MyMatches" />;
-    }
-
-    return (
-        <Box sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100vh',
-            backgroundColor: '#012265'
-        }}>
-            <LoginForm />
-        </Box>
-    );
-}
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getDatabase, ref, get } from 'firebase/database';
+import { TextField, Button, Typography, Box, CircularProgress, Grid, Select, MenuItem } from '@mui/material';
 
 function LoginForm() {
-    const [users, setUsers] = useState([]);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const [users, setUsers] = useState([]);
     const navigate = useNavigate();
-    const { login } = useContext(UserContext);
 
+    // Fetch users from Firebase
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await fetch('https://ScoutingSystem.pythonanywhere.com/users');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                const db = getDatabase();
+                const usersRef = ref(db, 'users');
+                const snapshot = await get(usersRef);
+
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    const userList = Object.keys(userData).map((key) => ({
+                        username: key,
+                        ...userData[key],
+                    }));
+                    setUsers(userList); // Set users in the state
                 }
-                const data = await response.json();
-                setUsers(data.users);
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
@@ -52,76 +37,84 @@ function LoginForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true); // Start loading
+        setLoading(true);
+        setMessage('');
+
+        // Ensure username is trimmed
+        const trimmedUsername = username.trim();
 
         try {
-            const response = await fetch('https://ScoutingSystem.pythonanywhere.com/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password }),
-            });
+            const db = getDatabase();
+            const usersRef = ref(db, 'users/' + trimmedUsername); // Query using the username directly
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
+            const snapshot = await get(usersRef);
 
-            const data = await response.json();
-            if (data.status === 'success') {
-                login(data.user); // Login the user
-                navigate('/MyMatches');  // Redirect to MyMatches page
+            if (snapshot.exists()) {
+                const userData = snapshot.val();
+
+                if (userData.password === password) {
+                    localStorage.setItem('user', JSON.stringify({ username: trimmedUsername, role: userData.role }));
+                    navigate('/MyMatches'); // Redirect to MyMatches page
+                } else {
+                    setMessage('Invalid password.');
+                }
             } else {
-                setMessage(data.message);
+                setMessage('User does not exist.');
             }
         } catch (error) {
-            console.error('Error:', error);
-            setMessage('Failed to login. Please try again later.');
+            console.error('Error logging in:', error);
+            setMessage('An error occurred. Please try again later.');
         } finally {
-            setLoading(false); // Stop loading
+            setLoading(false);
         }
     };
 
     return (
         <Box sx={{
-            width: { xs: '100%', sm: '400px' }, // Full width on mobile, 400px max on larger screens
+            maxWidth: 400,
+            mx: 'auto',
+            mt: 10,
             p: 4,
-            bgcolor: 'white',
+            border: '1px solid #d4af37',
             borderRadius: 2,
-            boxShadow: 3,
-            textAlign: 'center',
+            backgroundColor: '#012265',
+            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
         }}>
-            <Typography variant="h4" sx={{ color: '#012265', fontWeight: 'bold', mb: 3 }}>
+            <Typography variant="h4" sx={{
+                mb: 3,
+                textAlign: 'center',
+                color: '#d4af37',
+            }}>
                 Login to Your Account
             </Typography>
-
             <form onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <TextField
+                        <Select
                             fullWidth
-                            select
-                            label="Username"
                             value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            onChange={(e) => setUsername(e.target.value)} // Set the username value
+                            displayEmpty
                             variant="outlined"
                             margin="normal"
                             sx={{
-                                '& .MuiInputBase-root': { borderRadius: '8px' },
-                                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#d4af37' },
+                                backgroundColor: '#ffffff',
+                                color: '#012265',
+                                '& .MuiSelect-icon': {
+                                    color: '#012265',
+                                },
                             }}
                         >
-                            <MenuItem value="">
-                                <em>Select a user</em>
+                            <MenuItem value="" disabled sx={{ color: '#012265' }}>
+                                Select Username
                             </MenuItem>
                             {users.map((user) => (
-                                <MenuItem key={user.id} value={user.username}>
+                                <MenuItem key={user.username} value={user.username} sx={{ color: '#012265' }}>
                                     {user.username}
                                 </MenuItem>
                             ))}
-                        </TextField>
+                        </Select>
                     </Grid>
-
                     <Grid item xs={12}>
                         <TextField
                             fullWidth
@@ -132,34 +125,40 @@ function LoginForm() {
                             variant="outlined"
                             margin="normal"
                             sx={{
-                                '& .MuiInputBase-root': { borderRadius: '8px' },
-                                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#d4af37' },
+                                '& .MuiInputBase-root': {
+                                    backgroundColor: '#ffffff',
+                                    color: '#012265',
+                                },
+                                '& .MuiFormLabel-root': {
+                                    color: '#d4af37',
+                                },
+                                '& .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: '#d4af37',
+                                },
                             }}
                         />
                     </Grid>
-
                     <Grid item xs={12}>
                         <Button
                             fullWidth
                             variant="contained"
                             color="primary"
                             type="submit"
-                            sx={{
-                                mt: 2,
-                                backgroundColor: '#d4af37',
-                                '&:hover': { backgroundColor: '#b99328' },
-                                borderRadius: '8px',
-                                padding: '10px 20px',
-                            }}
                             disabled={loading}
+                            sx={{
+                                backgroundColor: '#d4af37',
+                                color: '#012265',
+                                '&:hover': {
+                                    backgroundColor: '#b0882f',
+                                },
+                            }}
                         >
                             {loading ? <CircularProgress size={24} color="inherit" /> : 'Login'}
                         </Button>
                     </Grid>
-
                     {message && (
                         <Grid item xs={12}>
-                            <Typography variant="body2" sx={{ color: 'red', mt: 2 }}>
+                            <Typography variant="body2" color="error" align="center" sx={{ color: '#d4af37' }}>
                                 {message}
                             </Typography>
                         </Grid>
@@ -170,4 +169,4 @@ function LoginForm() {
     );
 }
 
-export default Login;
+export default LoginForm;

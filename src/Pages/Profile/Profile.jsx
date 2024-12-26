@@ -16,9 +16,6 @@ function Profile() {
                     <h1>Welcome, {user.username}</h1>
                     <p className="role-tag">{user.role}</p>
                 </div>
-                <div className="profile-info">
-                    <p><strong>User ID:</strong> {user.user_id}</p>
-                </div>
             </div>
         </div>
     );

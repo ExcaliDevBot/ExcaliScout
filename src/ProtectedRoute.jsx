@@ -14,7 +14,6 @@ const ProtectedRoute = ({ children }) => {
         }
     }, [user, login]);
 
-    // If no user in context or localStorage, redirect to login
     if (!user && !localStorage.getItem('user')) {
         return <Navigate to="/login" />;
     }

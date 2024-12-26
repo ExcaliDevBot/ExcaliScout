@@ -116,7 +116,7 @@ const Navbar = () => {
                         My Matches
                     </Button>
                 )}
-                {user && user.role === 'ADMIN' && (
+                {user && user.role === 'admin' && (
                     <Button
                         color="inherit"
                         onClick={handleActionsMenuOpen}
@@ -135,6 +135,7 @@ const Navbar = () => {
                     <MenuItem onClick={() => navigate('/manage-users')}>Manage Users</MenuItem>
                     <MenuItem onClick={() => navigate('/ScouterPerformance')}>performance</MenuItem>
                     <MenuItem onClick={() => navigate('/assign')}>Assign Matches</MenuItem>
+                    <MenuItem onClick={() => navigate('/super-assign')}>Assign Super Matches</MenuItem>
                 </Menu>
 
                 {/* Profile Dropdown */}

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { ref, onValue, set, update, remove } from 'firebase/database';
+import { db } from '../../firebase-config'; // Ensure this path matches your project structure
 import { Box, Button, Card, CardContent, CircularProgress, Typography, TextField, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 
 function ManageUsers() {
@@ -9,101 +11,65 @@ function ManageUsers() {
     const [addSuccess, setAddSuccess] = useState(false);
     const [editSuccess, setEditSuccess] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
-    const [deletedUserId, setDeletedUserId] = useState(null);
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            setLoading(true);
-            try {
-                const response = await fetch('https://ScoutingSystem.pythonanywhere.com/users');
-                const data = await response.json();
-                if (data.status === 'success') {
-                    setUsers(data.users);
-                }
-            } catch (error) {
-                console.error('Error fetching users:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+        const usersRef = ref(db, 'users');
+        setLoading(true);
 
-        fetchUsers();
+        // Fetch users from Firebase using the 'users' node
+        onValue(usersRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                // Convert Firebase data into a list of users
+                const usersList = Object.entries(data).map(([username, user]) => ({
+                    username, // username is now the key
+                    ...user,
+                }));
+                setUsers(usersList);
+            } else {
+                setUsers([]);
+            }
+            setLoading(false);
+        });
     }, []);
 
     const handleAddUser = async () => {
         try {
-            const response = await fetch('https://ScoutingSystem.pythonanywhere.com/add_user', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newUser),
-            });
-            const data = await response.json();
-            if (data.status === 'success') {
-                setUsers([...users, { ...newUser, user_id: data.user_id }]);
-                setNewUser({ username: '', role: '', password: '' });
-                setAddSuccess(true);
-                setTimeout(() => setAddSuccess(false), 3000); // Show success message for 3 seconds
-            } else {
-                alert('Failed to add user');
-            }
+            const usersRef = ref(db, 'users');
+            // Set the user with the username as the key
+            await set(ref(db, `users/${newUser.username}`), newUser);
+            setNewUser({ username: '', role: '', password: '' });
+            setAddSuccess(true);
+            setTimeout(() => setAddSuccess(false), 3000);
         } catch (error) {
-            console.error('Error:', error);
-            alert('Failed to add user');
+            console.error('Error adding user:', error);
         }
     };
 
-    const handleEditUser = async (userId) => {
+    const handleEditUser = async (username) => {
         try {
-            const response = await fetch('https://ScoutingSystem.pythonanywhere.com/update_user', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ ...editingUser, user_id: userId }),
-            });
-            const data = await response.json();
-            if (data.status === 'success') {
-                setUsers(users.map(user => (user.user_id === userId ? editingUser : user)));
-                setEditingUser(null);
-                setEditSuccess(true);
-                setTimeout(() => setEditSuccess(false), 3000); // Show success message for 3 seconds
-            } else {
-                alert('Failed to edit user');
-            }
+            const userRef = ref(db, `users/${username}`);
+            await update(userRef, editingUser); // Use username as key for editing
+            setEditingUser(null);
+            setEditSuccess(true);
+            setTimeout(() => setEditSuccess(false), 3000);
         } catch (error) {
-            console.error('Error:', error);
-            alert('Failed to edit user');
+            console.error('Error editing user:', error);
         }
     };
 
-    const handleDeleteUser = async (userId) => {
+    const handleDeleteUser = async (username) => {
         try {
-            const response = await fetch('https://ScoutingSystem.pythonanywhere.com/delete_user', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ user_id: userId }),
-            });
-            const data = await response.json();
-            if (data.status === 'success') {
-                setDeletedUserId(userId);
-                setTimeout(() => {
-                    setUsers(users.filter(user => user.user_id !== userId));
-                    setDeletedUserId(null);
-                }, 500); // Delay to allow the fade-out effect
-            } else {
-                alert('Failed to delete user');
-            }
+            const userRef = ref(db, `users/${username}`);
+            await remove(userRef); // Use username as key for deletion
         } catch (error) {
-            console.error('Error:', error);
-            alert('Failed to delete user');
+            console.error('Error deleting user:', error);
         }
     };
 
-    const filteredUsers = users.filter(user => user.username && user.username.toLowerCase().includes(searchTerm.toLowerCase()));
+    const filteredUsers = users.filter(user =>
+        user.username && user.username.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <Box sx={{ p: 4 }}>
@@ -139,10 +105,10 @@ function ManageUsers() {
                                 value={newUser.role}
                                 onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
                             >
-                                <MenuItem value="ADMIN">Admin</MenuItem>
-                                <MenuItem value="normal_scouter">Normal Scouter</MenuItem>
-                                <MenuItem value="pit_scouter">Pit Scouter</MenuItem>
-                                <MenuItem value="super_scouter">Super Scouter</MenuItem>
+                                <MenuItem value="admin">Admin</MenuItem>
+                                <MenuItem value="normal scouter">Normal Scouter</MenuItem>
+                                <MenuItem value="pit scouter">Pit Scouter</MenuItem>
+                                <MenuItem value="super scouter">Super Scouter</MenuItem>
                             </Select>
                         </FormControl>
                         <TextField
@@ -167,7 +133,7 @@ function ManageUsers() {
 
                     {/* User Table */}
                     {filteredUsers.map((user) => (
-                        <Card key={user.user_id} sx={{ width: '100%', maxWidth: 600, mb: 2, boxShadow: 3 }}>
+                        <Card key={user.username} sx={{ width: '100%', maxWidth: 600, mb: 2, boxShadow: 3 }}>
                             <CardContent>
                                 <Typography variant="h6" sx={{ color: '#d4af37', mb: 1 }}>
                                     {user.username}
@@ -187,12 +153,12 @@ function ManageUsers() {
                                     <Button
                                         variant="outlined"
                                         color="error"
-                                        onClick={() => handleDeleteUser(user.user_id)}
+                                        onClick={() => handleDeleteUser(user.username)} // Use username to delete
                                     >
                                         Delete
                                     </Button>
                                 </Box>
-                                {editingUser && editingUser.user_id === user.user_id && (
+                                {editingUser && editingUser.username === user.username && (
                                     <Box sx={{ mt: 2 }}>
                                         <TextField
                                             label="New Username"
@@ -210,7 +176,7 @@ function ManageUsers() {
                                                     setEditingUser({ ...editingUser, role: e.target.value })
                                                 }
                                             >
-                                                <MenuItem value="ADMIN">Admin</MenuItem>
+                                                <MenuItem value="Admin">Admin</MenuItem>
                                                 <MenuItem value="normal_scouter">Normal Scouter</MenuItem>
                                                 <MenuItem value="pit_scouter">Pit Scouter</MenuItem>
                                                 <MenuItem value="super_scouter">Super Scouter</MenuItem>
@@ -231,7 +197,7 @@ function ManageUsers() {
                                                 backgroundColor: '#012265',
                                                 '&:hover': { backgroundColor: '#d4af37', color: '#012265' },
                                             }}
-                                            onClick={() => handleEditUser(user.user_id)}
+                                            onClick={() => handleEditUser(user.username)} // Use username to edit
                                         >
                                             Save Changes
                                         </Button>

@@ -8,8 +8,8 @@ import Profile from './Pages/Profile/Profile';
 import ManageUsers from './Pages/ManageUsers/ManageUsers';
 import { UserProvider } from './context/UserContext'; // Make sure this is correctly imported
 import SuperScouting from "./Pages/Scouting/Super/SuperScouting";
+import AdminSuperAssign from "./Pages/AdminSuperAssign/AdminSuperAssign";
 import PitScouting from "./Pages/Scouting/Pit/PitScouting";
-import ScoutNav from "./Pages/Nav/ScoutNav";
 import Actions from "./Pages/Actions/Actions";
 import AdminRoute from './AdminRoute';
 import ProtectedRoute from './ProtectedRoute';
@@ -28,11 +28,11 @@ function App() {
                 <Routes>
                     <Route path="/login" element={<Login />} />
                     <Route path="/" element={<Home />} />
-                    <Route path="/ScoutNav" element={<ProtectedRoute><ScoutNav /></ProtectedRoute>} />
                     <Route path="/Pit-Scouting" element={<ProtectedRoute><PitScouting /></ProtectedRoute>} />
                     <Route path="/super-scout" element={<ProtectedRoute><SuperScouting /></ProtectedRoute>} />
                     <Route path="/ScouterPerformance" element={<ProtectedRoute><ScouterPerformance /></ProtectedRoute>} />
                     <Route path="/assign" element={<AdminRoute><MatchAssign /></AdminRoute>} />
+                    <Route path="/super-assign" element={<AdminRoute><AdminSuperAssign /></AdminRoute>} />
                     <Route path="/MyMatches" element={<ProtectedRoute><MyMatches /></ProtectedRoute>} />
                     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                     <Route path="/Actions" element={<ProtectedRoute><Actions /></ProtectedRoute>} />
