@@ -77,7 +77,7 @@ const Navbar = () => {
                     <List>
                         <ListItem button onClick={() => navigate('/')}>Home</ListItem>
                         {user && (
-                            <ListItem button onClick={() => navigate('/MyMatches')}>
+                            <ListItem button onClick={() => navigate('/my_matches')}>
                                 My Matches
                             </ListItem>
                         )}
@@ -112,7 +112,7 @@ const Navbar = () => {
 
                 <Button color="#012265" onClick={() => navigate('/')}>Home</Button>
                 {user && (
-                    <Button color="#012265" onClick={() => navigate('/MyMatches')}>
+                    <Button color="#012265" onClick={() => navigate('/my_matches')}>
                         My Matches
                     </Button>
                 )}

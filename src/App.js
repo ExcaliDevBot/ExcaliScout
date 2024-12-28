@@ -11,9 +11,8 @@ import MatchAssign from './Pages/MatchAssign/MatchAssign';
 import Profile from './Pages/Profile/Profile';
 import ManageUsers from './Pages/ManageUsers/ManageUsers';
 import SuperScouting from './Pages/Scouting/Super/SuperScouting';
-import AdminSuperAssign from './Pages/AdminSuperAssign/AdminSuperAssign';
+import AdminSuperAssign from './Pages/AdminTools/AdminSuperAssign';
 import PitScouting from './Pages/Scouting/Pit/PitScouting';
-import ScouterPerformance from './Pages/ScouterPerformance/ScouterPerformance';
 import PitScoutingAssign from './Pages/AdminTools/PitScoutingAssign';
 
 // Routes and Access Control

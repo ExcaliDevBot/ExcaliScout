@@ -71,10 +71,9 @@ function SuperScouting() {
 
     return (
         <Box sx={{ p: 4, maxWidth: 900, margin: "auto" }}>
-            <Paper elevation={3} sx={{ padding: 3 }}>
+            <Paper elevation={3} sx={{ padding: 4 }}>
                 {user ? (
-                    <Typography variant="h6" sx={{ color: green[700], mb: 2 }}>
-                        Logged in as: {user.username}
+                    <Typography variant="h6" sx={{ color: green[700], mb: 2}}>
                     </Typography>
                 ) : (
                     <Typography variant="h6" sx={{ color: red[700], mb: 2 }}>

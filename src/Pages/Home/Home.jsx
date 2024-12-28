@@ -1,6 +1,5 @@
 // src/Pages/Home/Home.jsx
 import React from 'react';
-import Navbar from '../Navbar/Navbar';
 import './Home.css';
 
 function Home() {

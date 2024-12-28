@@ -1,5 +1,5 @@
 import React from 'react';
-import { useCurrentUser } from '../hooks/useCurrentUser';
+import { useCurrentUser } from '../../context/useCurrentUser';
 import './Profile.css';
 
 function Profile() {
