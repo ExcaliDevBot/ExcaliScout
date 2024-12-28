@@ -133,8 +133,8 @@ const Navbar = () => {
                     onClose={handleMenuClose}
                 >
                     <MenuItem onClick={() => navigate('/manage-users')}>Manage Users</MenuItem>
-                    <MenuItem onClick={() => navigate('/assign')}>Assign Matches</MenuItem>
-                    <MenuItem onClick={() => navigate('/PitScoutingAssign')}>Assign Pit Scouting</MenuItem>
+                    <MenuItem onClick={() => navigate('/assign-matches')}>Assign Matches</MenuItem>
+                    <MenuItem onClick={() => navigate('/pit-assign')}>Assign Pit Scouting</MenuItem>
                     <MenuItem onClick={() => navigate('/super-assign')}>Assign Super Matches</MenuItem>
                 </Menu>
 

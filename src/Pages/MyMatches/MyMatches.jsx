@@ -187,7 +187,7 @@ function MyMatches() {
                                         if (match.isSuperScouting) {
                                             navigate(`/super-scout`, { state: { match, questions: match.superScoutingQuestions } });
                                         } else if (match.isPitScouting) {
-                                            navigate('/pit-scouting', { state: { teamNumber: match.team_number, matchNumber: match.match_number } });
+                                            navigate('/pit-scout', { state: { teamNumber: match.team_number, matchNumber: match.match_number } });
                                         } else {
                                             navigate(`/scout/${match.match_number}`, { state: { match, user } });
                                         }
@@ -206,7 +206,7 @@ function MyMatches() {
             )}
 
             {/* Add role-based buttons for admins */}
-            {(user && (user.role === 'admin' || user.role === 'superScouter')) && (
+            {(user && (user.role === 'admin' || user.role === 'super_scouter')) && (
                 <Button
                     variant="outlined"
                     sx={{
@@ -226,7 +226,7 @@ function MyMatches() {
                     New Super Scouting Form
                 </Button>
             )}
-            {(user && (user.role === 'admin' || user.role === 'pitScouter')) && (
+            {(user && (user.role === 'admin' || user.role === 'pit_scouter')) && (
                 <Button
                     variant="outlined"
                     sx={{
@@ -241,7 +241,7 @@ function MyMatches() {
                             borderColor: '#d4af37',
                         },
                     }}
-                    onClick={() => navigate('/Pit-Scouting')}
+                    onClick={() => navigate('/pit-scout')}
                 >
                     New Pit Scouting Form
                 </Button>

@@ -1,24 +1,24 @@
-// src/App.js
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { UserProvider } from './context/UserContext';
+import Navbar from './Pages/Navbar/Navbar';
+
+// Pages
 import Login from './Pages/Login/Login';
+import Home from './Pages/Home/Home';
 import MyMatches from './Pages/MyMatches/MyMatches';
 import ScoutingForm from './Pages/Scouting/Scouting';
 import MatchAssign from './Pages/MatchAssign/MatchAssign';
 import Profile from './Pages/Profile/Profile';
 import ManageUsers from './Pages/ManageUsers/ManageUsers';
-import { UserProvider } from './context/UserContext'; // Make sure this is correctly imported
-import SuperScouting from "./Pages/Scouting/Super/SuperScouting";
-import AdminSuperAssign from "./Pages/AdminSuperAssign/AdminSuperAssign";
-import PitScouting from "./Pages/Scouting/Pit/PitScouting";
+import SuperScouting from './Pages/Scouting/Super/SuperScouting';
+import AdminSuperAssign from './Pages/AdminSuperAssign/AdminSuperAssign';
+import PitScouting from './Pages/Scouting/Pit/PitScouting';
+import ScouterPerformance from './Pages/ScouterPerformance/ScouterPerformance';
+import PitScoutingAssign from './Pages/AdminTools/PitScoutingAssign';
+
+// Routes and Access Control
 import AdminRoute from './AdminRoute';
 import ProtectedRoute from './ProtectedRoute';
-import Navbar from './Pages/Navbar/Navbar';
-import Home from "./Pages/Home/Home";
-import ScouterPerformance from "./Pages/ScouterPerformance/ScouterPerformance";
-import PitScoutingAssign from "./Pages/AdminTools/PitScoutingAssign";
-// src/App.js
-
-// Add the new route
 
 function App() {
     return (
@@ -26,20 +26,27 @@ function App() {
             <Router>
                 <Navbar />
                 <Routes>
+                    {/* Public Routes */}
                     <Route path="/login" element={<Login />} />
                     <Route path="/" element={<Home />} />
-                    <Route path="/PitScoutingAssign" element={<AdminRoute><PitScoutingAssign /></AdminRoute>} />
-                    <Route path="/Pit-Scouting" element={<ProtectedRoute><PitScouting /></ProtectedRoute>} />
+
+                    {/* Protected Routes */}
+                    <Route path="/pit-scout" element={<ProtectedRoute><PitScouting /></ProtectedRoute>} />
                     <Route path="/super-scout" element={<ProtectedRoute><SuperScouting /></ProtectedRoute>} />
-                    <Route path="/ScouterPerformance" element={<ProtectedRoute><ScouterPerformance /></ProtectedRoute>} />
-                    <Route path="/assign" element={<AdminRoute><MatchAssign /></AdminRoute>} />
-                    <Route path="/super-assign" element={<AdminRoute><AdminSuperAssign /></AdminRoute>} />
-                    <Route path="/MyMatches" element={<ProtectedRoute><MyMatches /></ProtectedRoute>} />
+                    <Route path="/my_matches" element={<ProtectedRoute><MyMatches /></ProtectedRoute>} />
                     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                     <Route path="/scout/:match_id" element={<ProtectedRoute><ScoutingForm /></ProtectedRoute>} />
                     <Route path="/scout" element={<ProtectedRoute><ScoutingForm /></ProtectedRoute>} />
+
+                    {/* Admin Routes */}
+                    <Route path="/pit-assign" element={<AdminRoute><PitScoutingAssign /></AdminRoute>} />
+                    <Route path="/assign-matches" element={<AdminRoute><MatchAssign /></AdminRoute>} />
+                    <Route path="/super-assign" element={<AdminRoute><AdminSuperAssign /></AdminRoute>} />
                     <Route path="/manage-users" element={<AdminRoute><ManageUsers /></AdminRoute>} />
+
+                    {/* Catch-all Route */}
                     <Route path="/no-access" element={<div>No Access</div>} />
+                    <Route path="*" element={<div>404 - Page Not Found</div>} />
                 </Routes>
             </Router>
         </UserProvider>
