@@ -25,19 +25,21 @@ function MyMatches() {
                 try {
                     const matchesRef = ref(db, `matches`);
                     const superScoutingAssignmentsRef = ref(db, `superScoutingAssignments`);
+                    const pitScoutingAssignmentsRef = ref(db, `pitScoutingAssignments`);
                     const snapshotMatches = await get(matchesRef);
                     const snapshotSuperScouting = await get(superScoutingAssignmentsRef);
+                    const snapshotPitScouting = await get(pitScoutingAssignmentsRef);
 
-                    if (snapshotMatches.exists() && snapshotSuperScouting.exists()) {
+                    if (snapshotMatches.exists() && snapshotSuperScouting.exists() && snapshotPitScouting.exists()) {
                         const allMatches = Object.values(snapshotMatches.val());
                         const allSuperScoutingAssignments = Object.values(snapshotSuperScouting.val());
-
-                        console.log('Fetched matches from Firebase:', allMatches);
-                        console.log('Fetched super scouting assignments from Firebase:', allSuperScoutingAssignments);
+                        const allPitScoutingAssignments = Object.values(snapshotPitScouting.val());
 
                         // Combine regular matches with super scouting assignments
                         const userMatches = allMatches
                             .map((match) => {
+                                if (!match || !match.match_id) return null;  // Add a check to ensure match is valid
+
                                 const positions = ['red1', 'red2', 'red3', 'blue1', 'blue2', 'blue3'];
                                 let isSuperScouting = false;
 
@@ -71,21 +73,43 @@ function MyMatches() {
                             .filter(assignment => assignment.user === user.username)
                             .map((assignment) => {
                                 const match = assignment.match; // The match assigned to the user
+                                if (!match) return null;
                                 return {
                                     match_number: match.match_number,
                                     team_number: match.team_number,
                                     isSuperScouting: true, // Mark as super scouting
                                     superScoutingQuestions: Object.values(assignment.questions || []), // Get relevant questions
                                 };
-                            });
+                            })
+                            .filter(Boolean);  // Remove null matches
 
-                        // Merge user-specific matches and super scouting matches
-                        const mergedMatches = [...userMatches, ...superScoutingMatches];
-                        mergedMatches.sort((a, b) => a.match_number - b.match_number); // Sort by match number
+                        // Fetch pit scouting assignments for the user
+                        const pitScoutingMatches = allPitScoutingAssignments
+                            .filter(assignment => assignment.user === user.username) // Filter pit scouting assignments for the current user
+                            .map((assignment) => {
+                                const match = assignment;  // The entire assignment object
+                                if (!match || !match.team_number) return null;
+                                return {
+                                    match_number: match.match_number || "Pit Scouting", // Add match_number if available, else show "Pit Scouting"
+                                    team_number: match.team_number,
+                                    isPitScouting: true, // Mark as pit scouting
+                                };
+                            })
+                            .filter(Boolean);  // Remove null matches
+
+                        // Merge pit scouting matches first, then super scouting and user-specific matches
+                        const mergedMatches = [
+                            ...pitScoutingMatches,  // Put pit scouting at the top
+                            ...superScoutingMatches,
+                            ...userMatches
+                        ];
+
+                        // Sort by match number
+                        mergedMatches.sort((a, b) => a.match_number - b.match_number);
 
                         setMatches(mergedMatches);
                     } else {
-                        console.log('No matches or super scouting assignments found in Firebase.');
+                        console.log('No matches, super scouting, or pit scouting assignments found in Firebase.');
                         setMatches([]);
                     }
                 } catch (error) {
@@ -119,26 +143,32 @@ function MyMatches() {
                 >
                     {matches.map((match, index) => (
                         <Card
-                            key={index}
+                            key={`${match.match_number}-${match.team_number}`} // Ensure a unique key
                             sx={{
                                 width: '100%',
                                 maxWidth: 400,
                                 boxShadow: 3,
                                 borderRadius: 2,
                                 border: match.isSuperScouting ? '4px solid #d4af37' : 'none', // Apply golden border if super scouting
+                                backgroundColor: match.isPitScouting ? '#f0f8ff' : 'white', // Different color for pit scouting matches
                             }}
                         >
                             <CardContent>
-                                <Typography variant="h6" sx={{ color: '#d4af37', mb: 1 }}>
+                                <Typography variant="h6" sx={{ color: match.isPitScouting ? '#003366' : '#d4af37', mb: 1 }}>
                                     Match {match.match_number}
                                 </Typography>
                                 <Typography variant="body1">Team: {match.team_number}</Typography>
-                                {!match.isSuperScouting && (
+                                {!match.isSuperScouting && !match.isPitScouting && (
                                     <Typography
                                         variant="body1"
                                         sx={{ color: match.alliance === 'Red' ? 'red' : 'blue' }}
                                     >
                                         Alliance: {match.alliance}
+                                    </Typography>
+                                )}
+                                {match.isPitScouting && (
+                                    <Typography variant="body2" sx={{ color: '#003366' }}>
+                                        Pit Scouting Assigned
                                     </Typography>
                                 )}
                                 <Button
@@ -151,6 +181,8 @@ function MyMatches() {
                                     onClick={() => {
                                         if (match.isSuperScouting) {
                                             navigate(`/super-scout`, { state: { match, questions: match.superScoutingQuestions } });
+                                        } else if (match.isPitScouting) {
+                                            navigate('/pit-scouting', { state: { teamNumber: match.team_number, matchNumber: match.match_number } });
                                         } else {
                                             navigate(`/scout/${match.match_number}`, { state: { match, user } });
                                         }

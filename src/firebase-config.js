@@ -6,7 +6,7 @@ const firebaseConfig = {
     apiKey: "AIzaSyCS_UutaEdL1O5fcI0r4qUmvPX6t2PadIg",
     authDomain: "excaliburscouting-6738e.firebaseapp.com",
     projectId: "excaliburscouting-6738e",
-    storageBucket: "excaliburscouting-6738e.appspot.com",
+    storageBucket: "excaliburscouting-6738e",
     messagingSenderId: "1006512770349",
     appId: "1:1006512770349:web:6d457e11718f00237b17a4",
     measurementId: "G-CYR4LETD6T"
