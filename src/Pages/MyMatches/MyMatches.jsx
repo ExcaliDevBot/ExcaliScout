@@ -171,6 +171,11 @@ function MyMatches() {
                                         Pit Scouting Assigned
                                     </Typography>
                                 )}
+                                {match.isSuperScouting && (
+                                    <Typography variant="body2" sx={{ color: '#d4af37' }}>
+                                        Super Scouting Assigned
+                                    </Typography>
+                                )}
                                 <Button
                                     variant="contained"
                                     sx={{
@@ -199,24 +204,68 @@ function MyMatches() {
                     No matches assigned to you.
                 </Typography>
             )}
-            <Button
-                variant="outlined"
-                sx={{
-                    mt: 4,
-                    display: 'block',
-                    mx: 'auto',
-                    color: '#012265',
-                    borderColor: '#012265',
-                    '&:hover': {
-                        backgroundColor: '#d4af37',
+
+            {/* Add role-based buttons for admins */}
+            {(user && (user.role === 'admin' || user.role === 'superScouter')) && (
+                <Button
+                    variant="outlined"
+                    sx={{
+                        mt: 4,
+                        display: 'block',
+                        mx: 'auto',
                         color: '#012265',
-                        borderColor: '#d4af37',
-                    },
-                }}
-                onClick={() => navigate('/scout/new', { state: { user } })}
-            >
-                New Scouting Form
-            </Button>
+                        borderColor: '#012265',
+                        '&:hover': {
+                            backgroundColor: '#d4af37',
+                            color: '#012265',
+                            borderColor: '#d4af37',
+                        },
+                    }}
+                    onClick={() => navigate('/super-scout')}
+                >
+                    New Super Scouting Form
+                </Button>
+            )}
+            {(user && (user.role === 'admin' || user.role === 'pitScouter')) && (
+                <Button
+                    variant="outlined"
+                    sx={{
+                        mt: 4,
+                        display: 'block',
+                        mx: 'auto',
+                        color: '#012265',
+                        borderColor: '#012265',
+                        '&:hover': {
+                            backgroundColor: '#d4af37',
+                            color: '#012265',
+                            borderColor: '#d4af37',
+                        },
+                    }}
+                    onClick={() => navigate('/Pit-Scouting')}
+                >
+                    New Pit Scouting Form
+                </Button>
+            )}
+            {(user) && (
+                <Button
+                    variant="outlined"
+                    sx={{
+                        mt: 4,
+                        display: 'block',
+                        mx: 'auto',
+                        color: '#012265',
+                        borderColor: '#012265',
+                        '&:hover': {
+                            backgroundColor: '#d4af37',
+                            color: '#012265',
+                            borderColor: '#d4af37',
+                        },
+                    }}
+                    onClick={() => navigate('/scout/new', { state: { user } })}
+                >
+                    New Scouting Form
+                </Button>
+            )}
         </Box>
     );
 }
