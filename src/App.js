@@ -45,7 +45,6 @@ function App() {
 
                     {/* Catch-all Route */}
                     <Route path="/no-access" element={<div>No Access</div>} />
-                    <Route path="*" element={<div>404 - Page Not Found</div>} />
                 </Routes>
             </Router>
         </UserProvider>
