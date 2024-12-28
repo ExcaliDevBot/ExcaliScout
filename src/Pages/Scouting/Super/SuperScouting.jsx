@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { db } from "../../../firebase-config";
 import { ref, push } from "firebase/database";
 import { UserContext } from "../../../context/UserContext";
@@ -20,13 +20,21 @@ const questionsList = {
 };
 
 function SuperScouting() {
-    const { user } = useContext(UserContext);
+    const { user } = useContext(UserContext); // Get the current user from context
     const navigate = useNavigate();
+    const location = useLocation();
+    const { match, questions } = location.state || {};
     const [formData, setFormData] = useState({});
     const [loading, setLoading] = useState(false);
-    const [teamNumber, setTeamNumber] = useState("");
-    const [matchNumber, setMatchNumber] = useState("");
-    const [isFormVisible, setIsFormVisible] = useState(false);
+    const [manualMatchNumber, setManualMatchNumber] = useState("");
+    const [manualTeamNumber, setManualTeamNumber] = useState("");
+
+    useEffect(() => {
+        if (!user) {
+            console.error("User not found.");
+            navigate("/login"); // Redirect to login if the user is not found
+        }
+    }, [user, navigate]);
 
     const handleChange = (event, questionId) => {
         setFormData({
@@ -35,17 +43,17 @@ function SuperScouting() {
         });
     };
 
-    const handleSubmit = async (event) => {
+    const handleManualSubmit = async (event) => {
         event.preventDefault();
         setLoading(true);
 
         const dataToSend = {
-            username: user?.username || "Unknown User",
-            team_number: teamNumber,
-            match_number: matchNumber,
-            questions: Object.keys(formData).map((questionId) => ({
-                question: questionsList[questionId],
-                answer: formData[questionId] || "",
+            username: user?.username || "Unknown User", // Safely access username
+            team_number: manualTeamNumber,
+            match_number: manualMatchNumber,
+            questions: questionsList.map((question, index) => ({
+                question,
+                answer: formData[index] || "",
             })),
         };
 
@@ -61,19 +69,82 @@ function SuperScouting() {
         }
     };
 
-    const handleTeamMatchSubmit = () => {
-        if (teamNumber && matchNumber) {
-            setIsFormVisible(true);
-        } else {
-            alert("Please enter both Team Number and Match Number.");
-        }
-    };
+    if (!match || !questions) {
+        return (
+            <Box sx={{ p: 4, maxWidth: 900, margin: "auto" }}>
+                <Paper elevation={3} sx={{ padding: 3 }}>
+                    <Typography variant="h6" sx={{ mb: 2 }}>
+                        Match or Questions Data is Missing
+                    </Typography>
+                    <form onSubmit={handleManualSubmit}>
+                        <Box sx={{ mb: 3 }}>
+                            <Typography variant="body1" sx={{ fontWeight: "bold", mb: 1 }}>
+                                Enter Match Number:
+                            </Typography>
+                            <TextField
+                                variant="outlined"
+                                fullWidth
+                                value={manualMatchNumber}
+                                onChange={(e) => setManualMatchNumber(e.target.value)}
+                                type="number"
+                            />
+                        </Box>
+                        <Box sx={{ mb: 3 }}>
+                            <Typography variant="body1" sx={{ fontWeight: "bold", mb: 1 }}>
+                                Enter Team Number:
+                            </Typography>
+                            <TextField
+                                variant="outlined"
+                                fullWidth
+                                value={manualTeamNumber}
+                                onChange={(e) => setManualTeamNumber(e.target.value)}
+                                type="number"
+                            />
+                        </Box>
+
+                        <Typography variant="h6" sx={{ mb: 2 }}>
+                            Answer the Questions Below
+                        </Typography>
+
+                        {Object.keys(questionsList).map((questionId) => (
+                            <Box key={questionId} sx={{ mb: 3 }}>
+                                <Typography variant="body1" sx={{ fontWeight: "bold", mb: 1 }}>
+                                    {questionsList[questionId]}
+                                </Typography>
+                                <TextField
+                                    variant="outlined"
+                                    fullWidth
+                                    multiline
+                                    rows={4}
+                                    value={formData[questionId] || ""}
+                                    onChange={(e) => handleChange(e, questionId)}
+                                />
+                            </Box>
+                        ))}
+
+                        <Box sx={{ textAlign: "center" }}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                sx={{ mt: 3, px: 4 }}
+                                type="submit"
+                                disabled={loading || !manualMatchNumber || !manualTeamNumber}
+                            >
+                                {loading ? <CircularProgress size={24} sx={{ color: "#fff" }} /> : "Submit"}
+                            </Button>
+                        </Box>
+                    </form>
+                </Paper>
+            </Box>
+        );
+    }
 
     return (
         <Box sx={{ p: 4, maxWidth: 900, margin: "auto" }}>
-            <Paper elevation={3} sx={{ padding: 4 }}>
+            <Paper elevation={3} sx={{ padding: 3 }}>
                 {user ? (
-                    <Typography variant="h6" sx={{ color: green[700], mb: 2}}>
+                    <Typography variant="h6" sx={{ color: green[700], mb: 2 }}>
+                        Logged in as: {user.username} {/* Display the username */}
                     </Typography>
                 ) : (
                     <Typography variant="h6" sx={{ color: red[700], mb: 2 }}>
@@ -81,50 +152,16 @@ function SuperScouting() {
                     </Typography>
                 )}
 
-                {!isFormVisible ? (
-                    <Box sx={{ mb: 4 }}>
-                        <Typography variant="h6">Enter Match Details</Typography>
-                        <TextField
-                            label="Team Number"
-                            variant="outlined"
-                            fullWidth
-                            value={teamNumber}
-                            onChange={(e) => setTeamNumber(e.target.value)}
-                            sx={{ mb: 2 }}
-                        />
-                        <TextField
-                            label="Match Number"
-                            variant="outlined"
-                            fullWidth
-                            value={matchNumber}
-                            onChange={(e) => setMatchNumber(e.target.value)}
-                            sx={{ mb: 2 }}
-                        />
-                        <Box sx={{ textAlign: "center" }}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                sx={{ mt: 3, px: 4 }}
-                                onClick={handleTeamMatchSubmit}
-                            >
-                                Start Super Scouting
-                            </Button>
-                        </Box>
-                    </Box>
-                ) : (
-                    <>
-                        <Box sx={{ mb: 4, paddingLeft: 1 }}>
-                            <Typography variant="h6">Match Details</Typography>
-                            <p>
-                                <strong>Team Number:</strong> {teamNumber}
-                            </p>
-                            <p>
-                                <strong>Match Number:</strong> {matchNumber}
-                            </p>
-                        </Box>
+                <Box sx={{ mb: 4, paddingLeft: 1 }}>
+                    <Typography variant="h6">Match Details</Typography>
+                    <p><strong>Team Number:</strong> {match.team_number}</p>
+                    <p><strong>Match Number:</strong> {match.match_number}</p>
+                </Box>
 
-                        <form onSubmit={handleSubmit}>
-                            {Object.keys(questionsList).map((questionId, index) => (
+                <form onSubmit={handleManualSubmit}>
+                    {questions.map(
+                        (questionId, index) =>
+                            questionsList[questionId] && (
                                 <Box key={index} sx={{ mb: 3 }}>
                                     <Typography variant="body1" sx={{ fontWeight: "bold", mb: 1 }}>
                                         {questionsList[questionId]}
@@ -138,25 +175,21 @@ function SuperScouting() {
                                         onChange={(e) => handleChange(e, questionId)}
                                     />
                                 </Box>
-                            ))}
-                            <Box sx={{ textAlign: "center" }}>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    sx={{ mt: 3, px: 4 }}
-                                    type="submit"
-                                    disabled={loading}
-                                >
-                                    {loading ? (
-                                        <CircularProgress size={24} sx={{ color: "#fff" }} />
-                                    ) : (
-                                        "Submit"
-                                    )}
-                                </Button>
-                            </Box>
-                        </form>
-                    </>
-                )}
+                            )
+                    )}
+
+                    <Box sx={{ textAlign: "center" }}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            sx={{ mt: 3, px: 4 }}
+                            type="submit"
+                            disabled={loading}
+                        >
+                            {loading ? <CircularProgress size={24} sx={{ color: "#fff" }} /> : "Submit"}
+                        </Button>
+                    </Box>
+                </form>
             </Paper>
         </Box>
     );
