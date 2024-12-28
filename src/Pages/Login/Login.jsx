@@ -54,7 +54,7 @@ function LoginForm() {
 
                 if (userData.password === password) {
                     localStorage.setItem('user', JSON.stringify({ username: trimmedUsername, role: userData.role }));
-                    navigate('/MyMatches'); // Redirect to MyMatches page
+                    navigate('/my_matches'); // Redirect to MyMatches page
                 } else {
                     setMessage('Invalid password.');
                 }

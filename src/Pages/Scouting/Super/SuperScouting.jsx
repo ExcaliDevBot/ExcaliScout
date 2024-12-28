@@ -51,9 +51,9 @@ function SuperScouting() {
             username: user?.username || "Unknown User", // Safely access username
             team_number: manualTeamNumber,
             match_number: manualMatchNumber,
-            questions: questionsList.map((question, index) => ({
-                question,
-                answer: formData[index] || "",
+            questions: Object.keys(questionsList).map((questionId) => ({
+                question: questionsList[questionId],
+                answer: formData[questionId] || "",
             })),
         };
 
