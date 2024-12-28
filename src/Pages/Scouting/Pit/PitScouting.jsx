@@ -1,188 +1,140 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { db } from "../../../firebase-config";
-import { ref, set, get } from "firebase/database";
+import { ref, push } from "firebase/database";
 import { UserContext } from "../../../context/UserContext";
-import { Box, Grid, TextField, Button, Typography, Paper, CircularProgress } from "@mui/material";
-import { styled } from "@mui/system";
+import { Box, Button, Typography, TextField, CircularProgress, Paper } from "@mui/material";
+import { green, red } from "@mui/material/colors";
 
-const PitScouting = () => {
+// Define the questions for Pit Scouting
+const questionsList = {
+    0: "Strengths of the robot?",
+    1: "Weaknesses of the robot?",
+    2: "Any issues with the robot?",
+    3: "Description of the robot's design?",
+    4: "Any specific strategies or mechanisms used?",
+};
+
+function PitScouting() {
     const { user } = useContext(UserContext);
     const navigate = useNavigate();
-    const { state } = useLocation();
-    const [formData, setFormData] = useState({
-        teamNumber: state?.teamNumber || "",
-        strengths: "",
-        weaknesses: "",
-        robotImage: null,
-    });
-    const [manualTeamNumber, setManualTeamNumber] = useState(state?.teamNumber || "");
-    const [imagePreview, setImagePreview] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const location = useLocation();
+    const { teamNumber } = location.state || {}; // Assuming teamNumber is passed in the state
+    const [formData, setFormData] = useState({});
+    const [loading, setLoading] = useState(false);
+    const [manualTeamNumber, setManualTeamNumber] = useState(teamNumber || ""); // Pre-fill or set manual team number
 
     useEffect(() => {
         if (!user) {
-            navigate("/login");
+            console.error("User not found.");
+            navigate("/login"); // Redirect to login if the user is not found
         }
     }, [user, navigate]);
 
-    const handleChange = (event) => {
+    const handleChange = (event, questionId) => {
         setFormData({
             ...formData,
-            [event.target.name]: event.target.value,
+            [questionId]: event.target.value,
         });
     };
 
-    const handleImageChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleSubmit = async (event) => {
+    const handleManualSubmit = async (event) => {
         event.preventDefault();
-        setIsLoading(true);
+        setLoading(true);
 
+        // Create data to send, including the team number
         const dataToSend = {
             username: user?.username || "Unknown User",
-            teamNumber: manualTeamNumber,
-            strengths: formData.strengths || "",
-            weaknesses: formData.weaknesses || "",
-            robotImage: formData.robotImage || null,
+            team_number: manualTeamNumber, // Use the team number (either passed or entered)
+            questions: Object.keys(questionsList).map((questionId) => ({
+                question: questionsList[questionId],
+                answer: formData[questionId] || "", // Empty answer if not filled
+            })),
         };
 
         try {
             const pitScoutingRef = ref(db, "pitScoutingResults");
-            await set(pitScoutingRef, dataToSend);
+            await push(pitScoutingRef, dataToSend);
             alert("Data submitted successfully!");
         } catch (error) {
             console.error("Error submitting data:", error);
             alert("Error submitting data.");
         } finally {
-            setIsLoading(false);
+            setLoading(false);
         }
     };
 
     return (
         <Box sx={{ p: 4, maxWidth: 900, margin: "auto" }}>
-            <Paper elevation={3} sx={{ padding: 3, borderRadius: "10px" }}>
-                <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold' }}>
-                    Scouting for Team {formData.teamNumber || "(Enter Team Number Below)"}
+            <Paper elevation={3} sx={{ padding: 3 }}>
+                {user ? (
+                    <Typography variant="h6" sx={{ color: green[700], mb: 2 }}>
+                        Logged in as: {user.username} {/* Display the username */}
+                    </Typography>
+                ) : (
+                    <Typography variant="h6" sx={{ color: red[700], mb: 2 }}>
+                        User not logged in.
+                    </Typography>
+                )}
+
+                {/* Display team number */}
+                <Typography variant="h6" sx={{ mb: 3, fontWeight: 'bold' }}>
+                    Team Number: {manualTeamNumber || "Not Provided"}
                 </Typography>
-                <form onSubmit={handleSubmit}>
-                    {/* Team Number Input (only if teamNumber is not available) */}
-                    {!formData.teamNumber && (
-                        <Grid container spacing={3}>
-                            <Grid item xs={12} md={6}>
-                                <TextField
-                                    label="Team Number"
-                                    variant="outlined"
-                                    fullWidth
-                                    value={manualTeamNumber}
-                                    onChange={(e) => setManualTeamNumber(e.target.value)}
-                                    required
-                                    sx={{ padding: "10px" }}
-                                />
-                            </Grid>
-                        </Grid>
-                    )}
 
-                    <Grid container spacing={3} sx={{ mt: 2 }}>
-                        <Grid item xs={12} md={6}>
+                {/* If no team number passed, show manual input */}
+                {!teamNumber && (
+                    <Box sx={{ mb: 3 }}>
+                        <Typography variant="body1" sx={{ fontWeight: "bold", mb: 1 }}>
+                            Enter Team Number:
+                        </Typography>
+                        <TextField
+                            variant="outlined"
+                            fullWidth
+                            value={manualTeamNumber}
+                            onChange={(e) => setManualTeamNumber(e.target.value)}
+                            type="number"
+                        />
+                    </Box>
+                )}
+
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                    Answer the Questions Below
+                </Typography>
+
+                <form onSubmit={handleManualSubmit}>
+                    {/* Dynamically render the questions */}
+                    {Object.keys(questionsList).map((questionId) => (
+                        <Box key={questionId} sx={{ mb: 3 }}>
+                            <Typography variant="body1" sx={{ fontWeight: "bold", mb: 1 }}>
+                                {questionsList[questionId]}
+                            </Typography>
                             <TextField
-                                label="Strengths"
                                 variant="outlined"
                                 fullWidth
                                 multiline
                                 rows={4}
-                                name="strengths"
-                                value={formData.strengths || ""}
-                                onChange={handleChange}
-                                sx={{ padding: "10px" }}
+                                value={formData[questionId] || ""}
+                                onChange={(e) => handleChange(e, questionId)}
                             />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                label="Weaknesses"
-                                variant="outlined"
-                                fullWidth
-                                multiline
-                                rows={4}
-                                name="weaknesses"
-                                value={formData.weaknesses || ""}
-                                onChange={handleChange}
-                                sx={{ padding: "10px" }}
-                            />
-                        </Grid>
-                    </Grid>
+                        </Box>
+                    ))}
 
-                    <Grid container spacing={3} sx={{ mt: 2 }}>
-                        <Grid item xs={12} md={6}>
-                            <Button
-                                variant="contained"
-                                component="label"
-                                fullWidth
-                                sx={{
-                                    backgroundColor: "#4CAF50",
-                                    color: "#fff",
-                                    marginBottom: 2,
-                                    '&:hover': {
-                                        backgroundColor: "#45a049"
-                                    }
-                                }}
-                            >
-                                Upload Robot Image
-                                <input
-                                    type="file"
-                                    hidden
-                                    accept="image/*"
-                                    onChange={handleImageChange}
-                                />
-                            </Button>
-                            {imagePreview && (
-                                <Box sx={{ mt: 2 }}>
-                                    <img
-                                        src={imagePreview}
-                                        alt="Robot Preview"
-                                        style={{
-                                            maxWidth: '100%',
-                                            height: 'auto',
-                                            borderRadius: "10px",
-                                        }}
-                                    />
-                                </Box>
-                            )}
-                        </Grid>
-                    </Grid>
-
-                    <Box sx={{ textAlign: 'center', marginTop: '20px' }}>
+                    <Box sx={{ textAlign: "center" }}>
                         <Button
                             variant="contained"
                             color="primary"
+                            sx={{ mt: 3, px: 4 }}
                             type="submit"
-                            sx={{
-                                backgroundColor: "#1976D2",
-                                color: "#fff",
-                                padding: "10px 20px",
-                                '&:hover': {
-                                    backgroundColor: "#1565C0"
-                                },
-                                minWidth: "200px",
-                            }}
-                            disabled={isLoading}
+                            disabled={loading || !manualTeamNumber} // Disable if no team number
                         >
-                            {isLoading ? <CircularProgress size={24} color="inherit" /> : "Submit"}
+                            {loading ? <CircularProgress size={24} sx={{ color: "#fff" }} /> : "Submit"}
                         </Button>
                     </Box>
                 </form>
             </Paper>
         </Box>
     );
-};
+}
 
 export default PitScouting;
