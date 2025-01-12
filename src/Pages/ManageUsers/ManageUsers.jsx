@@ -1,58 +1,71 @@
 import React, { useState, useEffect } from 'react';
 import { ref, onValue, set, update, remove } from 'firebase/database';
-import { db } from '../../firebase-config'; // Ensure this path matches your project structure
-import { Box, Button, Card, CardContent, CircularProgress, Typography, TextField, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
+import { db } from '../../firebase-config';
+import {
+    Box,
+    Button,
+    Card,
+    CardContent,
+    CircularProgress,
+    Typography,
+    TextField,
+    Select,
+    MenuItem,
+    InputLabel,
+    FormControl
+} from '@mui/material';
 
 function ManageUsers() {
     const [users, setUsers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [newUser, setNewUser] = useState({ username: '', role: '', password: '' });
     const [loading, setLoading] = useState(true);
-    const [addSuccess, setAddSuccess] = useState(false);
-    const [editSuccess, setEditSuccess] = useState(false);
+    const [feedbackMessage, setFeedbackMessage] = useState('');
     const [editingUser, setEditingUser] = useState(null);
 
     useEffect(() => {
         const usersRef = ref(db, 'users');
         setLoading(true);
 
-        // Fetch users from Firebase using the 'users' node
-        onValue(usersRef, (snapshot) => {
+        const unsubscribe = onValue(usersRef, (snapshot) => {
             const data = snapshot.val();
-            if (data) {
-                // Convert Firebase data into a list of users
-                const usersList = Object.entries(data).map(([username, user]) => ({
-                    username, // username is now the key
-                    ...user,
-                }));
-                setUsers(usersList);
-            } else {
-                setUsers([]);
-            }
+            setUsers(data ? Object.entries(data).map(([username, user]) => ({ username, ...user })) : []);
             setLoading(false);
         });
+
+        return () => unsubscribe(); // Cleanup listener on unmount
     }, []);
 
+    const showFeedback = (message) => {
+        setFeedbackMessage(message);
+        setTimeout(() => setFeedbackMessage(''), 3000);
+    };
+
     const handleAddUser = async () => {
+        if (!newUser.username || !newUser.role || !newUser.password) {
+            alert('Please fill in all fields before adding a user.');
+            return;
+        }
         try {
-            const usersRef = ref(db, 'users');
-            // Set the user with the username as the key
             await set(ref(db, `users/${newUser.username}`), newUser);
             setNewUser({ username: '', role: '', password: '' });
-            setAddSuccess(true);
-            setTimeout(() => setAddSuccess(false), 3000);
+            showFeedback('User added successfully!');
         } catch (error) {
             console.error('Error adding user:', error);
         }
     };
 
     const handleEditUser = async (username) => {
+        if (!editingUser.role || !editingUser.password) {
+            alert('Please fill in all fields before saving changes.');
+            return;
+        }
         try {
             const userRef = ref(db, `users/${username}`);
-            await update(userRef, editingUser); // Use username as key for editing
+            const updatedUser = { role: editingUser.role, password: editingUser.password };
+            await update(userRef, updatedUser);
             setEditingUser(null);
-            setEditSuccess(true);
-            setTimeout(() => setEditSuccess(false), 3000);
+            showFeedback('User edited successfully!');
         } catch (error) {
             console.error('Error editing user:', error);
         }
@@ -61,7 +74,8 @@ function ManageUsers() {
     const handleDeleteUser = async (username) => {
         try {
             const userRef = ref(db, `users/${username}`);
-            await remove(userRef); // Use username as key for deletion
+            await remove(userRef);
+            showFeedback('User deleted successfully!');
         } catch (error) {
             console.error('Error deleting user:', error);
         }
@@ -103,7 +117,7 @@ function ManageUsers() {
                             <InputLabel>Role</InputLabel>
                             <Select
                                 value={newUser.role}
-                                onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                                onChange={(e) => setNewUser({ ...newUser, role: e.target.value.toLowerCase() })}
                             >
                                 <MenuItem value="admin">Admin</MenuItem>
                                 <MenuItem value="normal scouter">Normal Scouter</MenuItem>
@@ -128,10 +142,13 @@ function ManageUsers() {
                         >
                             Add User
                         </Button>
-                        {addSuccess && <Typography sx={{ color: 'green', mt: 2 }}>User added successfully!</Typography>}
                     </Box>
 
-                    {/* User Table */}
+                    {feedbackMessage && (
+                        <Typography sx={{ color: 'green', mt: 2 }}>{feedbackMessage}</Typography>
+                    )}
+
+                    {/* User List */}
                     {filteredUsers.map((user) => (
                         <Card key={user.username} sx={{ width: '100%', maxWidth: 600, mb: 2, boxShadow: 3 }}>
                             <CardContent>
@@ -146,40 +163,41 @@ function ManageUsers() {
                                             backgroundColor: '#012265',
                                             '&:hover': { backgroundColor: '#d4af37', color: '#012265' },
                                         }}
-                                        onClick={() => setEditingUser(user)}
+                                        onClick={() => setEditingUser({ ...user, password: '' })}
                                     >
                                         Edit
                                     </Button>
                                     <Button
                                         variant="outlined"
                                         color="error"
-                                        onClick={() => handleDeleteUser(user.username)} // Use username to delete
+                                        onClick={() => handleDeleteUser(user.username)}
                                     >
                                         Delete
                                     </Button>
                                 </Box>
+
                                 {editingUser && editingUser.username === user.username && (
-                                    <Box sx={{ mt: 2 }}>
+                                    <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
                                         <TextField
-                                            label="New Username"
+                                            label="Username"
                                             value={editingUser.username}
-                                            onChange={(e) =>
-                                                setEditingUser({ ...editingUser, username: e.target.value })
-                                            }
-                                            sx={{ mb: 2 }}
+                                            InputProps={{
+                                                readOnly: true,
+                                            }}
+                                            sx={{ width: '100%', maxWidth: 400 }}
                                         />
                                         <FormControl sx={{ width: '100%', maxWidth: 400 }}>
                                             <InputLabel>Role</InputLabel>
                                             <Select
                                                 value={editingUser.role}
                                                 onChange={(e) =>
-                                                    setEditingUser({ ...editingUser, role: e.target.value })
+                                                    setEditingUser({ ...editingUser, role: e.target.value.toLowerCase() })
                                                 }
                                             >
-                                                <MenuItem value="Admin">Admin</MenuItem>
-                                                <MenuItem value="normal_scouter">Normal Scouter</MenuItem>
-                                                <MenuItem value="pit_scouter">Pit Scouter</MenuItem>
-                                                <MenuItem value="super_scouter">Super Scouter</MenuItem>
+                                                <MenuItem value="admin">Admin</MenuItem>
+                                                <MenuItem value="normal scouter">Normal Scouter</MenuItem>
+                                                <MenuItem value="pit scouter">Pit Scouter</MenuItem>
+                                                <MenuItem value="super scouter">Super Scouter</MenuItem>
                                             </Select>
                                         </FormControl>
                                         <TextField
@@ -189,7 +207,7 @@ function ManageUsers() {
                                             onChange={(e) =>
                                                 setEditingUser({ ...editingUser, password: e.target.value })
                                             }
-                                            sx={{ mb: 2 }}
+                                            sx={{ width: '100%', maxWidth: 400 }}
                                         />
                                         <Button
                                             variant="contained"
@@ -197,11 +215,10 @@ function ManageUsers() {
                                                 backgroundColor: '#012265',
                                                 '&:hover': { backgroundColor: '#d4af37', color: '#012265' },
                                             }}
-                                            onClick={() => handleEditUser(user.username)} // Use username to edit
+                                            onClick={() => handleEditUser(user.username)}
                                         >
                                             Save Changes
                                         </Button>
-                                        {editSuccess && <Typography sx={{ color: 'green', mt: 2 }}>User edited successfully!</Typography>}
                                     </Box>
                                 )}
                             </CardContent>

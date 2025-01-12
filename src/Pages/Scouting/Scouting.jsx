@@ -144,13 +144,7 @@ function ScoutingForm() {
                 </Grid>
             </Grid>
 
-            <TeleField
-                formData={formData}
-                setFormData={setFormData}
-                mode={mode}
-                eraserMode={eraserMode}
-                setEraserMode={setEraserMode}
-            />
+            <TeleField/>
 
             <Box sx={{ textAlign: 'center', marginTop: '20px' }}>
                 <Button
