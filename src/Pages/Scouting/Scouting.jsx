@@ -12,10 +12,12 @@ import {
     Box,
     Grid,
     Paper,
+    Divider,
 } from "@mui/material";
 import TeleField from "./Game/Teleop";
 import { db } from "../../firebase-config";
 import { ref, set } from "firebase/database";
+import Auto from "./Game/Auto";
 
 function ScoutingForm() {
     const location = useLocation();
@@ -27,16 +29,13 @@ function ScoutingForm() {
         Team: match ? match.team_number : '',
         Match: match ? match.match_number : '',
         Alliance: match ? match.alliance : '',
-        TeleNotes: '',
-        checkboxes: Array(8).fill(false),
-        TelePoints: [],
-        Pcounter: 0,
-        counter1: 0,
-        counter2: 0,
-        climbed: false,
-        deliveryCount: 0,
-        trapCounter: 0,
-        defensivePins: 0,
+        Notes: '',
+        L1: 0,
+        L2: 0,
+        L3: 0,
+        L4: 0,
+        algaeCounter: 0,
+        climbOption: '',
     });
 
     const [barcodeData, setBarcodeData] = useState('');
@@ -48,16 +47,13 @@ function ScoutingForm() {
                 ${formData.Name || "Unknown"},
                 ${formData.Team || "Unknown"},
                 ${formData.Match || "Unknown"},
-                ${formData.checkboxes.filter(Boolean).length},
-                ${formData.counter1},
-                ${formData.TelePoints.filter(point => point.color === 1).length},
-                ${formData.defensivePins},
-                ${formData.TelePoints.filter(point => point.color === 2).length},
-                ${formData.Pcounter},
-                ${formData.climbed},
-                ${formData.TelePoints.map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};G)`).join(';')},
-                ${formData.TelePoints.filter(point => point.color === 2).map(point => `(${point.x.toFixed(2)};${point.y.toFixed(2)};O)`).join(';')},
-                ${formData.deliveryCount}
+                ${formData.Notes || "Unknown"},
+                ${formData.L1},
+                ${formData.L2},
+                ${formData.L3},
+                ${formData.L4},
+                ${formData.algaeCounter},
+                ${formData.climbOption}
             `.replace(/\n/g, '').replace(/\s+/g, ' ').trim();
 
             return barcodeString.replace(/true/g, 'TRUE');
@@ -71,6 +67,18 @@ function ScoutingForm() {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+    const handleCounterChange = (name, value) => {
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleAlgaeCounterChange = (value) => {
+        setFormData((prev) => ({ ...prev, algaeCounter: value }));
+    };
+
+    const handleClimbOptionChange = (option) => {
+        setFormData((prev) => ({ ...prev, climbOption: option }));
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -81,7 +89,10 @@ function ScoutingForm() {
 
         try {
             const dbRef = ref(db, `scoutingData/${new Date().getTime()}`);
-            await set(dbRef, { ...formData, submittedAt: new Date().toISOString() });
+            await set(dbRef, {
+                ...formData,
+                submittedAt: new Date().toISOString()
+            });
             alert("Submission successful!");
             setIsButtonDisabled(true);
         } catch (error) {
@@ -91,12 +102,12 @@ function ScoutingForm() {
     };
 
     return (
-        <Box sx={{ padding: 3, maxWidth: '900px', margin: 'auto' }}>
+        <Box sx={{ padding: 3, maxWidth: '900px', margin: 'auto', textAlign: 'center' }}>
             <Typography variant="h4" align="center" gutterBottom>
                 Scouting Form
             </Typography>
 
-            <Grid container spacing={3}>
+            <Grid container spacing={3} justifyContent="center">
                 <Grid item xs={12} sm={6}>
                     <TextField
                         label="Team"
@@ -108,7 +119,7 @@ function ScoutingForm() {
                         disabled={!isNewForm}
                     />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={6} >
                     <TextField
                         label="Match"
                         variant="outlined"
@@ -142,8 +153,8 @@ function ScoutingForm() {
                         label="Notes"
                         variant="outlined"
                         fullWidth
-                        name="TeleNotes"
-                        value={formData.TeleNotes}
+                        name="Notes"
+                        value={formData.Notes}
                         onChange={handleInputChange}
                         multiline
                         rows={4}
@@ -151,9 +162,27 @@ function ScoutingForm() {
                 </Grid>
             </Grid>
 
-            <Box sx={{ marginTop: 3 }}>
-                <TeleField />
+            <Divider sx={{ marginY: 3 }} />
+
+            <Auto sx={{ marginTop: 3 }} />
+
+            <Divider sx={{ marginY: 3 }} />
+
+            <Box sx={{ marginTop: 3, display: 'flex', justifyContent: 'center' }}>
+                <TeleField
+                    L1={formData.L1}
+                    L2={formData.L2}
+                    L3={formData.L3}
+                    L4={formData.L4}
+                    onCounterChange={handleCounterChange}
+                    algaeCounter={formData.algaeCounter}
+                    onAlgaeCounterChange={handleAlgaeCounterChange}
+                    climbOption={formData.climbOption}
+                    onClimbOptionChange={handleClimbOptionChange}
+                />
             </Box>
+
+            <Divider sx={{ marginY: 3 }} />
 
             <Box sx={{ textAlign: 'center', marginTop: 4 }}>
                 <Button
