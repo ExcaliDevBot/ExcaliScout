@@ -200,7 +200,7 @@ function ScoutingForm() {
                 <Typography variant="h6" gutterBottom>
                     Barcode
                 </Typography>
-                <Paper elevation={3} sx={{ display: 'inline-block', padding: 3, borderRadius: 2 }}>
+                <Paper elevation={3} sx={{ display: 'inline-block', padding: 3, borderRadius: 2, marginBottom: 11 }}>
                     <QRCode value={barcodeData} size={256} />
                 </Paper>
             </Box>
