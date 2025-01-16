@@ -2,7 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import QRCode from "qrcode.react";
 import {
-    Button, TextField, Select, MenuItem, Typography, FormControl, InputLabel, Box, Grid,
+    Button,
+    TextField,
+    Select,
+    MenuItem,
+    Typography,
+    FormControl,
+    InputLabel,
+    Box,
+    Grid,
+    Paper,
 } from "@mui/material";
 import TeleField from "./Game/Teleop";
 import { db } from "../../firebase-config";
@@ -31,8 +40,6 @@ function ScoutingForm() {
     });
 
     const [barcodeData, setBarcodeData] = useState('');
-    const [mode, setMode] = useState('teleop');
-    const [eraserMode, setEraserMode] = useState(false);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
     useEffect(() => {
@@ -84,13 +91,13 @@ function ScoutingForm() {
     };
 
     return (
-        <Box sx={{ padding: '20px', maxWidth: '1200px', margin: 'auto' }}>
+        <Box sx={{ padding: 3, maxWidth: '900px', margin: 'auto' }}>
             <Typography variant="h4" align="center" gutterBottom>
                 Scouting Form
             </Typography>
 
             <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} sm={6}>
                     <TextField
                         label="Team"
                         variant="outlined"
@@ -101,7 +108,7 @@ function ScoutingForm() {
                         disabled={!isNewForm}
                     />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} sm={6}>
                     <TextField
                         label="Match"
                         variant="outlined"
@@ -115,7 +122,7 @@ function ScoutingForm() {
             </Grid>
 
             <Grid container spacing={3} sx={{ marginTop: 3 }}>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
                         <InputLabel>Alliance</InputLabel>
                         <Select
@@ -130,7 +137,7 @@ function ScoutingForm() {
                         </Select>
                     </FormControl>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} sm={6}>
                     <TextField
                         label="Notes"
                         variant="outlined"
@@ -144,22 +151,29 @@ function ScoutingForm() {
                 </Grid>
             </Grid>
 
-            <TeleField/>
+            <Box sx={{ marginTop: 3 }}>
+                <TeleField />
+            </Box>
 
-            <Box sx={{ textAlign: 'center', marginTop: '20px' }}>
+            <Box sx={{ textAlign: 'center', marginTop: 4 }}>
                 <Button
                     variant="contained"
                     color="primary"
                     onClick={handleSubmit}
                     disabled={isButtonDisabled}
-                    sx={{ backgroundColor: '#4caf50' }}
+                    sx={{ backgroundColor: '#4caf50', paddingX: 4 }}
                 >
                     Submit
                 </Button>
             </Box>
 
-            <Box sx={{ textAlign: 'center', marginTop: '30px' }}>
-                <QRCode value={barcodeData} size={256} />
+            <Box sx={{ textAlign: 'center', marginTop: 4 }}>
+                <Typography variant="h6" gutterBottom>
+                    Barcode
+                </Typography>
+                <Paper elevation={3} sx={{ display: 'inline-block', padding: 3, borderRadius: 2 }}>
+                    <QRCode value={barcodeData} size={256} />
+                </Paper>
             </Box>
         </Box>
     );

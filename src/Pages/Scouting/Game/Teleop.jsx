@@ -1,223 +1,236 @@
 import React, { useState } from 'react';
-import { Box, Button, Typography, Card } from '@mui/material';
-import reefImage from '../reef.png'; // Ensure 'reef.png' is in the same directory
+import {
+    Box,
+    Button,
+    Typography,
+    Grid,
+    Paper
+} from '@mui/material';
 
+// CounterBox Component
+const CounterBox = ({ count, onIncrement, onDecrement }) => (
+    <Box
+        sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%',
+            backgroundColor: '#f5f5f5',
+            borderRadius: 2,
+            padding: 2,
+            boxShadow: 1
+        }}
+    >
+        <Button
+            variant="contained"
+            onClick={onDecrement}
+            sx={{
+                minWidth: 50,
+                minHeight: 50,
+                backgroundColor: '#4caf50',
+                '&:hover': { backgroundColor: '#388e3c' },
+            }}
+        >
+            -
+        </Button>
+        <Typography
+            variant="h5"
+            sx={{ fontWeight: 'bold', color: '#333' }}
+        >
+            {count}
+        </Typography>
+        <Button
+            variant="contained"
+            onClick={onIncrement}
+            sx={{
+                minWidth: 50,
+                minHeight: 50,
+                backgroundColor: '#4caf50',
+                '&:hover': { backgroundColor: '#388e3c' },
+            }}
+        >
+            +
+        </Button>
+    </Box>
+);
+
+// AlgaeCounter Component
+const AlgaeCounter = ({ count, onIncrement, onDecrement }) => (
+    <Paper
+        elevation={3}
+        sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            padding: 3,
+            borderRadius: 2,
+            mt: 4
+        }}
+    >
+        <Typography
+            variant="h6"
+            sx={{ color: '#4caf50', fontWeight: 'bold', mb: 2 }}
+        >
+            Algae Counter
+        </Typography>
+        <Box
+            sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2
+            }}
+        >
+            <Button
+                variant="contained"
+                onClick={onDecrement}
+                sx={{
+                    minWidth: 50,
+                    minHeight: 50,
+                    backgroundColor: '#4caf50',
+                    '&:hover': { backgroundColor: '#388e3c' },
+                }}
+            >
+                -
+            </Button>
+            <Box
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: '#e3f2fd',
+                    borderRadius: '50%',
+                    width: 100,
+                    height: 100,
+                    color: '#1976d2',
+                    fontSize: 28,
+                    fontWeight: 'bold',
+                    boxShadow: 2,
+                }}
+            >
+                {count}
+            </Box>
+            <Button
+                variant="contained"
+                onClick={onIncrement}
+                sx={{
+                    minWidth: 50,
+                    minHeight: 50,
+                    backgroundColor: '#4caf50',
+                    '&:hover': { backgroundColor: '#388e3c' },
+                }}
+            >
+                +
+            </Button>
+        </Box>
+    </Paper>
+);
+
+// ClimbingOptions Component
+const ClimbingOptions = ({ selectedOption, onSelect }) => {
+    const options = ['PARKED', 'DEEP', 'SHALLOW'];
+
+    return (
+        <Box
+            sx={{
+                mt: 4,
+                display: 'flex',
+                gap: 2,
+                justifyContent: 'center',
+                flexWrap: 'wrap'
+            }}
+        >
+            {options.map((option) => (
+                <Paper
+                    key={option}
+                    onClick={() => onSelect(option)}
+                    elevation={selectedOption === option ? 6 : 2}
+                    sx={{
+                        padding: 2,
+                        width: 120,
+                        textAlign: 'center',
+                        borderRadius: 2,
+                        cursor: 'pointer',
+                        backgroundColor: selectedOption === option ? '#4caf50' : '#f5f5f5',
+                        color: selectedOption === option ? '#fff' : '#333',
+                        fontWeight: selectedOption === option ? 'bold' : 'normal',
+                        boxShadow: selectedOption === option ? '0 4px 20px rgba(0, 0, 0, 0.2)' : 'none',
+                        transition: 'all 0.3s',
+                    }}
+                >
+                    {option}
+                </Paper>
+            ))}
+        </Box>
+    );
+};
+
+// Main Teleop Component
 const Teleop = () => {
-    const [counters, setCounters] = useState([0, 0, 0, 0]); // Four counters for reef levels
+    const [counters, setCounters] = useState(Array(4).fill(0)); // Counters for 4 levels
+    const [algaeCounter, setAlgaeCounter] = useState(0);
+    const [climbOption, setClimbOption] = useState('');
 
     const increment = (index) => {
-        setCounters((prevCounters) => {
-            const updated = [...prevCounters];
+        setCounters((prev) => {
+            const updated = [...prev];
             updated[index] += 1;
             return updated;
         });
     };
 
     const decrement = (index) => {
-        setCounters((prevCounters) => {
-            const updated = [...prevCounters];
-            if (updated[index] > 0) {
-                updated[index] -= 1;
-            }
+        setCounters((prev) => {
+            const updated = [...prev];
+            if (updated[index] > 0) updated[index] -= 1;
             return updated;
         });
     };
 
+    const incrementAlgae = () => setAlgaeCounter((prev) => prev + 1);
+    const decrementAlgae = () => setAlgaeCounter((prev) => (prev > 0 ? prev - 1 : 0));
+    const handleClimbSelect = (option) => setClimbOption(option);
+
     return (
-        <Card
-            sx={{
-                p: 4,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                boxShadow: 3,
-                backgroundColor: '#f9f9f9',
-                borderRadius: '12px',
-            }}
-        >
-            <Typography variant="h4" sx={{ mb: 3, color: '#012265' }}>
-                Teleop Reef Scoring
-            </Typography>
-            <Box
-                sx={{
-                    position: 'relative',
-                    width: '600px',
-                    height: '400px',
-                }}
+        <Box sx={{ padding: 2 }}>
+            <Typography
+                variant="h4"
+                sx={{ mb: 4, color: '#4caf50', fontWeight: 'bold', textAlign: 'center' }}
             >
-                <img
-                    src={reefImage}
-                    alt="2025 FRC Reef"
-                    style={{
-                        width: 'auto',
-                        height: 'auto',
-                        objectFit: 'cover',
-                        borderRadius: '12px',
-                        transform: 'scaleX(-1)', // Mirroring the image
-                    }}
-                />
-
-                {/* Counter 1 (Top Level) */}
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: '10%',
-                        right: '5%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: 1,
-                    }}
-                >
-                    <Button
-                        variant="contained"
-                        onClick={() => increment(0)}
-                        sx={{
-                            backgroundColor: '#012265',
-                            '&:hover': { backgroundColor: '#d4af37' },
-                        }}
-                    >
-                        +
-                    </Button>
-                    <Typography
-                        variant="h6"
-                        sx={{ color: '#fff', backgroundColor: '#012265', p: 1, borderRadius: '4px' }}
-                    >
-                        {counters[0]}
-                    </Typography>
-                    <Button
-                        variant="contained"
-                        onClick={() => decrement(0)}
-                        sx={{
-                            backgroundColor: '#012265',
-                            '&:hover': { backgroundColor: '#d4af37' },
-                        }}
-                    >
-                        -
-                    </Button>
-                </Box>
-
-                {/* Counter 2 (Second Level) */}
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: '30%',
-                        right: '5%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: 1,
-                    }}
-                >
-                    <Button
-                        variant="contained"
-                        onClick={() => increment(1)}
-                        sx={{
-                            backgroundColor: '#012265',
-                            '&:hover': { backgroundColor: '#d4af37' },
-                        }}
-                    >
-                        +
-                    </Button>
-                    <Typography
-                        variant="h6"
-                        sx={{ color: '#fff', backgroundColor: '#012265', p: 1, borderRadius: '4px' }}
-                    >
-                        {counters[1]}
-                    </Typography>
-                    <Button
-                        variant="contained"
-                        onClick={() => decrement(1)}
-                        sx={{
-                            backgroundColor: '#012265',
-                            '&:hover': { backgroundColor: '#d4af37' },
-                        }}
-                    >
-                        -
-                    </Button>
-                </Box>
-
-                {/* Counter 3 (Third Level) */}
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        right: '5%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: 1,
-                    }}
-                >
-                    <Button
-                        variant="contained"
-                        onClick={() => increment(2)}
-                        sx={{
-                            backgroundColor: '#012265',
-                            '&:hover': { backgroundColor: '#d4af37' },
-                        }}
-                    >
-                        +
-                    </Button>
-                    <Typography
-                        variant="h6"
-                        sx={{ color: '#fff', backgroundColor: '#012265', p: 1, borderRadius: '4px' }}
-                    >
-                        {counters[2]}
-                    </Typography>
-                    <Button
-                        variant="contained"
-                        onClick={() => decrement(2)}
-                        sx={{
-                            backgroundColor: '#012265',
-                            '&:hover': { backgroundColor: '#d4af37' },
-                        }}
-                    >
-                        -
-                    </Button>
-                </Box>
-
-                {/* Counter 4 (Bottom Level) */}
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        bottom: '10%',
-                        right: '5%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: 1,
-                    }}
-                >
-                    <Button
-                        variant="contained"
-                        onClick={() => increment(3)}
-                        sx={{
-                            backgroundColor: '#012265',
-                            '&:hover': { backgroundColor: '#d4af37' },
-                        }}
-                    >
-                        +
-                    </Button>
-                    <Typography
-                        variant="h6"
-                        sx={{ color: '#fff', backgroundColor: '#012265', p: 1, borderRadius: '4px' }}
-                    >
-                        {counters[3]}
-                    </Typography>
-                    <Button
-                        variant="contained"
-                        onClick={() => decrement(3)}
-                        sx={{
-                            backgroundColor: '#012265',
-                            '&:hover': { backgroundColor: '#d4af37' },
-                        }}
-                    >
-                        -
-                    </Button>
-                </Box>
-            </Box>
-        </Card>
+                Teleop
+            </Typography>
+            <Grid container spacing={2}>
+                {['Level 4', 'Level 3', 'Level 2', 'Level 1'].map((label, index) => (
+                    <Grid item xs={12} sm={6} key={index}>
+                        <Typography
+                            variant="h6"
+                            sx={{ textAlign: 'center', mb: 2, color: '#333', fontWeight: 'bold' }}
+                        >
+                            {label}
+                        </Typography>
+                        <CounterBox
+                            count={counters[index]}
+                            onIncrement={() => increment(index)}
+                            onDecrement={() => decrement(index)}
+                        />
+                    </Grid>
+                ))}
+            </Grid>
+            <AlgaeCounter
+                count={algaeCounter}
+                onIncrement={incrementAlgae}
+                onDecrement={decrementAlgae}
+            />
+            <Typography
+                variant="h6"
+                sx={{ textAlign: 'center', mt: 4, color: '#333', fontWeight: 'bold' }}
+            >
+                Climbing Options
+            </Typography>
+            <ClimbingOptions
+                selectedOption={climbOption}
+                onSelect={handleClimbSelect}
+            />
+        </Box>
     );
 };
 
