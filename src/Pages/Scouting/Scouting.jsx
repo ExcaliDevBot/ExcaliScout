@@ -16,8 +16,8 @@ import {
 } from "@mui/material";
 import { db } from "../../firebase-config";
 import { ref, set } from "firebase/database";
-import TeleField from "./Game/Teleop";
-import Auto from "./Game/Auto";
+import TeleField from "./Game/Teleop"; // Import TeleField component
+import Auto from "./Game/Auto"; // Import Auto component
 
 function ScoutingForm() {
     const location = useLocation();
@@ -35,8 +35,8 @@ function ScoutingForm() {
         L3: 0,
         L4: 0,
         climbOption: '',
-        autoAlgaeCount: 0,   // Algae count
-        autoCoralCount: 0,   // Coral count
+        autoAlgaeCount: 0,
+        autoCoralCount: 0,
     });
 
     const [barcodeData, setBarcodeData] = useState('');
@@ -55,6 +55,7 @@ function ScoutingForm() {
         L4: ${formData.L4 || 0},
         AutoAlgaeCount: ${formData.autoAlgaeCount || 0},
         AutoCoralCount: ${formData.autoCoralCount || 0},
+        AlgaeCount: ${formData.algaeCount || 0},  // Include Teleop Algae Count
         ClimbOption: ${formData.climbOption || "None"}
         `.replace(/\n/g, "").replace(/\s+/g, " ").trim();
 
@@ -69,19 +70,17 @@ function ScoutingForm() {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    // Handle auto data change (from Auto component)
     const handleAutoChange = (autoData) => {
-        console.log("Auto Data received:", autoData); // Debugging log to see the data
         setFormData((prev) => ({
             ...prev,
-            ...autoData, // Spread the auto counters into formData
+            ...autoData,
         }));
     };
 
     const handleTeleChange = ({ counters, climbOption }) => {
         setFormData((prev) => ({
             ...prev,
-            ...counters, // Spread the L1, L2, L3, L4 values
+            ...counters,  // This will include L1, L2, L3, L4, and teleAlgaeCount
             climbOption,
         }));
     };
