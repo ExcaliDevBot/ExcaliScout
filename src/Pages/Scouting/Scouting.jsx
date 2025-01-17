@@ -34,7 +34,6 @@ function ScoutingForm() {
         L2: 0,
         L3: 0,
         L4: 0,
-        algaeCounter: 0,
         climbOption: '',
         autoData: {},
         teleData: {}, // Ensure this aligns with the structure in TeleField
@@ -43,23 +42,22 @@ function ScoutingForm() {
     const [barcodeData, setBarcodeData] = useState('');
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-    // Generate Barcode
     useEffect(() => {
         const generateBarcode = () => {
             const barcodeString = `
-            ${formData.Name || "Unknown"},
-            ${formData.Team || "Unknown"},
-            ${formData.Match || "Unknown"},
-            ${formData.Notes || "Unknown"},
-            ${formData.L1 || 0},
-            ${formData.L2},
-            ${formData.L3},
-            ${formData.L4},
-            ${formData.algaeCounter},
-            ${formData.climbOption}
-        `.replace(/\n/g, '').replace(/\s+/g, ' ').trim();
+        Name: ${formData.Name || "Unknown"},
+        Team: ${formData.Team || "Unknown"},
+        Match: ${formData.Match || "Unknown"},
+        Notes: ${formData.Notes || "Unknown"},
+        L1: ${formData.L1 || 0},
+        L2: ${formData.L2 || 0},
+        L3: ${formData.L3 || 0},
+        L4: ${formData.L4 || 0},
+        AlgaeCount: ${formData.algaeCount || 0},
+        ClimbOption: ${formData.climbOption || "None"}
+        `.replace(/\n/g, "").replace(/\s+/g, " ").trim();
 
-            return barcodeString.replace(/true/g, 'TRUE');
+            return barcodeString.replace(/true/g, "TRUE");
         };
 
         setBarcodeData(generateBarcode());
@@ -77,13 +75,14 @@ function ScoutingForm() {
     };
 
     // Update teleData from TeleField component
-    const handleTeleChange = (teleData) => {
-        console.log('TeleField Data:', teleData); // Debug log to confirm data flow
+    const handleTeleChange = ({ counters, climbOption }) => {
         setFormData((prev) => ({
             ...prev,
-            ...teleData, // Merge teleData directly into formData (or modify as needed)
+            ...counters, // Spread the L1, L2, L3, L4, and algaeCount values
+            climbOption, // Update climbOption
         }));
     };
+
 
     // Handle form submission
     const handleSubmit = async (event) => {
