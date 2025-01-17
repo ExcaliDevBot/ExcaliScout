@@ -152,6 +152,7 @@ const Navbar = () => {
                             open={Boolean(profileAnchorEl)}
                             onClose={handleMenuClose}
                         >
+                            <MenuItem onClick={() => navigate('/scan-match')}>Scan Match</MenuItem>
                             <MenuItem onClick={() => navigate('/profile')}>View Profile</MenuItem>
                             <MenuItem onClick={handleLogout}>Logout</MenuItem>
                         </Menu>

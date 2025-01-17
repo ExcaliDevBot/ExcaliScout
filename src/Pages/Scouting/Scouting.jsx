@@ -55,7 +55,7 @@ function ScoutingForm() {
         L4: ${formData.L4 || 0},
         AutoAlgaeCount: ${formData.autoAlgaeCount || 0},
         AutoCoralCount: ${formData.autoCoralCount || 0},
-        AlgaeCount: ${formData.algaeCount || 0},  // Include Teleop Algae Count
+        AlgaeCount: ${formData.algaeCount || 0}, 
         ClimbOption: ${formData.climbOption || "None"}
         `.replace(/\n/g, "").replace(/\s+/g, " ").trim();
 
