@@ -33,7 +33,22 @@ const CounterBox = ({ label, count, onIncrement, onDecrement }) => (
             </Button>
             <Typography
                 variant="h5"
-                sx={{ fontWeight: 'bold', color: '#333', minWidth: '50px', textAlign: 'center' }}
+                sx={{
+                    fontWeight: 'bold',
+                    color: '#333',
+                    minWidth: '50px',
+                    textAlign: 'center',
+                    ...(label === 'Algae Counter' && {
+                        borderRadius: '50%',
+                        backgroundColor: '#4caf50',
+                        color: '#fff',
+                        width: '50px',
+                        height: '50px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }),
+                }}
             >
                 {count}
             </Typography>
