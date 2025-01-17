@@ -14,6 +14,7 @@ import SuperScouting from './Pages/Scouting/Super/SuperScouting';
 import AdminSuperAssign from './Pages/AdminTools/AdminSuperAssign';
 import PitScouting from './Pages/Scouting/Pit/PitScouting';
 import PitScoutingAssign from './Pages/AdminTools/PitScoutingAssign';
+import QRCodeScanner from './Pages/Scanner/QRCodeScanner';
 
 // Routes and Access Control
 import AdminRoute from './AdminRoute';
@@ -30,6 +31,7 @@ function App() {
                     <Route path="/" element={<Home />} />
 
                     {/* Protected Routes */}
+                    <Route path={"/scan-match"} element={<ProtectedRoute><QRCodeScanner /></ProtectedRoute>} />
                     <Route path="/pit-scout" element={<ProtectedRoute><PitScouting /></ProtectedRoute>} />
                     <Route path="/super-scout" element={<ProtectedRoute><SuperScouting /></ProtectedRoute>} />
                     <Route path="/my_matches" element={<ProtectedRoute><MyMatches /></ProtectedRoute>} />

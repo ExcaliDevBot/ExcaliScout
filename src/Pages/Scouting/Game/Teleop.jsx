@@ -1,223 +1,173 @@
-import React, { useState } from 'react';
-import { Box, Button, Typography, Card } from '@mui/material';
-import reefImage from '../reef.png'; // Ensure 'reef.png' is in the same directory
+import React, { useState, useEffect } from 'react';
+import { Box, Button, Typography, Grid, Paper, Divider } from '@mui/material';
 
-const Teleop = () => {
-    const [counters, setCounters] = useState([0, 0, 0, 0]); // Four counters for reef levels
+// CounterBox Component
+const CounterBox = ({ label, count, onIncrement, onDecrement }) => (
+    <Box
+        sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            backgroundColor: '#f5f5f5',
+            borderRadius: 2,
+            padding: 2,
+            boxShadow: 1,
+            marginBottom: 2,
+        }}
+    >
+        <Typography variant="h6" sx={{ marginBottom: 1 }}>{label}</Typography>
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', justifyContent: 'center' }}>
+            <Button
+                variant="contained"
+                onClick={onDecrement}
+                sx={{
+                    color: '#000000',
+                    fontSize: 24,
+                    backgroundColor: '#4caf50',
+                    '&:hover': { backgroundColor: '#388e3c' },
+                }}
+            >
+                -
+            </Button>
+            <Typography
+                variant="h5"
+                sx={{
+                    fontWeight: 'bold',
+                    color: '#333',
+                    minWidth: '50px',
+                    textAlign: 'center',
+                    ...(label === 'Algae Counter' && {
+                        borderRadius: '50%',
+                        backgroundColor: '#4caf50',
+                        color: '#fff',
+                        width: '50px',
+                        height: '50px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }),
+                }}
+            >
+                {count}
+            </Typography>
+            <Button
+                variant="contained"
+                onClick={onIncrement}
+                sx={{
+                    color: '#000000',
+                    fontSize: 24,
+                    backgroundColor: '#4caf50',
+                    '&:hover': { backgroundColor: '#388e3c' },
+                }}
+            >
+                +
+            </Button>
+        </Box>
+    </Box>
+);
 
-    const increment = (index) => {
-        setCounters((prevCounters) => {
-            const updated = [...prevCounters];
-            updated[index] += 1;
-            return updated;
-        });
-    };
+// ClimbingOptions Component
+const ClimbingOptions = ({ selectedOption, onSelect }) => {
+    const options = ['PARKED', 'DEEP', 'SHALLOW'];
 
-    const decrement = (index) => {
-        setCounters((prevCounters) => {
-            const updated = [...prevCounters];
-            if (updated[index] > 0) {
-                updated[index] -= 1;
-            }
-            return updated;
-        });
+    return (
+        <Box
+            sx={{
+                mt: 4,
+                display: 'flex',
+                gap: 2,
+                justifyContent: 'center',
+                flexWrap: 'wrap'
+            }}
+        >
+            {options.map((option) => (
+                <Paper
+                    key={option}
+                    onClick={() => onSelect(option)}
+                    elevation={selectedOption === option ? 6 : 2}
+                    sx={{
+                        padding: 2,
+                        width: 120,
+                        textAlign: 'center',
+                        borderRadius: 2,
+                        cursor: 'pointer',
+                        backgroundColor: selectedOption === option ? '#4caf50' : '#f5f5f5',
+                        color: selectedOption === option ? '#fff' : '#333',
+                        fontWeight: selectedOption === option ? 'bold' : 'normal',
+                        boxShadow: selectedOption === option ? '0 4px 20px rgba(0, 0, 0, 0.2)' : 'none',
+                        transition: 'all 0.3s',
+                    }}
+                >
+                    {option}
+                </Paper>
+            ))}
+        </Box>
+    );
+};
+
+// Main Teleop Component
+const Teleop = ({ onChange }) => {
+    const [counters, setCounters] = useState({
+        L1: 0,
+        L2: 0,
+        L3: 0,
+        L4: 0,
+        algaeCount: 0,
+    });
+
+    const [climbOption, setClimbOption] = useState('');
+
+    // Call the onChange prop whenever counters or climbOption change
+    useEffect(() => {
+        if (onChange) {
+            onChange({ counters, climbOption });
+        }
+    }, [counters, climbOption, onChange]);
+
+    const handleCounterChange = (label, value) => {
+        setCounters((prev) => ({
+            ...prev,
+            [label]: Math.max(0, value),
+        }));
     };
 
     return (
-        <Card
-            sx={{
-                p: 4,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                boxShadow: 3,
-                backgroundColor: '#f9f9f9',
-                borderRadius: '12px',
-            }}
-        >
-            <Typography variant="h4" sx={{ mb: 3, color: '#012265' }}>
-                Teleop Reef Scoring
-            </Typography>
-            <Box
-                sx={{
-                    position: 'relative',
-                    width: '600px',
-                    height: '400px',
-                }}
+        <Box sx={{ padding: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Typography variant="h4" sx={{ marginBottom: 1 }}>Teleop</Typography>
+            <Grid container spacing={3} justifyContent="center">
+                {['L1', 'L2', 'L3', 'L4'].map((label) => (
+                    <Grid item xs={12} sm={6} md={3} key={label} container justifyContent="center">
+                        <CounterBox
+                            label={label}
+                            count={counters[label]}
+                            onIncrement={() => handleCounterChange(label, counters[label] + 1)}
+                            onDecrement={() => handleCounterChange(label, counters[label] > 0 ? counters[label] - 1 : 0)}
+                        />
+                    </Grid>
+                ))}
+                <Grid item xs={12} sm={6} md={3} container justifyContent="center">
+                    <CounterBox
+                        label="Algae Counter"
+                        count={counters.algaeCount}
+                        onIncrement={() => handleCounterChange('algaeCount', counters.algaeCount + 1)}
+                        onDecrement={() => handleCounterChange('algaeCount', counters.algaeCount > 0 ? counters.algaeCount - 1 : 0)}
+                    />
+                </Grid>
+            </Grid>
+            <Divider sx={{ marginY: 3 }} />
+            <Typography
+                variant="h6"
+                sx={{ textAlign: 'center', mt: 4, color: '#333', fontWeight: 'bold' }}
             >
-                <img
-                    src={reefImage}
-                    alt="2025 FRC Reef"
-                    style={{
-                        width: 'auto',
-                        height: 'auto',
-                        objectFit: 'cover',
-                        borderRadius: '12px',
-                        transform: 'scaleX(-1)', // Mirroring the image
-                    }}
-                />
-
-                {/* Counter 1 (Top Level) */}
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: '10%',
-                        right: '5%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: 1,
-                    }}
-                >
-                    <Button
-                        variant="contained"
-                        onClick={() => increment(0)}
-                        sx={{
-                            backgroundColor: '#012265',
-                            '&:hover': { backgroundColor: '#d4af37' },
-                        }}
-                    >
-                        +
-                    </Button>
-                    <Typography
-                        variant="h6"
-                        sx={{ color: '#fff', backgroundColor: '#012265', p: 1, borderRadius: '4px' }}
-                    >
-                        {counters[0]}
-                    </Typography>
-                    <Button
-                        variant="contained"
-                        onClick={() => decrement(0)}
-                        sx={{
-                            backgroundColor: '#012265',
-                            '&:hover': { backgroundColor: '#d4af37' },
-                        }}
-                    >
-                        -
-                    </Button>
-                </Box>
-
-                {/* Counter 2 (Second Level) */}
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: '30%',
-                        right: '5%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: 1,
-                    }}
-                >
-                    <Button
-                        variant="contained"
-                        onClick={() => increment(1)}
-                        sx={{
-                            backgroundColor: '#012265',
-                            '&:hover': { backgroundColor: '#d4af37' },
-                        }}
-                    >
-                        +
-                    </Button>
-                    <Typography
-                        variant="h6"
-                        sx={{ color: '#fff', backgroundColor: '#012265', p: 1, borderRadius: '4px' }}
-                    >
-                        {counters[1]}
-                    </Typography>
-                    <Button
-                        variant="contained"
-                        onClick={() => decrement(1)}
-                        sx={{
-                            backgroundColor: '#012265',
-                            '&:hover': { backgroundColor: '#d4af37' },
-                        }}
-                    >
-                        -
-                    </Button>
-                </Box>
-
-                {/* Counter 3 (Third Level) */}
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        right: '5%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: 1,
-                    }}
-                >
-                    <Button
-                        variant="contained"
-                        onClick={() => increment(2)}
-                        sx={{
-                            backgroundColor: '#012265',
-                            '&:hover': { backgroundColor: '#d4af37' },
-                        }}
-                    >
-                        +
-                    </Button>
-                    <Typography
-                        variant="h6"
-                        sx={{ color: '#fff', backgroundColor: '#012265', p: 1, borderRadius: '4px' }}
-                    >
-                        {counters[2]}
-                    </Typography>
-                    <Button
-                        variant="contained"
-                        onClick={() => decrement(2)}
-                        sx={{
-                            backgroundColor: '#012265',
-                            '&:hover': { backgroundColor: '#d4af37' },
-                        }}
-                    >
-                        -
-                    </Button>
-                </Box>
-
-                {/* Counter 4 (Bottom Level) */}
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        bottom: '10%',
-                        right: '5%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: 1,
-                    }}
-                >
-                    <Button
-                        variant="contained"
-                        onClick={() => increment(3)}
-                        sx={{
-                            backgroundColor: '#012265',
-                            '&:hover': { backgroundColor: '#d4af37' },
-                        }}
-                    >
-                        +
-                    </Button>
-                    <Typography
-                        variant="h6"
-                        sx={{ color: '#fff', backgroundColor: '#012265', p: 1, borderRadius: '4px' }}
-                    >
-                        {counters[3]}
-                    </Typography>
-                    <Button
-                        variant="contained"
-                        onClick={() => decrement(3)}
-                        sx={{
-                            backgroundColor: '#012265',
-                            '&:hover': { backgroundColor: '#d4af37' },
-                        }}
-                    >
-                        -
-                    </Button>
-                </Box>
-            </Box>
-        </Card>
+                Climbing Options
+            </Typography>
+            <ClimbingOptions
+                selectedOption={climbOption}
+                onSelect={(option) => setClimbOption(option)}
+            />
+        </Box>
     );
 };
 
