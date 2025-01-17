@@ -9,7 +9,10 @@ import {
     CardContent,
     CircularProgress,
     Typography,
+    Tooltip,
+    IconButton,
 } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
 
 function MyMatches() {
     const [matches, setMatches] = useState([]);
@@ -61,6 +64,10 @@ function MyMatches() {
                                                 ? Object.values(allSuperScoutingAssignments.find(assignment =>
                                                     assignment.match.match_number === match.match_id)?.questions || {})
                                                 : [],
+                                            assignedBy: isSuperScouting
+                                                ? allSuperScoutingAssignments.find(assignment =>
+                                                    assignment.match.match_number === match.match_id)?.assignedBy
+                                                : null,
                                         };
                                     }
                                 }
@@ -79,6 +86,7 @@ function MyMatches() {
                                     team_number: match.team_number,
                                     isSuperScouting: true, // Mark as super scouting
                                     superScoutingQuestions: Object.values(assignment.questions || []), // Get relevant questions
+                                    assignedBy: assignment.assignedBy, // Include the assignedBy field
                                 };
                             })
                             .filter(Boolean);  // Remove null matches
@@ -93,6 +101,7 @@ function MyMatches() {
                                     match_number: match.match_number || "Pit Scouting", // Add match_number if available, else show "Pit Scouting"
                                     team_number: match.team_number,
                                     isPitScouting: true, // Mark as pit scouting
+                                    assignedBy: assignment.assignedBy, // Include the assignedBy field
                                 };
                             })
                             .filter(Boolean);  // Remove null matches
@@ -151,6 +160,7 @@ function MyMatches() {
                                 borderRadius: 2,
                                 border: match.isSuperScouting ? '4px solid #d4af37' : 'none', // Apply golden border if super scouting
                                 backgroundColor: match.isPitScouting ? '#f0f8ff' : 'white', // Different color for pit scouting matches
+                                position: 'relative', // Add relative positioning
                             }}
                         >
                             <CardContent>
@@ -167,14 +177,34 @@ function MyMatches() {
                                     </Typography>
                                 )}
                                 {match.isPitScouting && (
-                                    <Typography variant="body2" sx={{ color: '#003366' }}>
-                                        Pit Scouting Assigned
-                                    </Typography>
+                                    <>
+                                        <Typography variant="body2" sx={{ color: '#003366' }}>
+                                            Pit Scouting Assigned
+                                        </Typography>
+                                        <Tooltip
+                                            title={`Assigned By: ${match.assignedBy}, Serial Number: ${Math.floor(Math.random() * (99999 - 11111 + 1)) + 11111}`}
+                                            arrow
+                                        >
+                                            <IconButton sx={{ position: 'absolute', bottom: 8, right: 8 }}>
+                                                <InfoIcon sx={{ color: 'gray' }} />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </>
                                 )}
                                 {match.isSuperScouting && (
-                                    <Typography variant="body2" sx={{ color: '#d4af37' }}>
-                                        Super Scouting Assigned
-                                    </Typography>
+                                    <>
+                                        <Typography variant="body2" sx={{ color: '#d4af37' }}>
+                                            Super Scouting Assigned
+                                        </Typography>
+                                        <Tooltip
+                                            title={`Assigned By: ${match.assignedBy}, Serial Number: ${Math.floor(Math.random() * (99999 - 11111 + 1)) + 11111}`}
+                                            arrow
+                                        >
+                                            <IconButton sx={{ position: 'absolute', bottom: 8, right: 8 }}>
+                                                <InfoIcon sx={{ color: 'gray' }} />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </>
                                 )}
                                 <Button
                                     variant="contained"

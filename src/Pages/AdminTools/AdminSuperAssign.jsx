@@ -1,19 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { db } from "../../firebase-config";
 import { ref, push, onValue } from "firebase/database";
-import {
-    Box,
-    Typography,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    Button,
-    Checkbox,
-    ListItemText,
-    TextField,
-    CircularProgress,
-} from "@mui/material";
+import { Box, Typography, FormControl, InputLabel, Select, MenuItem, Button, Checkbox, ListItemText, TextField, CircularProgress } from "@mui/material";
+import { UserContext } from "../../context/UserContext"; // Import UserContext
 
 const questionsList = {
     0: "תאר אוטונומי?",
@@ -36,6 +25,7 @@ const AdminSuperAssign = () => {
     const [teamNumber, setTeamNumber] = useState("");
     const [selectedQuestions, setSelectedQuestions] = useState([]);
     const [loading, setLoading] = useState(false);
+    const { user: currentUser } = useContext(UserContext); // Get current user from context
 
     // Fetch users and matches
     useEffect(() => {
@@ -65,6 +55,7 @@ const AdminSuperAssign = () => {
                 user: selectedUser,
                 match: { match_number: matchNumber, team_number: teamNumber },
                 questions: selectedQuestions,
+                assignedBy: currentUser?.username || 'Unknown User', // Use the current user's name
             });
             alert("Assignment successfully added!");
             setSelectedUser("");
