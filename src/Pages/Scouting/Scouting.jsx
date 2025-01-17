@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import QRCode from "qrcode.react";
+import React, { useEffect, useState } from "react"; // Import React hooks
+import { useLocation } from "react-router-dom"; // Import useLocation for navigation
+import QRCode from "qrcode.react"; // Import QRCode for barcode generation
 import {
     Button,
     TextField,
@@ -13,11 +13,11 @@ import {
     Grid,
     Paper,
     Divider,
-} from "@mui/material";
-import TeleField from "./Game/Teleop";
-import { db } from "../../firebase-config";
-import { ref, set } from "firebase/database";
-import Auto from "./Game/Auto";
+} from "@mui/material"; // Import MUI components
+import { db } from "../../firebase-config"; // Import your Firebase configuration
+import { ref, set } from "firebase/database"; // Firebase database methods
+import TeleField from "./Game/Teleop"; // Import TeleField component
+import Auto from "./Game/Auto"; // Import Auto component
 
 function ScoutingForm() {
     const location = useLocation();
@@ -36,25 +36,28 @@ function ScoutingForm() {
         L4: 0,
         algaeCounter: 0,
         climbOption: '',
+        autoData: {},
+        teleData: {}, // Ensure this aligns with the structure in TeleField
     });
 
     const [barcodeData, setBarcodeData] = useState('');
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
+    // Generate Barcode
     useEffect(() => {
         const generateBarcode = () => {
             const barcodeString = `
-                ${formData.Name || "Unknown"},
-                ${formData.Team || "Unknown"},
-                ${formData.Match || "Unknown"},
-                ${formData.Notes || "Unknown"},
-                ${formData.L1},
-                ${formData.L2},
-                ${formData.L3},
-                ${formData.L4},
-                ${formData.algaeCounter},
-                ${formData.climbOption}
-            `.replace(/\n/g, '').replace(/\s+/g, ' ').trim();
+            ${formData.Name || "Unknown"},
+            ${formData.Team || "Unknown"},
+            ${formData.Match || "Unknown"},
+            ${formData.Notes || "Unknown"},
+            ${formData.L1 || 0},
+            ${formData.L2},
+            ${formData.L3},
+            ${formData.L4},
+            ${formData.algaeCounter},
+            ${formData.climbOption}
+        `.replace(/\n/g, '').replace(/\s+/g, ' ').trim();
 
             return barcodeString.replace(/true/g, 'TRUE');
         };
@@ -62,23 +65,27 @@ function ScoutingForm() {
         setBarcodeData(generateBarcode());
     }, [formData]);
 
+    // Handle input changes for general fields
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleCounterChange = (name, value) => {
-        setFormData((prev) => ({ ...prev, [name]: value }));
+    // Update autoData from Auto component
+    const handleAutoChange = (autoData) => {
+        setFormData((prev) => ({ ...prev, autoData }));
     };
 
-    const handleAlgaeCounterChange = (value) => {
-        setFormData((prev) => ({ ...prev, algaeCounter: value }));
+    // Update teleData from TeleField component
+    const handleTeleChange = (teleData) => {
+        console.log('TeleField Data:', teleData); // Debug log to confirm data flow
+        setFormData((prev) => ({
+            ...prev,
+            ...teleData, // Merge teleData directly into formData (or modify as needed)
+        }));
     };
 
-    const handleClimbOptionChange = (option) => {
-        setFormData((prev) => ({ ...prev, climbOption: option }));
-    };
-
+    // Handle form submission
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -87,12 +94,14 @@ function ScoutingForm() {
             return;
         }
 
+        const dataToSubmit = {
+            ...formData,
+            submittedAt: new Date().toISOString(),
+        };
+
         try {
             const dbRef = ref(db, `scoutingData/${new Date().getTime()}`);
-            await set(dbRef, {
-                ...formData,
-                submittedAt: new Date().toISOString()
-            });
+            await set(dbRef, dataToSubmit);
             alert("Submission successful!");
             setIsButtonDisabled(true);
         } catch (error) {
@@ -119,7 +128,7 @@ function ScoutingForm() {
                         disabled={!isNewForm}
                     />
                 </Grid>
-                <Grid item xs={12} sm={6} >
+                <Grid item xs={12} sm={6}>
                     <TextField
                         label="Match"
                         variant="outlined"
@@ -164,22 +173,12 @@ function ScoutingForm() {
 
             <Divider sx={{ marginY: 3 }} />
 
-            <Auto sx={{ marginTop: 3 }} />
+            <Auto onChange={handleAutoChange} />
 
             <Divider sx={{ marginY: 3 }} />
 
             <Box sx={{ marginTop: 3, display: 'flex', justifyContent: 'center' }}>
-                <TeleField
-                    L1={formData.L1}
-                    L2={formData.L2}
-                    L3={formData.L3}
-                    L4={formData.L4}
-                    onCounterChange={handleCounterChange}
-                    algaeCounter={formData.algaeCounter}
-                    onAlgaeCounterChange={handleAlgaeCounterChange}
-                    climbOption={formData.climbOption}
-                    onClimbOptionChange={handleClimbOptionChange}
-                />
+                <TeleField onChange={handleTeleChange} />
             </Box>
 
             <Divider sx={{ marginY: 3 }} />

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import {Box, Button, Typography, Grid, Paper, Divider} from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Button, Typography, Grid, Paper, Divider } from '@mui/material';
 
 // CounterBox Component
 const CounterBox = ({ label, count, onIncrement, onDecrement }) => (
@@ -92,71 +92,8 @@ const ClimbingOptions = ({ selectedOption, onSelect }) => {
     );
 };
 
-// AlgaeCounter Component (Restored Design)
-const AlgaeCounter = ({ count, onIncrement, onDecrement }) => (
-    <Paper
-        elevation={3}
-        sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            padding: 3,
-            borderRadius: 2,
-            mt: 4,
-        }}
-    >
-        <Typography variant="h6" sx={{ color: '#4caf50', fontWeight: 'bold', mb: 2 }}>
-            Algae Counter
-        </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Button
-                variant="contained"
-                onClick={onDecrement}
-                disabled={count <= 0}  // Disable decrement if count is 0 or less
-                sx={{
-                    minWidth: 50,
-                    minHeight: 50,
-                    backgroundColor: '#4caf50',
-                    '&:hover': { backgroundColor: '#388e3c' },
-                }}
-            >
-                -
-            </Button>
-            <Box
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: '#e3f2fd',
-                    borderRadius: '50%',
-                    width: 100,
-                    height: 100,
-                    color: '#1976d2',
-                    fontSize: 28,
-                    fontWeight: 'bold',
-                    boxShadow: 2,
-                }}
-            >
-                {count}
-            </Box>
-            <Button
-                variant="contained"
-                onClick={onIncrement}
-                sx={{
-                    minWidth: 50,
-                    minHeight: 50,
-                    backgroundColor: '#4caf50',
-                    '&:hover': { backgroundColor: '#388e3c' },
-                }}
-            >
-                +
-            </Button>
-        </Box>
-    </Paper>
-);
-
 // Main Teleop Component
-const Teleop = () => {
+const Teleop = ({ onChange }) => {
     const [counters, setCounters] = useState({
         L1: 0,
         L2: 0,
@@ -167,10 +104,17 @@ const Teleop = () => {
 
     const [climbOption, setClimbOption] = useState('');
 
-    const handleCounterChange = (label, newValue) => {
-        setCounters((prevCounters) => ({
-            ...prevCounters,
-            [label]: newValue,
+    // Call the onChange prop whenever counters or climbOption change
+    useEffect(() => {
+        if (onChange) {
+            onChange({ counters, climbOption });
+        }
+    }, [counters, climbOption, onChange]);
+
+    const handleCounterChange = (label, value) => {
+        setCounters((prev) => ({
+            ...prev,
+            [label]: Math.max(0, value),
         }));
     };
 
@@ -178,7 +122,6 @@ const Teleop = () => {
         <Box sx={{ padding: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Typography variant="h4" sx={{ marginBottom: 1 }}>Teleop</Typography>
             <Grid container spacing={3} justifyContent="center">
-                {/* Individual counters for L1 to L4 */}
                 {['L1', 'L2', 'L3', 'L4'].map((label) => (
                     <Grid item xs={12} sm={6} md={3} key={label} container justifyContent="center">
                         <CounterBox
@@ -189,17 +132,16 @@ const Teleop = () => {
                         />
                     </Grid>
                 ))}
-                {/* Algae Counter (Updated Design) */}
                 <Grid item xs={12} sm={6} md={3} container justifyContent="center">
-                    <AlgaeCounter
+                    <CounterBox
+                        label="Algae Counter"
                         count={counters.algaeCount}
                         onIncrement={() => handleCounterChange('algaeCount', counters.algaeCount + 1)}
-                        onDecrement={() => handleCounterChange('algaeCount', counters.algaeCount > 0 ? counters.algaeCount - 1 : 0)} // Prevent going below 0
+                        onDecrement={() => handleCounterChange('algaeCount', counters.algaeCount > 0 ? counters.algaeCount - 1 : 0)}
                     />
                 </Grid>
             </Grid>
             <Divider sx={{ marginY: 3 }} />
-
             <Typography
                 variant="h6"
                 sx={{ textAlign: 'center', mt: 4, color: '#333', fontWeight: 'bold' }}
@@ -208,7 +150,7 @@ const Teleop = () => {
             </Typography>
             <ClimbingOptions
                 selectedOption={climbOption}
-                onSelect={setClimbOption}
+                onSelect={(option) => setClimbOption(option)}
             />
         </Box>
     );
