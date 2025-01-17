@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react"; // Import React hooks
-import { useLocation } from "react-router-dom"; // Import useLocation for navigation
-import QRCode from "qrcode.react"; // Import QRCode for barcode generation
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import QRCode from "qrcode.react";
 import {
     Button,
     TextField,
@@ -13,11 +13,11 @@ import {
     Grid,
     Paper,
     Divider,
-} from "@mui/material"; // Import MUI components
-import { db } from "../../firebase-config"; // Import your Firebase configuration
-import { ref, set } from "firebase/database"; // Firebase database methods
-import TeleField from "./Game/Teleop"; // Import TeleField component
-import Auto from "./Game/Auto"; // Import Auto component
+} from "@mui/material";
+import { db } from "../../firebase-config";
+import { ref, set } from "firebase/database";
+import TeleField from "./Game/Teleop";
+import Auto from "./Game/Auto";
 
 function ScoutingForm() {
     const location = useLocation();
@@ -35,8 +35,8 @@ function ScoutingForm() {
         L3: 0,
         L4: 0,
         climbOption: '',
-        autoData: {},
-        teleData: {}, // Ensure this aligns with the structure in TeleField
+        autoAlgaeCount: 0,   // Algae count
+        autoCoralCount: 0,   // Coral count
     });
 
     const [barcodeData, setBarcodeData] = useState('');
@@ -53,7 +53,8 @@ function ScoutingForm() {
         L2: ${formData.L2 || 0},
         L3: ${formData.L3 || 0},
         L4: ${formData.L4 || 0},
-        AlgaeCount: ${formData.algaeCount || 0},
+        AutoAlgaeCount: ${formData.autoAlgaeCount || 0},
+        AutoCoralCount: ${formData.autoCoralCount || 0},
         ClimbOption: ${formData.climbOption || "None"}
         `.replace(/\n/g, "").replace(/\s+/g, " ").trim();
 
@@ -63,28 +64,28 @@ function ScoutingForm() {
         setBarcodeData(generateBarcode());
     }, [formData]);
 
-    // Handle input changes for general fields
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    // Update autoData from Auto component
+    // Handle auto data change (from Auto component)
     const handleAutoChange = (autoData) => {
-        setFormData((prev) => ({ ...prev, autoData }));
-    };
-
-    // Update teleData from TeleField component
-    const handleTeleChange = ({ counters, climbOption }) => {
+        console.log("Auto Data received:", autoData); // Debugging log to see the data
         setFormData((prev) => ({
             ...prev,
-            ...counters, // Spread the L1, L2, L3, L4, and algaeCount values
-            climbOption, // Update climbOption
+            ...autoData, // Spread the auto counters into formData
         }));
     };
 
+    const handleTeleChange = ({ counters, climbOption }) => {
+        setFormData((prev) => ({
+            ...prev,
+            ...counters, // Spread the L1, L2, L3, L4 values
+            climbOption,
+        }));
+    };
 
-    // Handle form submission
     const handleSubmit = async (event) => {
         event.preventDefault();
 

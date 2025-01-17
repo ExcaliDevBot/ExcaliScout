@@ -1,24 +1,39 @@
-import React, { useState } from 'react';
-import { Box, Button, Typography, Grid } from '@mui/material';
+import React, { useState, useEffect } from "react";
+import { Button, Typography, Box, Grid } from "@mui/material";
 
-const AutoCounters = () => {
-    const [algaeCount, setAlgaeCount] = useState(0);
-    const [coralCount, setCoralCount] = useState(0);
+const Auto = ({ onChange }) => {
+    const [autoAlgaeCount, setAutoAlgaeCount] = useState(0);
+    const [autoCoralCount, setAutoCoralCount] = useState(0);
 
-    const handleIncrement = (type) => {
-        if (type === 'algae') setAlgaeCount(algaeCount + 1);
-        else if (type === 'coral') setCoralCount(coralCount + 1);
+    const handleAlgaeIncrement = () => {
+        setAutoAlgaeCount(prev => prev + 1);
     };
 
-    const handleDecrement = (type) => {
-        if (type === 'algae' && algaeCount > 0) setAlgaeCount(algaeCount - 1);
-        else if (type === 'coral' && coralCount > 0) setCoralCount(coralCount - 1);
+    const handleAlgaeDecrement = () => {
+        if (autoAlgaeCount > 0) setAutoAlgaeCount(prev => prev - 1);
     };
+
+    const handleCoralIncrement = () => {
+        setAutoCoralCount(prev => prev + 1);
+    };
+
+    const handleCoralDecrement = () => {
+        if (autoCoralCount > 0) setAutoCoralCount(prev => prev - 1);
+    };
+
+    // Send data to parent (ScoutingForm) when it changes
+    useEffect(() => {
+        if (onChange) {
+            // Pass the updated values to the parent
+            onChange({ autoAlgaeCount, autoCoralCount });
+        }
+    }, [autoAlgaeCount, autoCoralCount, onChange]); // Only run when either of the counters changes
 
     return (
         <Box>
             <Typography variant="h4" sx={{ marginBottom: 1 }}>Autonomous</Typography>
             <Grid container spacing={4} justifyContent="center">
+                {/* Algae Counter */}
                 <Grid item xs={12} sm={6} md={4}>
                     <Box
                         sx={{
@@ -33,13 +48,13 @@ const AutoCounters = () => {
                             Algae
                         </Typography>
                         <Typography variant="h3" color="primary" gutterBottom>
-                            {algaeCount}
+                            {autoAlgaeCount}
                         </Typography>
                         <Box display="flex" justifyContent="center" gap={2}>
                             <Button
                                 variant="contained"
                                 color="success"
-                                onClick={() => handleIncrement('algae')}
+                                onClick={handleAlgaeIncrement}
                                 sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}
                             >
                                 +
@@ -47,7 +62,7 @@ const AutoCounters = () => {
                             <Button
                                 variant="outlined"
                                 color="error"
-                                onClick={() => handleDecrement('algae')}
+                                onClick={handleAlgaeDecrement}
                                 sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}
                             >
                                 -
@@ -56,12 +71,13 @@ const AutoCounters = () => {
                     </Box>
                 </Grid>
 
+                {/* Coral Counter */}
                 <Grid item xs={12} sm={6} md={4}>
                     <Box
                         sx={{
                             p: 3,
                             borderRadius: 2,
-                            bgcolor: '#e3f2fd',
+                            bgcolor: '#e8f5e9',
                             textAlign: 'center',
                             boxShadow: 2,
                         }}
@@ -70,13 +86,13 @@ const AutoCounters = () => {
                             Coral
                         </Typography>
                         <Typography variant="h3" color="primary" gutterBottom>
-                            {coralCount}
+                            {autoCoralCount}
                         </Typography>
                         <Box display="flex" justifyContent="center" gap={2}>
                             <Button
                                 variant="contained"
                                 color="success"
-                                onClick={() => handleIncrement('coral')}
+                                onClick={handleCoralIncrement}
                                 sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}
                             >
                                 +
@@ -84,7 +100,7 @@ const AutoCounters = () => {
                             <Button
                                 variant="outlined"
                                 color="error"
-                                onClick={() => handleDecrement('coral')}
+                                onClick={handleCoralDecrement}
                                 sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}
                             >
                                 -
@@ -97,4 +113,4 @@ const AutoCounters = () => {
     );
 };
 
-export default AutoCounters;
+export default Auto;
