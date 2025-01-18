@@ -1,9 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDatabase, ref, get } from 'firebase/database';
-import { TextField, Button, Typography, Box, CircularProgress, Grid, Select, MenuItem } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import CssBaseline from '@mui/material/CssBaseline';
+import Divider from '@mui/material/Divider';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import Stack from '@mui/material/Stack';
+import Card from '@mui/material/Card';
+import CircularProgress from '@mui/material/CircularProgress';
 
-function LoginForm() {
+// Import the logo from your project's assets folder
+import logo from '../Login/Excalibur Frc (4).png'; // Adjust the path based on your project structure
+
+export default function LoginForm() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -11,7 +28,6 @@ function LoginForm() {
     const [users, setUsers] = useState([]);
     const navigate = useNavigate();
 
-    // Fetch users from Firebase
     useEffect(() => {
         const fetchUsers = async () => {
             try {
@@ -25,7 +41,7 @@ function LoginForm() {
                         username: key,
                         ...userData[key],
                     }));
-                    setUsers(userList); // Set users in the state
+                    setUsers(userList);
                 }
             } catch (error) {
                 console.error('Error fetching users:', error);
@@ -40,13 +56,11 @@ function LoginForm() {
         setLoading(true);
         setMessage('');
 
-        // Ensure username is trimmed
         const trimmedUsername = username.trim();
 
         try {
             const db = getDatabase();
-            const usersRef = ref(db, 'users/' + trimmedUsername); // Query using the username directly
-
+            const usersRef = ref(db, `users/${trimmedUsername}`);
             const snapshot = await get(usersRef);
 
             if (snapshot.exists()) {
@@ -54,7 +68,7 @@ function LoginForm() {
 
                 if (userData.password === password) {
                     localStorage.setItem('user', JSON.stringify({ username: trimmedUsername, role: userData.role }));
-                    navigate('/my_matches'); // Redirect to MyMatches page
+                    navigate('/my_matches');
                 } else {
                     setMessage('Invalid password.');
                 }
@@ -70,103 +84,126 @@ function LoginForm() {
     };
 
     return (
-        <Box sx={{
-            maxWidth: 400,
-            mx: 'auto',
-            mt: 10,
-            p: 4,
-            border: '1px solid #d4af37',
-            borderRadius: 2,
-            backgroundColor: '#012265',
-            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
-        }}>
-            <Typography variant="h4" sx={{
-                mb: 3,
-                textAlign: 'center',
-                color: '#d4af37',
-            }}>
-                Login to Your Account
-            </Typography>
-            <form onSubmit={handleSubmit}>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
+        <Box
+            sx={{
+                height: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#f5f5f5',
+                padding: 4,
+            }}
+        >
+            <CssBaseline />
+            <Card
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    maxWidth: 450,
+                    padding: 4,
+                    gap: 2,
+                    boxShadow:
+                        'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
+                }}
+            >
+                {/* Logo */}
+                <Box
+                    sx={{ textAlign: 'left', mb: 0.5, display: 'flex', alignItems: 'center' }}
+                >
+                    <img
+                        src={logo} // Use the imported logo
+                        alt="Logo"
+                        style={{
+                            maxWidth: '42px', // Adjusted the size to make the logo smaller
+                            height: 'auto',
+                            marginRight: '0.5rem',
+                        }}
+                    />
+                    <Typography
+                        component="span"
+                        sx={{
+                            fontFamily: 'Copperplate Gothic Bold, serif', // Use the new font
+                            color: '#012265',
+                            fontSize: '1rem',
+                        }}
+                    >
+                        EXCALIBUR FCR
+                    </Typography>
+                </Box>
+                {/* Sign In Header */}
+                <Typography
+                    component="h1"
+                    variant="h4"
+                    sx={{
+                        fontWeight: 'bold', // Make the font bolder
+                        fontSize: '2rem',
+                        textAlign: 'left', // Align text to the left
+                        mb: 2,
+                        mt: 0.5, // Reduced top margin
+                    }}
+                >
+                    Sign in
+                </Typography>
+
+
+                {/* Form */}
+                <Box component="form" onSubmit={handleSubmit} noValidate>
+                    <FormControl fullWidth>
+                        <FormLabel htmlFor="username">Username</FormLabel>
                         <Select
-                            fullWidth
+                            id="username"
                             value={username}
-                            onChange={(e) => setUsername(e.target.value)} // Set the username value
+                            onChange={(e) => setUsername(e.target.value)}
                             displayEmpty
-                            variant="outlined"
-                            margin="normal"
-                            sx={{
-                                backgroundColor: '#ffffff',
-                                color: '#012265',
-                                '& .MuiSelect-icon': {
-                                    color: '#012265',
-                                },
-                            }}
+                            required
                         >
-                            <MenuItem value="" disabled sx={{ color: '#012265' }}>
+                            <MenuItem value="" disabled>
                                 Select Username
                             </MenuItem>
                             {users.map((user) => (
-                                <MenuItem key={user.username} value={user.username} sx={{ color: '#012265' }}>
+                                <MenuItem key={user.username} value={user.username}>
                                     {user.username}
                                 </MenuItem>
                             ))}
                         </Select>
-                    </Grid>
-                    <Grid item xs={12}>
+                    </FormControl>
+                    <FormControl fullWidth sx={{ mt: 2 }}>
+                        <FormLabel htmlFor="password">Password</FormLabel>
                         <TextField
-                            fullWidth
-                            label="Password"
+                            id="password"
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            variant="outlined"
-                            margin="normal"
-                            sx={{
-                                '& .MuiInputBase-root': {
-                                    backgroundColor: '#ffffff',
-                                    color: '#012265',
-                                },
-                                '& .MuiFormLabel-root': {
-                                    color: '#d4af37',
-                                },
-                                '& .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: '#d4af37',
-                                },
-                            }}
+                            placeholder="Team Password"
+                            required
                         />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Button
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            type="submit"
-                            disabled={loading}
-                            sx={{
-                                backgroundColor: '#d4af37',
-                                color: '#012265',
-                                '&:hover': {
-                                    backgroundColor: '#b0882f',
-                                },
-                            }}
-                        >
-                            {loading ? <CircularProgress size={24} color="inherit" /> : 'Login'}
-                        </Button>
-                    </Grid>
+                    </FormControl>
+                    <FormControlLabel
+                        control={<Checkbox value="remember" color="primary" />}
+                        label="Remember me"
+                        sx={{ mt: 2 }}
+                    />
                     {message && (
-                        <Grid item xs={12}>
-                            <Typography variant="body2" color="error" align="center" sx={{ color: '#d4af37' }}>
-                                {message}
-                            </Typography>
-                        </Grid>
+                        <Typography color="error" sx={{ mt: 2, textAlign: 'center' }}>
+                            {message}
+                        </Typography>
                     )}
-                </Grid>
-            </form>
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3 }}
+                        disabled={loading}
+                    >
+                        {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign in'}
+                    </Button>
+                </Box>
+                <Divider sx={{ my: 2 }}>or</Divider>
+                <Typography textAlign="center" >
+                    Don&apos;t have an account?{' '}
+                    <Button variant="text" onClick={() => alert('Yuda Buda')}>Contact Support</Button>
+                </Typography>
+            </Card>
         </Box>
     );
 }
-
-export default LoginForm;

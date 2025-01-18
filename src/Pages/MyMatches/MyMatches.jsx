@@ -9,7 +9,7 @@ import {
     CardContent,
     CircularProgress,
     Typography,
-    Tooltip,
+    Popover,
     IconButton,
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
@@ -20,6 +20,20 @@ function MyMatches() {
     const { user } = useContext(UserContext);  // Get current user
     const navigate = useNavigate();
     const db = getDatabase();
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [popoverContent, setPopoverContent] = useState('');
+
+    const handlePopoverOpen = (event, content) => {
+        setAnchorEl(event.currentTarget);
+        setPopoverContent(content);
+    };
+
+    const handlePopoverClose = () => {
+        setAnchorEl(null);
+        setPopoverContent('');
+    };
+
+    const open = Boolean(anchorEl);
 
     useEffect(() => {
         if (user) {
@@ -181,14 +195,13 @@ function MyMatches() {
                                         <Typography variant="body2" sx={{ color: '#003366' }}>
                                             Pit Scouting Assigned
                                         </Typography>
-                                        <Tooltip
-                                            title={`Assigned By: ${match.assignedBy}, Serial Number: ${Math.floor(Math.random() * (99999 - 11111 + 1)) + 11111}`}
-                                            arrow
+                                        <IconButton
+                                            sx={{ position: 'absolute', bottom: 8, right: 8 }}
+                                            onMouseEnter={(e) => handlePopoverOpen(e, `Assigned By ${match.assignedBy}, Serial Number ${Math.floor(Math.random() * (99999 - 11111 + 1)) + 11111}`)}
+                                            onMouseLeave={handlePopoverClose}
                                         >
-                                            <IconButton sx={{ position: 'absolute', bottom: 8, right: 8 }}>
-                                                <InfoIcon sx={{ color: 'gray' }} />
-                                            </IconButton>
-                                        </Tooltip>
+                                            <InfoIcon sx={{ color: 'gray' }} />
+                                        </IconButton>
                                     </>
                                 )}
                                 {match.isSuperScouting && (
@@ -196,14 +209,15 @@ function MyMatches() {
                                         <Typography variant="body2" sx={{ color: '#d4af37' }}>
                                             Super Scouting Assigned
                                         </Typography>
-                                        <Tooltip
-                                            title={`Assigned By: ${match.assignedBy}, Serial Number: ${Math.floor(Math.random() * (99999 - 11111 + 1)) + 11111}`}
-                                            arrow
+                                        <IconButton
+                                            sx={{ position: 'absolute', bottom: 8, right: 8 }}
+                                            onMouseEnter={(e) => handlePopoverOpen(
+                                                e, `Assigned By ${match.assignedBy},\nSerial Number ${Math.floor(Math.random() * (99999 - 11111 + 1)) + 11111}`
+                                            )}
+                                            onMouseLeave={handlePopoverClose}
                                         >
-                                            <IconButton sx={{ position: 'absolute', bottom: 8, right: 8 }}>
-                                                <InfoIcon sx={{ color: 'gray' }} />
-                                            </IconButton>
-                                        </Tooltip>
+                                            <InfoIcon sx={{ color: 'gray' }} />
+                                        </IconButton>
                                     </>
                                 )}
                                 <Button
@@ -296,6 +310,24 @@ function MyMatches() {
                     New Scouting Form
                 </Button>
             )}
+
+            <Popover
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handlePopoverClose}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+            >
+                <Box sx={{ p: 2 }}>
+                    <Typography>{popoverContent}</Typography>
+                </Box>
+            </Popover>
         </Box>
     );
 }

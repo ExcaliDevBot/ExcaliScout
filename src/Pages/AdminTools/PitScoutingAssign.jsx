@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { db } from "../../firebase-config";
-import { ref, push, onValue, get } from "firebase/database";
+import { ref, push, onValue } from "firebase/database";
+import { UserContext } from "../../context/UserContext";
 import { Box, Typography, FormControl, InputLabel, Select, MenuItem, Button, TextField, CircularProgress, List, ListItem, ListItemText, Paper } from "@mui/material";
 
 const PitScoutingAssign = () => {
@@ -9,6 +10,7 @@ const PitScoutingAssign = () => {
     const [selectedUser, setSelectedUser] = useState("");
     const [teamNumber, setTeamNumber] = useState("");
     const [loading, setLoading] = useState(false);
+    const { user } = useContext(UserContext);  // Get current user
 
     // Fetch the list of users and pit scouting assignments from Firebase
     useEffect(() => {
@@ -41,6 +43,7 @@ const PitScoutingAssign = () => {
             await push(assignmentRef, {
                 user: selectedUser,
                 team_number: teamNumber,
+                assignedBy: user.username, // Use the current user's name
             });
             alert("Assignment successfully added!");
             setSelectedUser("");
@@ -115,7 +118,7 @@ const PitScoutingAssign = () => {
                                 <ListItem key={index}>
                                     <ListItemText
                                         primary={`User: ${assignment.user}`}
-                                        secondary={`Assigned Team: ${assignment.team_number}`}
+                                        secondary={`Assigned Team: ${assignment.team_number}, Assigned By: ${assignment.assignedBy}`}
                                     />
                                 </ListItem>
                             ))}
