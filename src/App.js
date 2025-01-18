@@ -19,9 +19,12 @@ import QRCodeScanner from './Pages/Scanner/QRCodeScanner';
 // Routes and Access Control
 import AdminRoute from './AdminRoute';
 import ProtectedRoute from './ProtectedRoute';
+import React from "react";
+import { ThemeProvider } from './ThemeContext';
 
 function App() {
     return (
+        <ThemeProvider>
         <UserProvider>
             <Router>
                 <Navbar />
@@ -50,6 +53,7 @@ function App() {
                 </Routes>
             </Router>
         </UserProvider>
+        </ThemeProvider>
     );
 }
 
