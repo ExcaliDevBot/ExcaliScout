@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { db } from "../../firebase-config";
 import { ref, push, onValue } from "firebase/database";
 import { UserContext } from "../../context/UserContext";
+import { ThemeContext } from "../../ThemeContext";
 import { Box, Typography, FormControl, InputLabel, Select, MenuItem, Button, TextField, CircularProgress, List, ListItem, ListItemText, Paper } from "@mui/material";
 
 const PitScoutingAssign = () => {
@@ -11,6 +12,7 @@ const PitScoutingAssign = () => {
     const [teamNumber, setTeamNumber] = useState("");
     const [loading, setLoading] = useState(false);
     const { user } = useContext(UserContext);  // Get current user
+    const { theme } = useContext(ThemeContext);  // Get current theme
 
     // Fetch the list of users and pit scouting assignments from Firebase
     useEffect(() => {
@@ -57,8 +59,8 @@ const PitScoutingAssign = () => {
     };
 
     return (
-        <Box sx={{ p: 4, maxWidth: 600, margin: "auto", backgroundColor: "#fff", borderRadius: 2, boxShadow: 3 }}>
-            <Typography variant="h4" align="center" sx={{ color: "#012265", mb: 4 }}>
+        <Box sx={{ p: 4, maxWidth: 600, margin: "auto", backgroundColor: theme === 'light' ? "#fff" : "#333", color: theme === 'light' ? "#000" : "#fff", borderRadius: 2, boxShadow: 3 }}>
+            <Typography variant="h4" align="center" sx={{ color: theme === 'light' ? "#012265" : "#d4af37", mb: 4 }}>
                 Assign Pit Scouting
             </Typography>
 
@@ -92,8 +94,8 @@ const PitScoutingAssign = () => {
                     variant="contained"
                     sx={{
                         mt: 2,
-                        backgroundColor: "#012265",
-                        '&:hover': { backgroundColor: "#d4af37", color: "#012265" },
+                        backgroundColor: theme === 'light' ? "#012265" : "#d4af37",
+                        '&:hover': { backgroundColor: theme === 'light' ? "#d4af37" : "#012265", color: theme === 'light' ? "#012265" : "#d4af37" },
                         paddingX: 4,
                         paddingY: 2,
                         fontSize: 16,
@@ -107,12 +109,12 @@ const PitScoutingAssign = () => {
 
             {/* Display current assignments */}
             <Box sx={{ mt: 4 }}>
-                <Typography variant="h5" align="center" sx={{ color: "#012265", mb: 3 }}>
+                <Typography variant="h5" align="center" sx={{ color: theme === 'light' ? "#012265" : "#d4af37", mb: 3 }}>
                     Current Pit Scouting Assignments
                 </Typography>
 
                 {assignments.length > 0 ? (
-                    <Paper sx={{ padding: 2 }}>
+                    <Paper sx={{ padding: 2, backgroundColor: theme === 'light' ? "#f0f0f0" : "#444", color: theme === 'light' ? "#000" : "#fff" }}>
                         <List>
                             {assignments.map((assignment, index) => (
                                 <ListItem key={index}>

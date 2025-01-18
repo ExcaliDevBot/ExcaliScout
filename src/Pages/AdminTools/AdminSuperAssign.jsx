@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import { db } from "../../firebase-config";
 import { ref, push, onValue, remove } from "firebase/database";
-import { Box, Typography, FormControl, InputLabel, Select, MenuItem, Button, Checkbox, ListItemText, TextField, CircularProgress, List, ListItem, ListItemSecondaryAction, IconButton } from "@mui/material";
+import { Box, Typography, FormControl, InputLabel, Select, MenuItem, Button, Checkbox, ListItemText, TextField, CircularProgress, List, ListItem, ListItemSecondaryAction, IconButton, Paper } from "@mui/material";
 import { UserContext } from "../../context/UserContext";
+import { ThemeContext } from "../../ThemeContext";
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const questionsList = {
@@ -28,6 +29,7 @@ const AdminSuperAssign = () => {
     const [selectedQuestions, setSelectedQuestions] = useState([]);
     const [loading, setLoading] = useState(false);
     const { user: currentUser } = useContext(UserContext);
+    const { theme } = useContext(ThemeContext);
 
     useEffect(() => {
         const usersRef = ref(db, "users");
@@ -88,8 +90,8 @@ const AdminSuperAssign = () => {
     };
 
     return (
-        <Box sx={{ p: 4, maxWidth: 600, margin: "auto", backgroundColor: "#fff", borderRadius: 2, boxShadow: 3 }}>
-            <Typography variant="h4" align="center" sx={{ color: "#012265", mb: 4 }}>
+        <Box sx={{ p: 4, maxWidth: 600, margin: "auto", backgroundColor: theme === 'light' ? "#fff" : "#333", color: theme === 'light' ? "#000" : "#fff", borderRadius: 2, boxShadow: 3 }}>
+            <Typography variant="h4" align="center" sx={{ color: theme === 'light' ? "#012265" : "#d4af37", mb: 4 }}>
                 Assign Super Scouting Matches
             </Typography>
 
@@ -147,8 +149,8 @@ const AdminSuperAssign = () => {
                     variant="contained"
                     sx={{
                         mt: 2,
-                        backgroundColor: "#012265",
-                        '&:hover': { backgroundColor: "#d4af37", color: "#012265" },
+                        backgroundColor: theme === 'light' ? "#012265" : "#d4af37",
+                        '&:hover': { backgroundColor: theme === 'light' ? "#d4af37" : "#012265", color: theme === 'light' ? "#012265" : "#d4af37" },
                         paddingX: 4,
                         paddingY: 2,
                         fontSize: 16,
@@ -160,24 +162,26 @@ const AdminSuperAssign = () => {
                 </Button>
             </Box>
 
-            <Typography variant="h5" align="center" sx={{ color: "#012265", mt: 4 }}>
+            <Typography variant="h5" align="center" sx={{ color: theme === 'light' ? "#012265" : "#d4af37", mt: 4 }}>
                 Current Assignments
             </Typography>
-            <List>
-                {assignments.map((assignment) => (
-                    <ListItem key={assignment.id}>
-                        <ListItemText
-                            primary={`User: ${assignment.user}, Match: ${assignment.match.match_number}, Team: ${assignment.match.team_number}`}
-                            secondary={`Questions: ${assignment.questions.map((id) => questionsList[id]).join(", ")}`}
-                        />
-                        <ListItemSecondaryAction>
-                            <IconButton edge="end" aria-label="delete" onClick={() => handleRemove(assignment.id)}>
-                                <DeleteIcon />
-                            </IconButton>
-                        </ListItemSecondaryAction>
-                    </ListItem>
-                ))}
-            </List>
+            <Paper sx={{ padding: 2, backgroundColor: theme === 'light' ? "#f0f0f0" : "#444", color: theme === 'light' ? "#000" : "#fff" }}>
+                <List>
+                    {assignments.map((assignment) => (
+                        <ListItem key={assignment.id}>
+                            <ListItemText
+                                primary={`User: ${assignment.user}, Match: ${assignment.match.match_number}, Team: ${assignment.match.team_number}`}
+                                secondary={`Questions: ${assignment.questions.map((id) => questionsList[id]).join(", ")}`}
+                            />
+                            <ListItemSecondaryAction>
+                                <IconButton edge="end" aria-label="delete" onClick={() => handleRemove(assignment.id)}>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </ListItemSecondaryAction>
+                        </ListItem>
+                    ))}
+                </List>
+            </Paper>
         </Box>
     );
 };
