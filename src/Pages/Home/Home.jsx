@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box, Button, Container, Typography, Grid, Paper } from '@mui/material';
-import {useNavigate} from "react-router-dom";
+import { Box, Button, Typography } from '@mui/material';
+import { useNavigate } from "react-router-dom";
 
 function Home() {
     const navigate = useNavigate();
@@ -13,7 +13,7 @@ function Home() {
             {/* Hero Section */}
             <Box
                 sx={{
-                    backgroundColor: '#012265', // Dark Blue
+                    backgroundColor: '#d4af37', // Dark Blue
                     color: '#fff',
                     padding: '120px 0',
                     display: 'flex',
