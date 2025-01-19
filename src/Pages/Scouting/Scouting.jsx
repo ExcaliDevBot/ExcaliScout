@@ -19,6 +19,8 @@ import { ref, set } from "firebase/database";
 import Teleop from "./Game/Teleop";
 import Auto from "./Game/Auto";
 import {Games} from "@mui/icons-material";
+import TeleField from "./Game/Teleop"; // Import TeleField component
+import Auto from "./Game/Auto"; // Import Auto component
 
 function ScoutingForm() {
     const location = useLocation();
@@ -38,6 +40,7 @@ function ScoutingForm() {
         climbOption: '',
         autoAlgaeCount: 0,
         autoCoralCount: 0
+
     });
 
     const [barcodeData, setBarcodeData] = useState('');
@@ -140,8 +143,8 @@ function ScoutingForm() {
                     />
                 </Grid>
             </Grid>
-
             <Games container spacing={3} sx={{ marginTop: 3 }}>
+
                 <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
                         <InputLabel>Alliance</InputLabel>
