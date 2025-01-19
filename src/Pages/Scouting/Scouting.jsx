@@ -18,9 +18,6 @@ import { db } from "../../firebase-config";
 import { ref, set } from "firebase/database";
 import Teleop from "./Game/Teleop";
 import Auto from "./Game/Auto";
-import {Games} from "@mui/icons-material";
-import TeleField from "./Game/Teleop"; // Import TeleField component
-import Auto from "./Game/Auto"; // Import Auto component
 
 function ScoutingForm() {
     const location = useLocation();
@@ -39,8 +36,8 @@ function ScoutingForm() {
         L4: 0,
         climbOption: '',
         autoAlgaeCount: 0,
-        autoCoralCount: 0
-
+        autoCoralCount: 0,
+        algaeCount: 0
     });
 
     const [barcodeData, setBarcodeData] = useState('');
@@ -59,7 +56,7 @@ function ScoutingForm() {
         L4: ${formData.L4 || 0},
         AutoAlgaeCount: ${formData.autoAlgaeCount || 0},
         AutoCoralCount: ${formData.autoCoralCount || 0},
-        AlgaeCount: ${formData.algaeCount || 0}, 
+        AlgaeCount: ${formData.algaeCount || 0},
         ClimbOption: ${formData.climbOption || "None"}
         `.replace(/\n/g, "").replace(/\s+/g, " ").trim();
 
@@ -143,7 +140,7 @@ function ScoutingForm() {
                     />
                 </Grid>
             </Grid>
-            <Games container spacing={3} sx={{ marginTop: 3 }}>
+            <Grid container spacing={3} sx={{ marginTop: 3 }}>
 
                 <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
@@ -172,7 +169,7 @@ function ScoutingForm() {
                         rows={4}
                     />
                 </Grid>
-            </Games>
+            </Grid>
 
             <Divider sx={{ marginY: 3 }} />
 
