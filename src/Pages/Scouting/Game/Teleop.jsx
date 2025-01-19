@@ -70,7 +70,7 @@ const CounterBox = ({ label, count, onIncrement, onDecrement }) => (
 
 // ClimbingOptions Component
 const ClimbingOptions = ({ selectedOption, onSelect }) => {
-    const options = ['PARKED', 'DEEP', 'SHALLOW'];
+    const options = ['PARKED', 'DEEP', 'SHALLOW' , 'UNPARKED'];
 
     return (
         <Box
