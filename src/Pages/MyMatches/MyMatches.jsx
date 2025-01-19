@@ -167,7 +167,7 @@ function MyMatches() {
                                 maxWidth: 400,
                                 boxShadow: 3,
                                 borderRadius: 2,
-                                border: match.isSuperScouting ? '4px solid #d4af37' : 'none',
+                                border: match.isSuperScouting ? '4px solid #d4af37' : match.isPitScouting ? '4px solid #2a93b9' : 'none' ,
                                 backgroundColor: theme === 'light' ? (match.isPitScouting ? '#f0f8ff' : '#fff') : (match.isPitScouting ? '#1e1e1e' : '#333'),
                                 color: theme === 'light' ? '#000' : '#fff',
                                 position: 'relative',

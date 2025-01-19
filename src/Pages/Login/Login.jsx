@@ -51,23 +51,26 @@ export default function LoginForm() {
         fetchUsers();
     }, []);
 
-    const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setMessage('');
 
+        // Ensure username is trimmed
         const trimmedUsername = username.trim();
 
         try {
             const db = getDatabase();
-            const usersRef = ref(db, `users/${trimmedUsername}`);
+            const usersRef = ref(db, 'users/' + trimmedUsername); // Query using the username directly
+
             const snapshot = await get(usersRef);
 
             if (snapshot.exists()) {
                 const userData = snapshot.val();
 
                 if (userData.password === password) {
-                    navigate('/my_matches');
+                    localStorage.setItem('user', JSON.stringify({ username: trimmedUsername, role: userData.role }));
+                    navigate('/my_matches'); // Redirect to MyMatches page
                 } else {
                     setMessage('Invalid password.');
                 }
@@ -126,7 +129,7 @@ export default function LoginForm() {
                             fontSize: '1rem',
                         }}
                     >
-                        EXCALIBUR FCR
+                        EXCALIBUR FRC
                     </Typography>
                 </Box>
                 {/* Sign In Header */}

@@ -13,7 +13,6 @@ import {
     ListItem,
     ListItemText,
     Button,
-    Typography
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -98,7 +97,7 @@ const Navbar = () => {
                     {/* Centered Logo */}
                     <Box
                         component={Link}
-                        to="/"
+                        to="/my_matches"
                         sx={{
                             textDecoration: 'none',
                             display: 'flex',
