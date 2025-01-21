@@ -70,6 +70,7 @@ export default function LoginForm() {
                 const userData = snapshot.val();
 
                 if (userData.password === password) {
+                    localStorage.setItem('user', JSON.stringify({ username: trimmedUsername, role: userData.role }));
                     navigate('/my_matches');
                 } else {
                     setMessage('Invalid password.');
