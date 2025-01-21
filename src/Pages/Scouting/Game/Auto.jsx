@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Button, Typography, Box, Grid } from "@mui/material";
+import { ThemeContext } from "../../../ThemeContext";
 
 const Auto = ({ onChange }) => {
+    const { theme } = useContext(ThemeContext);
     const [autoAlgaeCount, setAutoAlgaeCount] = useState(0);
     const [autoCoralCount, setAutoCoralCount] = useState(0);
 
@@ -21,30 +23,27 @@ const Auto = ({ onChange }) => {
         if (autoCoralCount > 0) setAutoCoralCount(prev => prev - 1);
     };
 
-    // Send data to parent (ScoutingForm) when it changes
     useEffect(() => {
         if (onChange) {
-            // Pass the updated values to the parent
             onChange({ autoAlgaeCount, autoCoralCount });
         }
-    }, [autoAlgaeCount, autoCoralCount, onChange]); // Only run when either of the counters changes
+    }, [autoAlgaeCount, autoCoralCount, onChange]);
 
     return (
         <Box>
             <Typography variant="h4" sx={{ marginBottom: 1 }}>Autonomous</Typography>
             <Grid container spacing={4} justifyContent="center">
-                {/* Algae Counter */}
                 <Grid item xs={12} sm={6} md={4}>
                     <Box
                         sx={{
                             p: 3,
                             borderRadius: 2,
-                            bgcolor: '#e8f5e9',
+                            bgcolor: theme === 'dark' ? '#424242' : '#e8f5e9',
                             textAlign: 'center',
                             boxShadow: 2,
                         }}
                     >
-                        <Typography variant="h5" gutterBottom>
+                        <Typography variant="h5" gutterBottom sx={{ color: theme === 'dark' ? '#fff' : '#000' }}>
                             Algae
                         </Typography>
                         <Typography variant="h3" color="primary" gutterBottom>
@@ -71,18 +70,17 @@ const Auto = ({ onChange }) => {
                     </Box>
                 </Grid>
 
-                {/* Coral Counter */}
                 <Grid item xs={12} sm={6} md={4}>
                     <Box
                         sx={{
                             p: 3,
                             borderRadius: 2,
-                            bgcolor: '#e8f5e9',
+                            bgcolor: theme === 'dark' ? '#424242' : '#e8f5e9',
                             textAlign: 'center',
                             boxShadow: 2,
                         }}
                     >
-                        <Typography variant="h5" gutterBottom>
+                        <Typography variant="h5" gutterBottom sx={{ color: theme === 'dark' ? '#fff' : '#000' }}>
                             Coral
                         </Typography>
                         <Typography variant="h3" color="primary" gutterBottom>
