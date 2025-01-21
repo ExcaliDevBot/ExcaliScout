@@ -8,6 +8,7 @@ import Divider from '@mui/material/Divider';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
+import { capitalize } from 'lodash';
 import './Profile.css';
 
 const Profile = () => {
@@ -69,8 +70,8 @@ const Profile = () => {
                     <Typography variant="h4" fontWeight="bold">
                         {user.username}
                     </Typography>
-                    <Typography variant="body1" color="textSecondary">
-                        Role: {user.role}
+                    <Typography variant="body3" sx={{ color: theme === 'light' ? '#012265' : '#fff' }}>
+                        {capitalize(user.role)}
                     </Typography>
                     <Divider
                         sx={{
