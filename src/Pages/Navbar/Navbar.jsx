@@ -13,6 +13,8 @@ import {
     ListItem,
     ListItemText,
     Button,
+    useMediaQuery,
+    useTheme,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -24,6 +26,8 @@ const Navbar = () => {
     const [profileAnchorEl, setProfileAnchorEl] = useState(null);
     const [actionsAnchorEl, setActionsAnchorEl] = useState(null);
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
     const handleLogout = () => {
         logout();
@@ -44,10 +48,7 @@ const Navbar = () => {
     };
 
     const toggleDrawer = (open) => (event) => {
-        if (
-            event.type === 'keydown' &&
-            (event.key === 'Tab' || event.key === 'Shift')
-        ) {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
         setDrawerOpen(open);
@@ -57,44 +58,6 @@ const Navbar = () => {
         <div>
             <AppBar position="fixed" sx={{ backgroundColor: '#012265', boxShadow: 'none' }}>
                 <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    {/* Hamburger Menu for mobile */}
-                    <IconButton
-                        edge="start"
-                        color="inherit"
-                        aria-label="menu"
-                        onClick={toggleDrawer(true)}
-                        sx={{ display: { xs: 'block', md: 'none' }, color: '#d4af37' }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-
-                    {/* Drawer for mobile navigation */}
-                    <Drawer
-                        anchor="left"
-                        open={drawerOpen}
-                        onClose={toggleDrawer(false)}
-                        sx={{
-                            '& .MuiDrawer-paper': {
-                                backgroundColor: '#012265',
-                                color: '#fff',
-                            }
-                        }}
-                    >
-                        <List>
-                            {user && (
-                                <ListItem button onClick={() => navigate('/my_matches')}>
-                                    <ListItemText primary="My Matches" sx={{ color: '#fff' }} />
-                                </ListItem>
-                            )}
-                            {user && user.role === 'admin' && (
-                                <ListItem button onClick={handleActionsMenuOpen}>
-                                    <ListItemText primary="Actions" sx={{ color: '#fff' }} />
-                                </ListItem>
-                            )}
-                        </List>
-                    </Drawer>
-
-                    {/* Centered Logo */}
                     <Box
                         component={Link}
                         to="/my_matches"
@@ -102,8 +65,7 @@ const Navbar = () => {
                             textDecoration: 'none',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center',
-                            flexGrow: 1
+                            padding: '0 20px',
                         }}
                     >
                         <Box
@@ -113,7 +75,6 @@ const Navbar = () => {
                             sx={{
                                 height: 40,
                                 width: 'auto',
-                                justifyContent: 'left',
                                 objectFit: 'contain',
                                 transition: 'transform 0.3s ease-in-out',
                                 '&:hover': {
@@ -122,25 +83,60 @@ const Navbar = () => {
                             }}
                         />
                     </Box>
+                    {isMobile ? (
+                        <>
+                            <IconButton
+                                edge="start"
+                                color="inherit"
+                                aria-label="menu"
+                                onClick={toggleDrawer(true)}
+                                sx={{ color: '#d4af37' }}
+                            >
+                                <MenuIcon />
+                            </IconButton>
+                            <Drawer
+                                anchor="left"
+                                open={drawerOpen}
+                                onClose={toggleDrawer(false)}
+                                sx={{
+                                    '& .MuiDrawer-paper': {
+                                        backgroundColor: '#012265',
+                                        color: '#fff',
+                                    }
+                                }}
+                            >
+                                <List>
+                                    <ListItem button component={Link} to="/my_matches">
+                                        <ListItemText primary="My Matches" sx={{ color: '#fff' }} />
+                                    </ListItem>
+                                    {user && user.role === 'admin' && (
+                                        <ListItem button onClick={handleActionsMenuOpen}>
+                                            <ListItemText primary="Actions" sx={{ color: '#fff' }} />
+                                        </ListItem>
+                                    )}
+                                </List>
+                            </Drawer>
+                        </>
+                    ) : (
+                        <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1, justifyContent: 'center' }}>
+                            {/* Other content */}
+                        </Box>
+                    )}
 
-                    {/* Profile and Action Buttons */}
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         {user ? (
                             <>
-                                {/* Profile Icon */}
                                 <IconButton
                                     color="inherit"
                                     onClick={handleProfileMenuOpen}
                                     sx={{
                                         '&:hover': {
-                                            color: '#d4af37', // Gold color on hover
+                                            color: '#d4af37',
                                         }
                                     }}
                                 >
                                     <AccountCircleIcon />
                                 </IconButton>
-
-                                {/* Profile Dropdown */}
                                 <Menu
                                     anchorEl={profileAnchorEl}
                                     open={Boolean(profileAnchorEl)}
@@ -156,8 +152,6 @@ const Navbar = () => {
                                     <MenuItem onClick={() => navigate('/profile')}>View Profile</MenuItem>
                                     <MenuItem onClick={handleLogout}>Logout</MenuItem>
                                 </Menu>
-
-                                {/* Actions Button (for admin users) */}
                                 {user && user.role === 'admin' && (
                                     <IconButton
                                         color="inherit"
@@ -172,8 +166,6 @@ const Navbar = () => {
                                         <MoreVertIcon />
                                     </IconButton>
                                 )}
-
-                                {/* Actions Dropdown */}
                                 <Menu
                                     anchorEl={actionsAnchorEl}
                                     open={Boolean(actionsAnchorEl)}
@@ -208,13 +200,10 @@ const Navbar = () => {
                     </Box>
                 </Toolbar>
             </AppBar>
-
-            {/* Add margin-top to avoid content overlap */}
             <Box sx={{ marginTop: '60px' }}>
                 {/* The rest of your content goes here */}
             </Box>
         </div>
-
     );
 };
 
