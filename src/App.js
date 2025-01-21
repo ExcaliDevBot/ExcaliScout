@@ -55,6 +55,7 @@ function App() {
         </UserProvider>
         </ThemeProvider>
     );
+    <SpeedInsights/>
 }
 
 export default App;
