@@ -243,7 +243,7 @@ function ScoutingForm() {
                         display: 'inline-block',
                         padding: 3,
                         borderRadius: 2,
-                        backgroundColor: theme === 'dark' ? '#424242' : '#fff',
+                        backgroundColor: '#fff',
                     }}
                 >
                     <QRCode value={barcodeData} size={256} />
