@@ -15,13 +15,16 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import CircularProgress from '@mui/material/CircularProgress';
-
-// Import the logo from your project's assets folder
-import logo from '../Login/Excalibur Frc (4).png'; // Adjust the path based on your project structure
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import logo from '../Login/Excalibur Frc (4).png';
 
 export default function LoginForm() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [users, setUsers] = useState([]);
@@ -50,17 +53,16 @@ export default function LoginForm() {
         fetchUsers();
     }, []);
 
-const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setMessage('');
 
-        // Ensure username is trimmed
         const trimmedUsername = username.trim();
 
         try {
             const db = getDatabase();
-            const usersRef = ref(db, 'users/' + trimmedUsername); // Query using the username directly
+            const usersRef = ref(db, 'users/' + trimmedUsername);
 
             const snapshot = await get(usersRef);
 
@@ -68,8 +70,7 @@ const handleSubmit = async (e) => {
                 const userData = snapshot.val();
 
                 if (userData.password === password) {
-                    localStorage.setItem('user', JSON.stringify({ username: trimmedUsername, role: userData.role }));
-                    navigate('/my_matches'); // Redirect to MyMatches page
+                    navigate('/my_matches');
                 } else {
                     setMessage('Invalid password.');
                 }
@@ -82,6 +83,10 @@ const handleSubmit = async (e) => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleClickShowPassword = () => {
+        setShowPassword((prev) => !prev);
     };
 
     return (
@@ -107,15 +112,14 @@ const handleSubmit = async (e) => {
                         'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
                 }}
             >
-                {/* Logo */}
                 <Box
                     sx={{ textAlign: 'left', mb: 0.5, display: 'flex', alignItems: 'center' }}
                 >
                     <img
-                        src={logo} // Use the imported logo
+                        src={logo}
                         alt="Logo"
                         style={{
-                            maxWidth: '42px', // Adjusted the size to make the logo smaller
+                            maxWidth: '42px',
                             height: 'auto',
                             marginRight: '0.5rem',
                         }}
@@ -123,7 +127,7 @@ const handleSubmit = async (e) => {
                     <Typography
                         component="span"
                         sx={{
-                            fontFamily: 'Copperplate Gothic Bold, serif', // Use the new font
+                            fontFamily: 'Copperplate Gothic Bold, serif',
                             color: '#012265',
                             fontSize: '1rem',
                         }}
@@ -131,23 +135,19 @@ const handleSubmit = async (e) => {
                         EXCALIBUR FRC
                     </Typography>
                 </Box>
-                {/* Sign In Header */}
                 <Typography
                     component="h1"
                     variant="h4"
                     sx={{
-                        fontWeight: 'bold', // Make the font bolder
+                        fontWeight: 'bold',
                         fontSize: '2rem',
-                        textAlign: 'left', // Align text to the left
+                        textAlign: 'left',
                         mb: 2,
-                        mt: 0.5, // Reduced top margin
+                        mt: 0.5,
                     }}
                 >
                     Sign in
                 </Typography>
-
-
-                {/* Form */}
                 <Box component="form" onSubmit={handleSubmit} noValidate>
                     <FormControl fullWidth>
                         <FormLabel htmlFor="username">Username</FormLabel>
@@ -172,11 +172,24 @@ const handleSubmit = async (e) => {
                         <FormLabel htmlFor="password">Password</FormLabel>
                         <TextField
                             id="password"
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="Team Password"
                             required
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={handleClickShowPassword}
+                                            edge="end"
+                                        >
+                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
                     </FormControl>
                     <FormControlLabel
@@ -200,7 +213,7 @@ const handleSubmit = async (e) => {
                     </Button>
                 </Box>
                 <Divider sx={{ my: 2 }}>or</Divider>
-                <Typography textAlign="center" >
+                <Typography textAlign="center">
                     Don&apos;t have an account?{' '}
                     <Button variant="text" onClick={() => alert('Yuda Buda')}>Contact Support</Button>
                 </Typography>
