@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import QRCode from "qrcode.react";
 import {
@@ -18,11 +18,13 @@ import { db } from "../../firebase-config";
 import { ref, set } from "firebase/database";
 import Teleop from "./Game/Teleop";
 import Auto from "./Game/Auto";
+import { ThemeContext } from "../../ThemeContext";
 
 function ScoutingForm() {
     const location = useLocation();
     const { match, user } = location.state || {};
     const isNewForm = !match;
+    const { theme } = useContext(ThemeContext);
 
     const [formData, setFormData] = useState({
         Name: user ? user.username : '',
@@ -37,7 +39,7 @@ function ScoutingForm() {
         climbOption: '',
         autoAlgaeCount: 0,
         autoCoralCount: 0,
-        algaeCount: 0
+        algaeCount: 0,
     });
 
     const [barcodeData, setBarcodeData] = useState('');
@@ -81,7 +83,7 @@ function ScoutingForm() {
     const handleTeleChange = ({ counters, climbOption }) => {
         setFormData((prev) => ({
             ...prev,
-            ...counters,  // This will include L1, L2, L3, L4, and teleAlgaeCount
+            ...counters,
             climbOption,
         }));
     };
@@ -111,8 +113,19 @@ function ScoutingForm() {
     };
 
     return (
-        <Box sx={{ padding: 3, maxWidth: '900px', margin: 'auto', textAlign: 'center' }}>
-            <Typography variant="h4" align="center" gutterBottom>
+        <Box
+            sx={{
+                padding: 3,
+                maxWidth: '900px',
+                margin: 'auto',
+                textAlign: 'center',
+                backgroundColor: theme === 'dark' ? '#121212' : '#fff',
+                color: theme === 'dark' ? '#fff' : '#000',
+                borderRadius: 2,
+                boxShadow: 4,
+            }}
+        >
+            <Typography variant="h4" gutterBottom>
                 Scouting Form
             </Typography>
 
@@ -126,6 +139,12 @@ function ScoutingForm() {
                         value={formData.Team}
                         onChange={handleInputChange}
                         disabled={!isNewForm}
+                        InputProps={{
+                            style: { color: 'inherit' },
+                        }}
+                        sx={{
+                            backgroundColor: theme === 'dark' ? '#424242' : '#fff',
+                        }}
                     />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -137,11 +156,16 @@ function ScoutingForm() {
                         value={formData.Match}
                         onChange={handleInputChange}
                         disabled={!isNewForm}
+                        InputProps={{
+                            style: { color: 'inherit' },
+                        }}
+                        sx={{
+                            backgroundColor: theme === 'dark' ? '#424242' : '#fff',
+                        }}
                     />
                 </Grid>
             </Grid>
             <Grid container spacing={3} sx={{ marginTop: 3 }}>
-
                 <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
                         <InputLabel>Alliance</InputLabel>
@@ -151,6 +175,10 @@ function ScoutingForm() {
                             value={formData.Alliance}
                             onChange={handleInputChange}
                             disabled={!isNewForm}
+                            sx={{
+                                backgroundColor: theme === 'dark' ? '#424242' : '#fff',
+                                color: 'inherit',
+                            }}
                         >
                             <MenuItem value="Red">Red</MenuItem>
                             <MenuItem value="Blue">Blue</MenuItem>
@@ -167,6 +195,12 @@ function ScoutingForm() {
                         onChange={handleInputChange}
                         multiline
                         rows={4}
+                        InputProps={{
+                            style: { color: 'inherit' },
+                        }}
+                        sx={{
+                            backgroundColor: theme === 'dark' ? '#424242' : '#fff',
+                        }}
                     />
                 </Grid>
             </Grid>
@@ -186,10 +220,14 @@ function ScoutingForm() {
             <Box sx={{ textAlign: 'center', marginTop: 4 }}>
                 <Button
                     variant="contained"
-                    color="primary"
                     onClick={handleSubmit}
                     disabled={isButtonDisabled}
-                    sx={{ backgroundColor: '#4caf50', paddingX: 4 }}
+                    sx={{
+                        backgroundColor: '#4caf50',
+                        '&:hover': { backgroundColor: '#388e3c' },
+                        color: '#fff',
+                        paddingX: 4,
+                    }}
                 >
                     Submit
                 </Button>
@@ -199,7 +237,15 @@ function ScoutingForm() {
                 <Typography variant="h6" gutterBottom>
                     Barcode
                 </Typography>
-                <Paper elevation={3} sx={{ display: 'inline-block', padding: 3, borderRadius: 2, marginBottom: 11 }}>
+                <Paper
+                    elevation={3}
+                    sx={{
+                        display: 'inline-block',
+                        padding: 3,
+                        borderRadius: 2,
+                        backgroundColor: theme === 'dark' ? '#424242' : '#fff',
+                    }}
+                >
                     <QRCode value={barcodeData} size={256} />
                 </Paper>
             </Box>

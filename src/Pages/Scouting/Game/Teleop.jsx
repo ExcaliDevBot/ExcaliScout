@@ -1,76 +1,82 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Box, Button, Typography, Grid, Paper, Divider } from '@mui/material';
+import { ThemeContext } from '../../../ThemeContext';
 
 // CounterBox Component
-const CounterBox = ({ label, count, onIncrement, onDecrement }) => (
-    <Box
-        sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '100%',
-            backgroundColor: '#f5f5f5',
-            borderRadius: 2,
-            padding: 2,
-            boxShadow: 1,
-            marginBottom: 2,
-        }}
-    >
-        <Typography variant="h6" sx={{ marginBottom: 1 }}>{label}</Typography>
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', justifyContent: 'center' }}>
-            <Button
-                variant="contained"
-                onClick={onDecrement}
-                sx={{
-                    color: '#000000',
-                    fontSize: 24,
-                    backgroundColor: '#4caf50',
-                    '&:hover': { backgroundColor: '#388e3c' },
-                }}
-            >
-                -
-            </Button>
-            <Typography
-                variant="h5"
-                sx={{
-                    fontWeight: 'bold',
-                    color: '#333',
-                    minWidth: '50px',
-                    textAlign: 'center',
-                    ...(label === 'Algae Counter' && {
-                        borderRadius: '50%',
+const CounterBox = ({ label, count, onIncrement, onDecrement }) => {
+    const { theme } = useContext(ThemeContext);
+
+    return (
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                backgroundColor: theme === 'dark' ? '#424242' : '#f5f5f5',
+                borderRadius: 2,
+                padding: 2,
+                boxShadow: 1,
+                marginBottom: 2,
+            }}
+        >
+            <Typography variant="h6" sx={{ marginBottom: 1, color: theme === 'dark' ? '#fff' : '#000' }}>{label}</Typography>
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', justifyContent: 'center' }}>
+                <Button
+                    variant="contained"
+                    onClick={onDecrement}
+                    sx={{
+                        color: '#000000',
+                        fontSize: 24,
                         backgroundColor: '#4caf50',
-                        color: '#fff',
-                        width: '50px',
-                        height: '50px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }),
-                }}
-            >
-                {count}
-            </Typography>
-            <Button
-                variant="contained"
-                onClick={onIncrement}
-                sx={{
-                    color: '#000000',
-                    fontSize: 24,
-                    backgroundColor: '#4caf50',
-                    '&:hover': { backgroundColor: '#388e3c' },
-                }}
-            >
-                +
-            </Button>
+                        '&:hover': { backgroundColor: '#388e3c' },
+                    }}
+                >
+                    -
+                </Button>
+                <Typography
+                    variant="h5"
+                    sx={{
+                        fontWeight: 'bold',
+                        color: theme === 'dark' ? '#fff' : '#333',
+                        minWidth: '50px',
+                        textAlign: 'center',
+                        ...(label === 'Algae Counter' && {
+                            borderRadius: '50%',
+                            backgroundColor: '#4caf50',
+                            color: '#fff',
+                            width: '50px',
+                            height: '50px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }),
+                    }}
+                >
+                    {count}
+                </Typography>
+                <Button
+                    variant="contained"
+                    onClick={onIncrement}
+                    sx={{
+                        color: '#000000',
+                        fontSize: 24,
+                        backgroundColor: '#4caf50',
+                        '&:hover': { backgroundColor: '#388e3c' },
+                    }}
+                >
+                    +
+                </Button>
+            </Box>
         </Box>
-    </Box>
-);
+    );
+};
 
 // ClimbingOptions Component
 const ClimbingOptions = ({ selectedOption, onSelect }) => {
-    const options = ['PARKED', 'DEEP', 'SHALLOW' , 'UNPARKED'];
+    const { theme } = useContext(ThemeContext);
+    const options = ['PARKED', 'DEEP', 'SHALLOW', 'UNPARKED'];
 
     return (
         <Box
@@ -93,8 +99,8 @@ const ClimbingOptions = ({ selectedOption, onSelect }) => {
                         textAlign: 'center',
                         borderRadius: 2,
                         cursor: 'pointer',
-                        backgroundColor: selectedOption === option ? '#4caf50' : '#f5f5f5',
-                        color: selectedOption === option ? '#fff' : '#333',
+                        backgroundColor: selectedOption === option ? '#4caf50' : theme === 'dark' ? '#424242' : '#f5f5f5',
+                        color: selectedOption === option ? '#fff' : theme === 'dark' ? '#fff' : '#333',
                         fontWeight: selectedOption === option ? 'bold' : 'normal',
                         boxShadow: selectedOption === option ? '0 4px 20px rgba(0, 0, 0, 0.2)' : 'none',
                         transition: 'all 0.3s',
