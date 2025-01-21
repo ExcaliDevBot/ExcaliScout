@@ -15,7 +15,7 @@ import AdminSuperAssign from './Pages/AdminTools/AdminSuperAssign';
 import PitScouting from './Pages/Scouting/Pit/PitScouting';
 import PitScoutingAssign from './Pages/AdminTools/PitScoutingAssign';
 import QRCodeScanner from './Pages/Scanner/QRCodeScanner';
-
+import { SpeedInsights } from "@vercel/speed-insights/react"
 // Routes and Access Control
 import AdminRoute from './AdminRoute';
 import ProtectedRoute from './ProtectedRoute';
