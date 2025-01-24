@@ -18,6 +18,7 @@ import InfoIcon from '@mui/icons-material/Info';
 function MyMatches() {
     const [matches, setMatches] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [submittedMatches, setSubmittedMatches] = useState([]);
     const { user } = useContext(UserContext);
     const { theme } = useContext(ThemeContext);
     const navigate = useNavigate();
@@ -45,14 +46,17 @@ function MyMatches() {
                     const matchesRef = ref(db, `matches`);
                     const superScoutingAssignmentsRef = ref(db, `superScoutingAssignments`);
                     const pitScoutingAssignmentsRef = ref(db, `pitScoutingAssignments`);
+                    const scoutingDataRef = ref(db, `scoutingData`);
                     const snapshotMatches = await get(matchesRef);
                     const snapshotSuperScouting = await get(superScoutingAssignmentsRef);
                     const snapshotPitScouting = await get(pitScoutingAssignmentsRef);
+                    const snapshotScoutingData = await get(scoutingDataRef);
 
                     if (snapshotMatches.exists() && snapshotSuperScouting.exists() && snapshotPitScouting.exists()) {
                         const allMatches = Object.values(snapshotMatches.val());
                         const allSuperScoutingAssignments = Object.values(snapshotSuperScouting.val());
                         const allPitScoutingAssignments = Object.values(snapshotPitScouting.val());
+                        const allScoutingData = snapshotScoutingData.exists() ? snapshotScoutingData.val() : {};
 
                         const userMatches = allMatches
                             .map((match) => {
@@ -65,8 +69,8 @@ function MyMatches() {
                                     if (match[position]?.scouter_name === user.username) {
                                         isSuperScouting = allSuperScoutingAssignments.some(
                                             (assignment) =>
-                                                assignment.user === user.username &&
-                                                String(assignment.match.match_number) === String(match.match_id)
+                                                assignment.match.match_id === match.match_id &&
+                                                assignment.user === user.username
                                         );
                                         return {
                                             match_number: match.match_id,
@@ -74,12 +78,20 @@ function MyMatches() {
                                             alliance: position.startsWith('red') ? 'Red' : 'Blue',
                                             isSuperScouting,
                                             superScoutingQuestions: isSuperScouting
-                                                ? Object.values(allSuperScoutingAssignments.find(assignment =>
-                                                    assignment.match.match_number === match.match_id)?.questions || {})
+                                                ? Object.values(
+                                                      allSuperScoutingAssignments.find(
+                                                          (assignment) =>
+                                                              assignment.match.match_id === match.match_id &&
+                                                              assignment.user === user.username
+                                                      ).questions || []
+                                                  )
                                                 : [],
                                             assignedBy: isSuperScouting
-                                                ? allSuperScoutingAssignments.find(assignment =>
-                                                    assignment.match.match_number === match.match_id)?.assignedBy
+                                                ? allSuperScoutingAssignments.find(
+                                                      (assignment) =>
+                                                          assignment.match.match_id === match.match_id &&
+                                                          assignment.user === user.username
+                                                  ).assignedBy
                                                 : null,
                                         };
                                     }
@@ -125,7 +137,16 @@ function MyMatches() {
 
                         mergedMatches.sort((a, b) => a.match_number - b.match_number);
 
+                        const submittedMatches = mergedMatches.filter(match => {
+                            const nodeName = `M${match.match_number}T${match.team_number}`;
+                            return allScoutingData[nodeName] && allScoutingData[nodeName].submittedAt;
+                        }).map(match => `${match.match_number}-${match.team_number}`);
+
+                        console.log('All matches assigned to the user:', mergedMatches);
+                        console.log('Submitted matches:', submittedMatches);
+
                         setMatches(mergedMatches);
+                        setSubmittedMatches(submittedMatches);
                     } else {
                         console.log('No matches, super scouting, or pit scouting assignments found in Firebase.');
                         setMatches([]);
@@ -220,21 +241,24 @@ function MyMatches() {
                                     variant="contained"
                                     sx={{
                                         mt: 2,
-                                        backgroundColor: theme === 'light' ? '#012265' : '#d4af37',
-                                        color: theme === 'light' ? '#fff' : '#012265',
-                                        '&:hover': { backgroundColor: theme === 'light' ? '#d4af37' : '#012265', color: theme === 'light' ? '#012265' : '#d4af37' },
+                                        backgroundColor: submittedMatches.includes(`${match.match_number}-${match.team_number}`) ? 'green' : (theme === 'light' ? '#012265' : '#d4af37'),
+                                        color: 'white',
+                                        '&:hover': { backgroundColor: submittedMatches.includes(`${match.match_number}-${match.team_number}`) ? 'green' : (theme === 'light' ? '#d4af37' : '#012265'), color: 'white' },
                                     }}
                                     onClick={() => {
-                                        if (match.isSuperScouting) {
-                                            navigate(`/super-scout`, { state: { match, questions: match.superScoutingQuestions } });
-                                        } else if (match.isPitScouting) {
-                                            navigate('/pit-scout', { state: { teamNumber: match.team_number, matchNumber: match.match_number } });
-                                        } else {
-                                            navigate(`/scout/${match.match_number}`, { state: { match, user } });
+                                        if (!submittedMatches.includes(`${match.match_number}-${match.team_number}`)) {
+                                            if (match.isSuperScouting) {
+                                                navigate(`/super-scout`, { state: { match, questions: match.superScoutingQuestions } });
+                                            } else if (match.isPitScouting) {
+                                                navigate('/pit-scout', { state: { teamNumber: match.team_number, matchNumber: match.match_number } });
+                                            } else {
+                                                navigate(`/scout/${match.match_number}`, { state: { match, user } });
+                                            }
                                         }
                                     }}
+                                    disabled={submittedMatches.includes(`${match.match_number}-${match.team_number}`)}
                                 >
-                                    Scout Now
+                                    {submittedMatches.includes(`${match.match_number}-${match.team_number}`) ? 'Completed!' : 'Scout Now'}
                                 </Button>
                             </CardContent>
                         </Card>
