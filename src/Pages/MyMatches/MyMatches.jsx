@@ -10,7 +10,7 @@ import {
     CardContent,
     CircularProgress,
     Typography,
-    Popover,
+    Divider,
     IconButton,
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
@@ -19,24 +19,11 @@ function MyMatches() {
     const [matches, setMatches] = useState([]);
     const [loading, setLoading] = useState(false);
     const [submittedMatches, setSubmittedMatches] = useState([]);
+    const [infoContent, setInfoContent] = useState({});
     const { user } = useContext(UserContext);
     const { theme } = useContext(ThemeContext);
     const navigate = useNavigate();
     const db = getDatabase();
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [popoverContent, setPopoverContent] = useState('');
-
-    const handlePopoverOpen = (event, content) => {
-        setAnchorEl(event.currentTarget);
-        setPopoverContent(content);
-    };
-
-    const handlePopoverClose = () => {
-        setAnchorEl(null);
-        setPopoverContent('');
-    };
-
-    const open = Boolean(anchorEl);
 
     useEffect(() => {
         if (user) {
@@ -54,7 +41,7 @@ function MyMatches() {
 
                     if (snapshotMatches.exists() && snapshotSuperScouting.exists() && snapshotPitScouting.exists()) {
                         const allMatches = Object.values(snapshotMatches.val());
-                        const allSuperScoutingAssignments = Object.values(snapshotSuperScouting.val());
+                        const allSuperScoutingAssignments = Object.entries(snapshotSuperScouting.val());
                         const allPitScoutingAssignments = Object.values(snapshotPitScouting.val());
                         const allScoutingData = snapshotScoutingData.exists() ? snapshotScoutingData.val() : {};
 
@@ -68,9 +55,8 @@ function MyMatches() {
                                 for (const position of positions) {
                                     if (match[position]?.scouter_name === user.username) {
                                         isSuperScouting = allSuperScoutingAssignments.some(
-                                            (assignment) =>
-                                                assignment.match.match_id === match.match_id &&
-                                                assignment.user === user.username
+                                            ([assignmentId, assignment]) =>
+                                                assignment.user === user.username && assignment.match.match_number === match.match_id
                                         );
                                         return {
                                             match_number: match.match_id,
@@ -78,21 +64,23 @@ function MyMatches() {
                                             alliance: position.startsWith('red') ? 'Red' : 'Blue',
                                             isSuperScouting,
                                             superScoutingQuestions: isSuperScouting
-                                                ? Object.values(
-                                                      allSuperScoutingAssignments.find(
-                                                          (assignment) =>
-                                                              assignment.match.match_id === match.match_id &&
-                                                              assignment.user === user.username
-                                                      ).questions || []
-                                                  )
+                                                ? allSuperScoutingAssignments.find(
+                                                      ([assignmentId, assignment]) =>
+                                                          assignment.user === user.username && assignment.match.match_number === match.match_id
+                                                  )[1].questions
                                                 : [],
                                             assignedBy: isSuperScouting
                                                 ? allSuperScoutingAssignments.find(
-                                                      (assignment) =>
-                                                          assignment.match.match_id === match.match_id &&
-                                                          assignment.user === user.username
-                                                  ).assignedBy
-                                                : null,
+                                                      ([assignmentId, assignment]) =>
+                                                          assignment.user === user.username && assignment.match.match_number === match.match_id
+                                                  )[1].assignedBy
+                                                : '',
+                                            assignmentId: isSuperScouting
+                                                ? allSuperScoutingAssignments.find(
+                                                      ([assignmentId, assignment]) =>
+                                                          assignment.user === user.username && assignment.match.match_number === match.match_id
+                                                  )[0]
+                                                : '',
                                         };
                                     }
                                 }
@@ -101,8 +89,8 @@ function MyMatches() {
                             .filter(Boolean);
 
                         const superScoutingMatches = allSuperScoutingAssignments
-                            .filter(assignment => assignment.user === user.username)
-                            .map((assignment) => {
+                            .filter(([assignmentId, assignment]) => assignment.user === user.username)
+                            .map(([assignmentId, assignment]) => {
                                 const match = assignment.match;
                                 if (!match) return null;
                                 return {
@@ -111,6 +99,7 @@ function MyMatches() {
                                     isSuperScouting: true,
                                     superScoutingQuestions: Object.values(assignment.questions || []),
                                     assignedBy: assignment.assignedBy,
+                                    assignmentId,
                                 };
                             })
                             .filter(Boolean);
@@ -161,6 +150,18 @@ function MyMatches() {
             fetchMatches();
         }
     }, [user, db]);
+
+    const handleInfoClick = async (match) => {
+        const nodeName = `M${match.match_number}T${match.team_number}`;
+        const matchRef = ref(db, `scoutingData/${nodeName}`);
+        const snapshot = await get(matchRef);
+        const parentNodeName = snapshot.exists() ? snapshot.ref.parent.key : 'Unknown';
+
+        setInfoContent((prev) => ({
+            ...prev,
+            [match.match_number]: prev[match.match_number] ? null : { ...match, parentNodeName },
+        }));
+    };
 
     return (
         <Box sx={{ p: 4, backgroundColor: theme === 'light' ? '#f0f0f0' : '#121212', color: theme === 'light' ? '#000' : '#fff' }}>
@@ -214,8 +215,7 @@ function MyMatches() {
                                         </Typography>
                                         <IconButton
                                             sx={{ position: 'absolute', bottom: 8, right: 8 }}
-                                            onMouseEnter={(e) => handlePopoverOpen(e, `Assigned By ${match.assignedBy}, Serial Number ${Math.floor(Math.random() * (99999 - 11111 + 1)) + 11111}`)}
-                                            onMouseLeave={handlePopoverClose}
+                                            onClick={() => handleInfoClick(match)}
                                         >
                                             <InfoIcon sx={{ color: 'gray' }} />
                                         </IconButton>
@@ -228,10 +228,7 @@ function MyMatches() {
                                         </Typography>
                                         <IconButton
                                             sx={{ position: 'absolute', bottom: 8, right: 8 }}
-                                            onMouseEnter={(e) => handlePopoverOpen(
-                                                e, `Assigned By ${match.assignedBy},\nSerial Number ${Math.floor(Math.random() * (99999 - 11111 + 1)) + 11111}`
-                                            )}
-                                            onMouseLeave={handlePopoverClose}
+                                            onClick={() => handleInfoClick(match)}
                                         >
                                             <InfoIcon sx={{ color: 'gray' }} />
                                         </IconButton>
@@ -250,9 +247,9 @@ function MyMatches() {
                                             if (match.isSuperScouting) {
                                                 navigate(`/super-scout`, { state: { match, questions: match.superScoutingQuestions } });
                                             } else if (match.isPitScouting) {
-                                                navigate('/pit-scout', { state: { teamNumber: match.team_number, matchNumber: match.match_number } });
+                                                navigate(`/pit-scout`, { state: { match } });
                                             } else {
-                                                navigate(`/scout/${match.match_number}`, { state: { match, user } });
+                                                navigate(`/scout/new`, { state: { match, user } });
                                             }
                                         }
                                     }}
@@ -260,6 +257,17 @@ function MyMatches() {
                                 >
                                     {submittedMatches.includes(`${match.match_number}-${match.team_number}`) ? 'Completed!' : 'Scout Now'}
                                 </Button>
+                                {infoContent[match.match_number] && (
+                                    <>
+                                        <Divider sx={{ my: 2 }} />
+                                        <Typography variant="body2" sx={{ color: 'gray' }}>
+                                            Assigned By: {match.assignedBy}
+                                        </Typography>
+                                        <Typography variant="body2" sx={{ color: 'gray' }}>
+                                            Serial ID: {infoContent[match.match_number].assignmentId}
+                                        </Typography>
+                                    </>
+                                )}
                             </CardContent>
                         </Card>
                     ))}
@@ -330,24 +338,6 @@ function MyMatches() {
                     New Scouting Form
                 </Button>
             )}
-
-            <Popover
-                open={open}
-                anchorEl={anchorEl}
-                onClose={handlePopoverClose}
-                anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                }}
-                transformOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                }}
-            >
-                <Box sx={{ p: 2 }}>
-                    <Typography>{popoverContent}</Typography>
-                </Box>
-            </Popover>
         </Box>
     );
 }
