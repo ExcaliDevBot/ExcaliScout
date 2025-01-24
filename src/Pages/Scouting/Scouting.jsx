@@ -102,7 +102,8 @@ function ScoutingForm() {
         };
 
         try {
-            const dbRef = ref(db, `scoutingData/${new Date().getTime()}`);
+            const nodeName = `M${formData.Match}T${formData.Team}`;
+            const dbRef = ref(db, `scoutingData/${nodeName}`);
             await set(dbRef, dataToSubmit);
             alert("Submission successful!");
             setIsButtonDisabled(true);
