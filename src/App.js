@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+import { Analytics } from "@vercel/analytics/react"
 import Navbar from './Pages/Navbar/Navbar';
 
 // Pages
@@ -53,6 +54,7 @@ function App() {
                 </Routes>
             </Router>
             <SpeedInsights/>
+            <Analytics/>
         </UserProvider>
         </ThemeProvider>
 
