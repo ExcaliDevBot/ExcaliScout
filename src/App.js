@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import Navbar from './Pages/Navbar/Navbar';
 
 // Pages
@@ -15,7 +16,6 @@ import AdminSuperAssign from './Pages/AdminTools/AdminSuperAssign';
 import PitScouting from './Pages/Scouting/Pit/PitScouting';
 import PitScoutingAssign from './Pages/AdminTools/PitScoutingAssign';
 import QRCodeScanner from './Pages/Scanner/QRCodeScanner';
-import { SpeedInsights } from "@vercel/speed-insights/react"
 // Routes and Access Control
 import AdminRoute from './AdminRoute';
 import ProtectedRoute from './ProtectedRoute';
@@ -52,10 +52,11 @@ function App() {
                     <Route path="/no-access" element={<div>No Access</div>} />
                 </Routes>
             </Router>
+            <SpeedInsights/>
         </UserProvider>
         </ThemeProvider>
+
     );
-    <SpeedInsights/>
 }
 
 export default App;
