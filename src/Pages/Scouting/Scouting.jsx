@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useContext } from "react";
-import { useLocation } from "react-router-dom";
+import React, {useEffect, useState, useContext} from "react";
+import {useLocation} from "react-router-dom";
 import QRCode from "qrcode.react";
 import {
     Button,
@@ -13,24 +13,30 @@ import {
     Grid,
     Paper,
     Divider,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
 } from "@mui/material";
-import { db } from "../../firebase-config";
-import { ref, set } from "firebase/database";
+import {db} from "../../firebase-config";
+import {ref, set} from "firebase/database";
 import Teleop from "./Game/Teleop";
 import Auto from "./Game/Auto";
-import { ThemeContext } from "../../ThemeContext";
+import {ThemeContext} from "../../ThemeContext";
+import {EmojiEvents, Star, HelpOutline} from '@mui/icons-material';
 
 function ScoutingForm() {
     const location = useLocation();
-    const { match, user } = location.state || {};
+    const {match, user} = location.state || {};
     const isNewForm = !match;
-    const { theme } = useContext(ThemeContext);
+    const {theme} = useContext(ThemeContext);
 
     const [formData, setFormData] = useState({
         Name: user ? user.username : '',
         Team: match ? match.team_number : '',
         Match: match ? match.match_number : '',
         Alliance: match ? match.alliance : '',
+        WinnerPrediction: '',
         Notes: '',
         L1: 0,
         L2: 0,
@@ -44,6 +50,7 @@ function ScoutingForm() {
 
     const [barcodeData, setBarcodeData] = useState('');
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [winnerDialogOpen, setWinnerDialogOpen] = useState(true);
 
     useEffect(() => {
         const generateBarcode = () => {
@@ -51,6 +58,7 @@ function ScoutingForm() {
         Name: ${formData.Name || "Unknown"},
         Team: ${formData.Team || "Unknown"},
         Match: ${formData.Match || "Unknown"},
+        WinnerPrediction: ${formData.WinnerPrediction || "None"},
         Notes: ${formData.Notes || "Unknown"},
         L1: ${formData.L1 || 0},
         L2: ${formData.L2 || 0},
@@ -69,8 +77,8 @@ function ScoutingForm() {
     }, [formData]);
 
     const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        const {name, value} = event.target;
+        setFormData((prev) => ({...prev, [name]: value}));
     };
 
     const handleAutoChange = (autoData) => {
@@ -80,7 +88,7 @@ function ScoutingForm() {
         }));
     };
 
-    const handleTeleChange = ({ counters, climbOption }) => {
+    const handleTeleChange = ({counters, climbOption}) => {
         setFormData((prev) => ({
             ...prev,
             ...counters,
@@ -88,10 +96,15 @@ function ScoutingForm() {
         }));
     };
 
+    const handleWinnerSelect = (winner) => {
+        setFormData((prev) => ({...prev, WinnerPrediction: winner}));
+        setWinnerDialogOpen(false);
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if (!formData.Team || !formData.Match || !formData.Alliance || !formData.Name) {
+        if (!formData.Team || !formData.Match || !formData.Alliance || !formData.Name || !formData.WinnerPrediction) {
             alert("Please fill in all required fields.");
             return;
         }
@@ -114,143 +127,212 @@ function ScoutingForm() {
     };
 
     return (
-        <Box
-            sx={{
-                padding: 3,
-                maxWidth: '900px',
-                margin: 'auto',
-                textAlign: 'center',
-                backgroundColor: theme === 'dark' ? '#121212' : '#fff',
-                color: theme === 'dark' ? '#fff' : '#000',
-                borderRadius: 2,
-                boxShadow: 4,
-            }}
-        >
-            <Typography variant="h4" gutterBottom>
-                Scouting Form
-            </Typography>
+        <>
+            <Dialog open={winnerDialogOpen} onClose={() => {
+            }} disableBackdropClick>
+                <DialogTitle>Which Alliance Do You Think Will Win?</DialogTitle>
+                <DialogContent>
+                    <Box sx={{display: 'flex', justifyContent: 'space-around', marginTop: 2}}>
+                        <Button
+                            variant="contained"
+                            onClick={() => handleWinnerSelect("Red")}
+                            sx={{backgroundColor: '#ff0000', color: '#fff', '&:hover': {backgroundColor: '#ff0000'}}}
+                        >
+                            Red
+                        </Button>
+                        <Button
+                            variant="contained"
+                            onClick={() => handleWinnerSelect("Tie")}
+                            sx={{backgroundColor: '#9e9e9e', color: '#fff', '&:hover': {backgroundColor: '#757575'}}}
+                        >
+                            Tie
+                        </Button>
+                        <Button
+                            variant="contained"
+                            onClick={() => handleWinnerSelect("Blue")}
+                            sx={{backgroundColor: '#00458c', color: '#fff', '&:hover': {backgroundColor: '#00458c'}}}
+                        >
+                            Blue
+                        </Button>
+                    </Box>
+                </DialogContent>
+            </Dialog>
 
-            <Grid container spacing={3} justifyContent="center">
-                <Grid item xs={12} sm={6}>
-                    <TextField
-                        label="Team"
-                        variant="outlined"
-                        fullWidth
-                        name="Team"
-                        value={formData.Team}
-                        onChange={handleInputChange}
-                        disabled={!isNewForm}
-                        InputProps={{
-                            style: { color: 'inherit' },
-                        }}
-                        sx={{
-                            backgroundColor: theme === 'dark' ? '#424242' : '#fff',
-                        }}
-                    />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                    <TextField
-                        label="Match"
-                        variant="outlined"
-                        fullWidth
-                        name="Match"
-                        value={formData.Match}
-                        onChange={handleInputChange}
-                        disabled={!isNewForm}
-                        InputProps={{
-                            style: { color: 'inherit' },
-                        }}
-                        sx={{
-                            backgroundColor: theme === 'dark' ? '#424242' : '#fff',
-                        }}
-                    />
-                </Grid>
-            </Grid>
-            <Grid container spacing={3} sx={{ marginTop: 3 }}>
-                <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth>
-                        <InputLabel>Alliance</InputLabel>
-                        <Select
-                            label="Alliance"
-                            name="Alliance"
-                            value={formData.Alliance}
+            <Box
+                sx={{
+                    padding: 3,
+                    maxWidth: '900px',
+                    margin: 'auto',
+                    textAlign: 'center',
+                    backgroundColor: theme === 'dark' ? '#121212' : '#fff',
+                    color: theme === 'dark' ? '#fff' : '#000',
+                    borderRadius: 2,
+                    boxShadow: 4,
+                }}
+            >
+                <Typography variant="h4" gutterBottom>
+                    Scouting Form
+                </Typography>
+
+                <Grid container spacing={3} justifyContent="center">
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            label="Team"
+                            variant="outlined"
+                            fullWidth
+                            name="Team"
+                            value={formData.Team}
                             onChange={handleInputChange}
                             disabled={!isNewForm}
+                            InputProps={{
+                                style: {color: 'inherit'},
+                            }}
                             sx={{
                                 backgroundColor: theme === 'dark' ? '#424242' : '#fff',
-                                color: 'inherit',
                             }}
-                        >
-                            <MenuItem value="Red">Red</MenuItem>
-                            <MenuItem value="Blue">Blue</MenuItem>
-                        </Select>
-                    </FormControl>
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            label="Match"
+                            variant="outlined"
+                            fullWidth
+                            name="Match"
+                            value={formData.Match}
+                            onChange={handleInputChange}
+                            disabled={!isNewForm}
+                            InputProps={{
+                                style: {color: 'inherit'},
+                            }}
+                            sx={{
+                                backgroundColor: theme === 'dark' ? '#424242' : '#fff',
+                            }}
+                        />
+                    </Grid>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                    <TextField
-                        label="Notes"
-                        variant="outlined"
-                        fullWidth
-                        name="Notes"
-                        value={formData.Notes}
-                        onChange={handleInputChange}
-                        multiline
-                        rows={4}
-                        InputProps={{
-                            style: { color: 'inherit' },
-                        }}
-                        sx={{
-                            backgroundColor: theme === 'dark' ? '#424242' : '#fff',
-                        }}
-                    />
+                <Grid container spacing={3} sx={{marginTop: 3}}>
+                    <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                            <InputLabel>Alliance</InputLabel>
+                            <Select
+                                label="Alliance"
+                                name="Alliance"
+                                value={formData.Alliance}
+                                onChange={handleInputChange}
+                                disabled={!isNewForm}
+                                sx={{
+                                    backgroundColor: theme === 'dark' ? '#424242' : '#fff',
+                                    color: 'inherit',
+                                }}
+                            >
+                                <MenuItem value="Red">Red</MenuItem>
+                                <MenuItem value="Blue">Blue</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            label="Notes"
+                            variant="outlined"
+                            fullWidth
+                            name="Notes"
+                            value={formData.Notes}
+                            onChange={handleInputChange}
+                            multiline
+                            rows={4}
+                            InputProps={{
+                                style: {color: 'inherit'},
+                            }}
+                            sx={{
+                                backgroundColor: theme === 'dark' ? '#424242' : '#fff',
+                            }}
+                        />
+                    </Grid>
                 </Grid>
-            </Grid>
 
-            <Divider sx={{ marginY: 3 }} />
+                <Divider sx={{marginY: 3}}/>
 
-            <Auto onChange={handleAutoChange} />
+                <Auto onChange={handleAutoChange}/>
 
-            <Divider sx={{ marginY: 3 }} />
+                <Divider sx={{marginY: 3}}/>
 
-            <Box sx={{ marginTop: 3, display: 'flex', justifyContent: 'center' }}>
-                <Teleop onChange={handleTeleChange} />
-            </Box>
+                <Box sx={{marginTop: 3, display: 'flex', justifyContent: 'center'}}>
+                    <Teleop onChange={handleTeleChange}/>
+                </Box>
 
-            <Divider sx={{ marginY: 3 }} />
+                <Divider sx={{marginY: 3}}/>
 
-            <Box sx={{ textAlign: 'center', marginTop: 4 }}>
-                <Button
-                    variant="contained"
-                    onClick={handleSubmit}
-                    disabled={isButtonDisabled}
+
+                <Box
+                    display="flex"
+                    alignItems="center"
                     sx={{
-                        backgroundColor: '#4caf50',
-                        '&:hover': { backgroundColor: '#388e3c' },
-                        color: '#fff',
-                        paddingX: 4,
-                    }}
-                >
-                    Submit
-                </Button>
-            </Box>
-
-            <Box sx={{ textAlign: 'center', marginTop: 4 }}>
-                <Typography variant="h6" gutterBottom>
-                    Barcode
-                </Typography>
-                <Paper
-                    elevation={3}
-                    sx={{
-                        display: 'inline-block',
-                        padding: 3,
+                        padding: 2,
+                        border: "1px solid",
+                        borderColor: theme === "dark" ? "#555" : "#ccc",
                         borderRadius: 2,
-                        backgroundColor: '#fff',
+                        backgroundColor: theme === "dark" ? "#1c1c1c" : "#f9f9f9",
+                        boxShadow: 3,
+                        maxWidth: "400px",
+                        margin: "0 auto",
                     }}
                 >
-                    <QRCode value={barcodeData} size={256} />
-                </Paper>
+                    {formData.WinnerPrediction === "Red" && (
+                        <EmojiEvents color="error" style={{marginRight: 8}}/>
+                    )}
+                    {formData.WinnerPrediction === "Blue" && (
+                        <Star color="primary" style={{marginRight: 8}}/>
+                    )}
+                    {formData.WinnerPrediction === "Tie" && (
+                        <HelpOutline color="action" style={{marginRight: 8}}/>
+                    )}
+
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            color: theme === "dark" ? "#fff" : "#000",
+                        }}
+                    >
+                        Predicted Winner: {formData.WinnerPrediction || "None"}
+                    </Typography>
+                </Box>
+
+                <Divider sx={{marginY: 3}}/>
+
+                <Box sx={{textAlign: 'center', marginTop: 4}}>
+                    <Button
+                        variant="contained"
+                        onClick={handleSubmit}
+                        disabled={isButtonDisabled}
+                        sx={{
+                            backgroundColor: '#4caf50',
+                            '&:hover': {backgroundColor: '#388e3c'},
+                            color: '#fff',
+                            paddingX: 4,
+                        }}
+                    >
+                        Submit
+                    </Button>
+                </Box>
+
+                <Box sx={{textAlign: 'center', marginTop: 4}}>
+                    <Typography variant="h6" gutterBottom>
+                        Barcode
+                    </Typography>
+                    <Paper
+                        elevation={3}
+                        sx={{
+                            display: 'inline-block',
+                            padding: 3,
+                            borderRadius: 2,
+                            backgroundColor: '#fff',
+                        }}
+                    >
+                        <QRCode value={barcodeData} size={256}/>
+                    </Paper>
+                </Box>
             </Box>
-        </Box>
+        </>
     );
 }
 
