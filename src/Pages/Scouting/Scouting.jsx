@@ -1,6 +1,5 @@
-import React, {useEffect, useState, useContext} from "react";
-import {useLocation} from "react-router-dom";
-import QRCode from "qrcode.react";
+import React, { useEffect, useState, useContext } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
     Button,
     TextField,
@@ -14,22 +13,23 @@ import {
     Paper,
     Divider,
     Dialog,
-    DialogActions,
     DialogContent,
     DialogTitle,
 } from "@mui/material";
-import {db} from "../../firebase-config";
-import {ref, set} from "firebase/database";
+import { db } from "../../firebase-config";
+import { ref, set, get, child } from "firebase/database";
 import Teleop from "./Game/Teleop";
 import Auto from "./Game/Auto";
-import {ThemeContext} from "../../ThemeContext";
-import {EmojiEvents, Star, HelpOutline} from '@mui/icons-material';
+import { ThemeContext } from "../../ThemeContext";
+import { EmojiEvents, Star, HelpOutline } from '@mui/icons-material';
+import QRCode from "qrcode.react"; // Ensure this import is present
 
 function ScoutingForm() {
     const location = useLocation();
-    const {match, user} = location.state || {};
+    const navigate = useNavigate();
+    const { match, user } = location.state || {};
     const isNewForm = !match;
-    const {theme} = useContext(ThemeContext);
+    const { theme } = useContext(ThemeContext);
 
     const [formData, setFormData] = useState({
         Name: user ? user.username : '',
@@ -76,9 +76,26 @@ function ScoutingForm() {
         setBarcodeData(generateBarcode());
     }, [formData]);
 
+    useEffect(() => {
+        const checkIfDataExists = async (team, match) => {
+            const nodeName = `M${match}T${team}`;
+            const dbRef = ref(db);
+            const snapshot = await get(child(dbRef, `scoutingData/${nodeName}`));
+            return snapshot.exists();
+        };
+
+        if (formData.Team && formData.Match) {
+            checkIfDataExists(formData.Team, formData.Match).then(exists => {
+                if (exists) {
+                    navigate('/my_matches');
+                }
+            });
+        }
+    }, [formData.Team, formData.Match, navigate]);
+
     const handleInputChange = (event) => {
-        const {name, value} = event.target;
-        setFormData((prev) => ({...prev, [name]: value}));
+        const { name, value } = event.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleAutoChange = (autoData) => {
@@ -88,7 +105,7 @@ function ScoutingForm() {
         }));
     };
 
-    const handleTeleChange = ({counters, climbOption}) => {
+    const handleTeleChange = ({ counters, climbOption }) => {
         setFormData((prev) => ({
             ...prev,
             ...counters,
@@ -97,7 +114,7 @@ function ScoutingForm() {
     };
 
     const handleWinnerSelect = (winner) => {
-        setFormData((prev) => ({...prev, WinnerPrediction: winner}));
+        setFormData((prev) => ({ ...prev, WinnerPrediction: winner }));
         setWinnerDialogOpen(false);
     };
 
@@ -128,29 +145,28 @@ function ScoutingForm() {
 
     return (
         <>
-            <Dialog open={winnerDialogOpen} onClose={() => {
-            }} disableBackdropClick>
+            <Dialog open={winnerDialogOpen} onClose={() => { }} disableBackdropClick>
                 <DialogTitle>Which Alliance Do You Think Will Win?</DialogTitle>
                 <DialogContent>
-                    <Box sx={{display: 'flex', justifyContent: 'space-around', marginTop: 2}}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-around', marginTop: 2 }}>
                         <Button
                             variant="contained"
                             onClick={() => handleWinnerSelect("Red")}
-                            sx={{backgroundColor: '#ff0000', color: '#fff', '&:hover': {backgroundColor: '#ff0000'}}}
+                            sx={{ backgroundColor: '#ff0000', color: '#fff', '&:hover': { backgroundColor: '#ff0000' } }}
                         >
                             Red
                         </Button>
                         <Button
                             variant="contained"
                             onClick={() => handleWinnerSelect("Tie")}
-                            sx={{backgroundColor: '#9e9e9e', color: '#fff', '&:hover': {backgroundColor: '#757575'}}}
+                            sx={{ backgroundColor: '#9e9e9e', color: '#fff', '&:hover': { backgroundColor: '#757575' } }}
                         >
                             Tie
                         </Button>
                         <Button
                             variant="contained"
                             onClick={() => handleWinnerSelect("Blue")}
-                            sx={{backgroundColor: '#00458c', color: '#fff', '&:hover': {backgroundColor: '#00458c'}}}
+                            sx={{ backgroundColor: '#00458c', color: '#fff', '&:hover': { backgroundColor: '#00458c' } }}
                         >
                             Blue
                         </Button>
@@ -185,7 +201,7 @@ function ScoutingForm() {
                             onChange={handleInputChange}
                             disabled={!isNewForm}
                             InputProps={{
-                                style: {color: 'inherit'},
+                                style: { color: 'inherit' },
                             }}
                             sx={{
                                 backgroundColor: theme === 'dark' ? '#424242' : '#fff',
@@ -202,7 +218,7 @@ function ScoutingForm() {
                             onChange={handleInputChange}
                             disabled={!isNewForm}
                             InputProps={{
-                                style: {color: 'inherit'},
+                                style: { color: 'inherit' },
                             }}
                             sx={{
                                 backgroundColor: theme === 'dark' ? '#424242' : '#fff',
@@ -210,7 +226,7 @@ function ScoutingForm() {
                         />
                     </Grid>
                 </Grid>
-                <Grid container spacing={3} sx={{marginTop: 3}}>
+                <Grid container spacing={3} sx={{ marginTop: 3 }}>
                     <Grid item xs={12} sm={6}>
                         <FormControl fullWidth>
                             <InputLabel>Alliance</InputLabel>
@@ -241,7 +257,7 @@ function ScoutingForm() {
                             multiline
                             rows={4}
                             InputProps={{
-                                style: {color: 'inherit'},
+                                style: { color: 'inherit' },
                             }}
                             sx={{
                                 backgroundColor: theme === 'dark' ? '#424242' : '#fff',
@@ -250,17 +266,17 @@ function ScoutingForm() {
                     </Grid>
                 </Grid>
 
-                <Divider sx={{marginY: 3}}/>
+                <Divider sx={{ marginY: 3 }} />
 
-                <Auto onChange={handleAutoChange}/>
+                <Auto onChange={handleAutoChange} />
 
-                <Divider sx={{marginY: 3}}/>
+                <Divider sx={{ marginY: 3 }} />
 
-                <Box sx={{marginTop: 3, display: 'flex', justifyContent: 'center'}}>
-                    <Teleop onChange={handleTeleChange}/>
+                <Box sx={{ marginTop: 3, display: 'flex', justifyContent: 'center' }}>
+                    <Teleop onChange={handleTeleChange} />
                 </Box>
 
-                <Divider sx={{marginY: 3}}/>
+                <Divider sx={{ marginY: 3 }} />
 
 
                 <Box
@@ -278,13 +294,13 @@ function ScoutingForm() {
                     }}
                 >
                     {formData.WinnerPrediction === "Red" && (
-                        <EmojiEvents color="error" style={{marginRight: 8}}/>
+                        <EmojiEvents color="error" style={{ marginRight: 8 }} />
                     )}
                     {formData.WinnerPrediction === "Blue" && (
-                        <Star color="primary" style={{marginRight: 8}}/>
+                        <Star color="primary" style={{ marginRight: 8 }} />
                     )}
                     {formData.WinnerPrediction === "Tie" && (
-                        <HelpOutline color="action" style={{marginRight: 8}}/>
+                        <HelpOutline color="action" style={{ marginRight: 8 }} />
                     )}
 
                     <Typography
@@ -297,16 +313,16 @@ function ScoutingForm() {
                     </Typography>
                 </Box>
 
-                <Divider sx={{marginY: 3}}/>
+                <Divider sx={{ marginY: 3 }} />
 
-                <Box sx={{textAlign: 'center', marginTop: 4}}>
+                <Box sx={{ textAlign: 'center', marginTop: 4 }}>
                     <Button
                         variant="contained"
                         onClick={handleSubmit}
                         disabled={isButtonDisabled}
                         sx={{
                             backgroundColor: '#4caf50',
-                            '&:hover': {backgroundColor: '#388e3c'},
+                            '&:hover': { backgroundColor: '#388e3c' },
                             color: '#fff',
                             paddingX: 4,
                         }}
@@ -315,7 +331,7 @@ function ScoutingForm() {
                     </Button>
                 </Box>
 
-                <Box sx={{textAlign: 'center', marginTop: 4}}>
+                <Box sx={{ textAlign: 'center', marginTop: 4 }}>
                     <Typography variant="h6" gutterBottom>
                         Barcode
                     </Typography>
@@ -328,7 +344,7 @@ function ScoutingForm() {
                             backgroundColor: '#fff',
                         }}
                     >
-                        <QRCode value={barcodeData} size={256}/>
+                        <QRCode value={barcodeData} size={256} />
                     </Paper>
                 </Box>
             </Box>
