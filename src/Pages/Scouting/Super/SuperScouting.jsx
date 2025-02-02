@@ -45,31 +45,31 @@ function SuperScouting() {
     };
 
     const handleManualSubmit = async (event) => {
-        event.preventDefault();
-        setLoading(true);
-        setIsSubmitted(true);
+    event.preventDefault();
+    setLoading(true);
+    setIsSubmitted(true);
 
-        const dataToSend = {
-            username: user?.username || "Unknown User",
-            team_number: manualTeamNumber,
-            match_number: manualMatchNumber,
-            questions: Object.keys(questionsList).map((questionId) => ({
-                question: questionsList[questionId],
-                answer: formData[questionId] || "",
-            })),
-        };
-
-        try {
-            const superScoutingRef = ref(db, "superScoutingResults");
-            await push(superScoutingRef, dataToSend);
-            alert("Data submitted successfully!");
-        } catch (error) {
-            console.error("Error submitting data:", error);
-            alert("Error submitting data.");
-        } finally {
-            setLoading(false);
-        }
+    const dataToSend = {
+        username: user?.username || "Unknown User",
+        team_number: match ? match.team_number : manualTeamNumber,
+        match_number: match ? match.match_number : manualMatchNumber,
+        questions: Object.keys(questionsList).map((questionId) => ({
+            question: questionsList[questionId],
+            answer: formData[questionId] || "",
+        })),
     };
+
+    try {
+        const superScoutingRef = ref(db, "superScoutingResults");
+        await push(superScoutingRef, dataToSend);
+        alert("Data submitted successfully!");
+    } catch (error) {
+        console.error("Error submitting data:", error);
+        alert("Error submitting data.");
+    } finally {
+        setLoading(false);
+    }
+};
 
     if (!match || !questions) {
         return (
