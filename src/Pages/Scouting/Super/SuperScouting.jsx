@@ -20,7 +20,7 @@ const questionsList = {
 };
 
 function SuperScouting() {
-    const { user } = useContext(UserContext); // Get the current user from context
+    const { user } = useContext(UserContext);
     const navigate = useNavigate();
     const location = useLocation();
     const { match, questions } = location.state || {};
@@ -28,11 +28,12 @@ function SuperScouting() {
     const [loading, setLoading] = useState(false);
     const [manualMatchNumber, setManualMatchNumber] = useState("");
     const [manualTeamNumber, setManualTeamNumber] = useState("");
+    const [isSubmitted, setIsSubmitted] = useState(false);
 
     useEffect(() => {
         if (!user) {
             console.error("User not found.");
-            navigate("/login"); // Redirect to login if the user is not found
+            navigate("/login");
         }
     }, [user, navigate]);
 
@@ -46,9 +47,10 @@ function SuperScouting() {
     const handleManualSubmit = async (event) => {
         event.preventDefault();
         setLoading(true);
+        setIsSubmitted(true);
 
         const dataToSend = {
-            username: user?.username || "Unknown User", // Safely access username
+            username: user?.username || "Unknown User",
             team_number: manualTeamNumber,
             match_number: manualMatchNumber,
             questions: Object.keys(questionsList).map((questionId) => ({
@@ -128,7 +130,7 @@ function SuperScouting() {
                                 color="primary"
                                 sx={{ mt: 3, px: 4 }}
                                 type="submit"
-                                disabled={loading || !manualMatchNumber || !manualTeamNumber}
+                                disabled={loading || !manualMatchNumber || !manualTeamNumber || isSubmitted}
                             >
                                 {loading ? <CircularProgress size={24} sx={{ color: "#fff" }} /> : "Submit"}
                             </Button>
@@ -144,7 +146,7 @@ function SuperScouting() {
             <Paper elevation={3} sx={{ padding: 3 }}>
                 {user ? (
                     <Typography variant="h6" sx={{ color: green[700], mb: 2 }}>
-                        Logged in as: {user.username} {/* Display the username */}
+                        Logged in as: {user.username}
                     </Typography>
                 ) : (
                     <Typography variant="h6" sx={{ color: red[700], mb: 2 }}>
@@ -184,7 +186,7 @@ function SuperScouting() {
                             color="primary"
                             sx={{ mt: 3, px: 4 }}
                             type="submit"
-                            disabled={loading}
+                            disabled={loading || isSubmitted}
                         >
                             {loading ? <CircularProgress size={24} sx={{ color: "#fff" }} /> : "Submit"}
                         </Button>
