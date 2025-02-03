@@ -179,6 +179,7 @@ function ScoutingForm() {
                     </Box>
                 </DialogContent>
             </Dialog>
+            <Alert severity="info"> Remember to track your robot's  actions well.</Alert>
 
             <Box
                 sx={{
@@ -192,9 +193,7 @@ function ScoutingForm() {
                     boxShadow: 4,
                 }}
             >
-                <Typography variant="h4" gutterBottom>
-                    Scouting Form
-                </Typography>
+
 
                 <Grid container spacing={3} justifyContent="center">
                     <Grid item xs={12} sm={6}>
@@ -278,7 +277,7 @@ function ScoutingForm() {
 
                 <Divider sx={{ marginY: 3 }} />
 
-                <Box sx={{ marginTop: 3, display: 'flex', justifyContent: 'center' }}>
+                <Box sx={{ marginTop: 0, display: 'flex', justifyContent: 'center' }}>
                     <Teleop onChange={handleTeleChange} />
                 </Box>
 
@@ -328,7 +327,6 @@ function ScoutingForm() {
                         disabled={isButtonDisabled}
                         sx={{
                             backgroundColor: '#4c74af',
-                            '&:hover': { backgroundColor: '#388e3c' },
                             color: '#fff',
                             paddingX: 6, // Increase padding for a bigger button
                             paddingY: 2, // Increase padding for a bigger button

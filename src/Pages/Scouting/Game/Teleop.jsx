@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import {Box, Button, Typography, Grid, Paper, Divider, Alert, AlertTitle} from '@mui/material';
+import { Box, Button, Typography, Grid, Paper, Divider, Alert } from '@mui/material';
 import { ThemeContext } from '../../../ThemeContext';
 
 // CounterBox Component
@@ -141,7 +141,21 @@ const Teleop = ({ onChange }) => {
 
     return (
         <Box sx={{ padding: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <Typography variant="h4" sx={{ marginBottom: 1 }}>Teleop</Typography>
+            <Typography
+                variant="h4"
+                sx={{
+                    marginBottom: 1,
+                    backgroundColor: '#4caf50',
+                    color: '#fff',
+                    padding: 2,
+                    borderRadius: 2,
+                    textAlign: 'center',
+                    width: '100%',
+                }}
+            >
+                Teleop
+            </Typography>
+            <Divider sx={{ marginY: 3 }} />
             <Grid container spacing={3} justifyContent="center">
                 {['L1', 'L2', 'L3', 'L4'].map((label) => (
                     <Grid item xs={12} sm={6} md={3} key={label} container justifyContent="center">
