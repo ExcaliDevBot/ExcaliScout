@@ -1,6 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { Box, Button, Typography, Paper, CircularProgress, TextField } from '@mui/material';
-import QRScanner from 'react-qr-scanner';
+import React, { useState, useEffect, useContext, useRef } from 'react';
+import { Box, Button, Typography, Paper, CircularProgress, TextField, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { db } from '../../firebase-config';
 import { ref, set, get, child } from 'firebase/database';
 import { UserContext } from '../../context/UserContext';
@@ -11,21 +10,57 @@ const QRCodeScanner = () => {
     const [cameraWidth, setCameraWidth] = useState(400);
     const [flashMode, setFlashMode] = useState(false);
     const [matchAlreadySubmitted, setMatchAlreadySubmitted] = useState(false);
+    const [cameras, setCameras] = useState([]);
+    const [selectedCamera, setSelectedCamera] = useState('');
     const { user: currentUser } = useContext(UserContext);
+    const videoRef = useRef(null);
 
-    const handleScan = async (data) => {
-        if (data) {
-            setScanResult(data.text);
-            const parsedData = parseQRCodeData(data.text);
+    useEffect(() => {
+        const getCameras = async () => {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                setCameras(videoDevices);
+                if (videoDevices.length > 0) {
+                    setSelectedCamera(videoDevices[0].deviceId);
+                    startCamera(videoDevices[0].deviceId);
+                } else {
+                    alert('No cameras found');
+                }
+            } catch (error) {
+                console.error('Error getting cameras:', error);
+            }
+        };
+
+        getCameras();
+
+        return () => {
+            if (videoRef.current && videoRef.current.srcObject) {
+                videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+            }
+        };
+    }, []);
+
+    const startCamera = async (deviceId) => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { deviceId: { exact: deviceId } }
+            });
+            videoRef.current.srcObject = stream;
+        } catch (error) {
+            console.error('Error starting camera:', error);
+        }
+    };
+
+    const handleScan = async (content) => {
+        if (content) {
+            setScanResult(content);
+            const parsedData = parseQRCodeData(content);
             if (parsedData) {
                 const dataExists = await checkIfDataExists(parsedData);
                 setMatchAlreadySubmitted(dataExists);
             }
         }
-    };
-
-    const handleError = (error) => {
-        console.error('Error scanning QR code:', error);
     };
 
     const checkIfDataExists = async (data) => {
@@ -113,15 +148,7 @@ const QRCodeScanner = () => {
                     marginBottom: 3,
                 }}
             >
-                <QRScanner
-                    delay={300}
-                    style={{ width: '100%' }}
-                    onError={handleError}
-                    onScan={handleScan}
-                    facingMode="environment"
-                    width={cameraWidth}
-                    flashMode={flashMode ? 'torch' : 'off'}
-                />
+                <video ref={videoRef} style={{ width: '100%' }} autoPlay />
             </Paper>
 
             <Box sx={{ marginBottom: 3 }}>
@@ -142,6 +169,24 @@ const QRCodeScanner = () => {
                 >
                     {flashMode ? 'Turn Flash Off' : 'Turn Flash On'}
                 </Button>
+                <FormControl fullWidth sx={{ marginBottom: 2 }}>
+                    <InputLabel id="camera-select-label">Select Camera</InputLabel>
+                    <Select
+                        labelId="camera-select-label"
+                        value={selectedCamera}
+                        label="Select Camera"
+                        onChange={(e) => {
+                            setSelectedCamera(e.target.value);
+                            startCamera(e.target.value);
+                        }}
+                    >
+                        {cameras.map((camera) => (
+                            <MenuItem key={camera.deviceId} value={camera.deviceId}>
+                                {camera.label || `Camera ${camera.deviceId}`}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
             </Box>
 
             {scanResult && (
