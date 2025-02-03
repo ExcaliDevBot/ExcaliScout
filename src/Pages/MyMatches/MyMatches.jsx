@@ -234,29 +234,29 @@ function MyMatches() {
                                         </IconButton>
                                     </>
                                 )}
-                                <Button
-                                    variant="contained"
-                                    sx={{
-                                        mt: 2,
-                                        backgroundColor: submittedMatches.includes(`${match.match_number}-${match.team_number}`) ? 'green' : (theme === 'light' ? '#012265' : '#d4af37'),
-                                        color: 'white',
-                                        '&:hover': { backgroundColor: submittedMatches.includes(`${match.match_number}-${match.team_number}`) ? 'green' : (theme === 'light' ? '#d4af37' : '#012265'), color: 'white' },
-                                    }}
-                                    onClick={() => {
-                                        if (!submittedMatches.includes(`${match.match_number}-${match.team_number}`)) {
-                                            if (match.isSuperScouting) {
-                                                navigate(`/super-scout`, { state: { match, questions: match.superScoutingQuestions } });
-                                            } else if (match.isPitScouting) {
-                                                navigate(`/pit-scout`, { state: { match } });
-                                            } else {
-                                                navigate(`/scout/new`, { state: { match, user } });
+                                    <Button
+                                        variant="contained"
+                                        sx={{
+                                            mt: 2,
+                                            backgroundColor: submittedMatches.includes(`${match.match_number}-${match.team_number}`) ? 'green' : (theme === 'light' ? '#012265' : '#d4af37'),
+                                            color: 'white',
+                                            '&:hover': { backgroundColor: submittedMatches.includes(`${match.match_number}-${match.team_number}`) ? 'green' : (theme === 'light' ? '#d4af37' : '#012265'), color: 'white' },
+                                        }}
+                                        onClick={() => {
+                                            if (!submittedMatches.includes(`${match.match_number}-${match.team_number}`)) {
+                                                if (match.isSuperScouting) {
+                                                    navigate(`/super-scout`, { state: { match, questions: match.superScoutingQuestions } });
+                                                } else if (match.isPitScouting) {
+                                                    navigate(`/pit-scout`, { state: { teamNumber: match.team_number } });
+                                                } else {
+                                                    navigate(`/scout/new`, { state: { match, user } });
+                                                }
                                             }
-                                        }
-                                    }}
-                                    disabled={submittedMatches.includes(`${match.match_number}-${match.team_number}`)}
-                                >
-                                    {submittedMatches.includes(`${match.match_number}-${match.team_number}`) ? 'Completed!' : 'Scout Now'}
-                                </Button>
+                                        }}
+                                        disabled={submittedMatches.includes(`${match.match_number}-${match.team_number}`)}
+                                    >
+                                        {submittedMatches.includes(`${match.match_number}-${match.team_number}`) ? 'Completed!' : 'Scout Now'}
+                                    </Button>
                                 {infoContent[match.match_number] && (
                                     <>
                                         <Divider sx={{ my: 2 }} />
