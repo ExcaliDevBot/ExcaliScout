@@ -15,6 +15,7 @@ import {
     Dialog,
     DialogContent,
     DialogTitle,
+    Alert,
 } from "@mui/material";
 import { db } from "../../firebase-config";
 import { ref, set, get, child } from "firebase/database";
@@ -51,6 +52,8 @@ function ScoutingForm() {
     const [barcodeData, setBarcodeData] = useState('');
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [winnerDialogOpen, setWinnerDialogOpen] = useState(true);
+    const [alertMessage, setAlertMessage] = useState(null);
+    const [alertSeverity, setAlertSeverity] = useState('success');
 
     useEffect(() => {
         const generateBarcode = () => {
@@ -122,7 +125,8 @@ function ScoutingForm() {
         event.preventDefault();
 
         if (!formData.Team || !formData.Match || !formData.Alliance || !formData.Name || !formData.WinnerPrediction) {
-            alert("Please fill in all required fields.");
+            setAlertMessage("Please fill in all required fields.");
+            setAlertSeverity("warning");
             return;
         }
 
@@ -135,11 +139,13 @@ function ScoutingForm() {
             const nodeName = `M${formData.Match}T${formData.Team}`;
             const dbRef = ref(db, `scoutingData/${nodeName}`);
             await set(dbRef, dataToSubmit);
-            alert("Submission successful!");
+            setAlertMessage("Submission successful!");
+            setAlertSeverity("success");
             setIsButtonDisabled(true);
         } catch (error) {
             console.error("Error submitting data:", error);
-            alert("Error submitting data. Please try again.");
+            setAlertMessage("Error submitting data. Please try again.");
+            setAlertSeverity("error");
         }
     };
 
@@ -321,15 +327,23 @@ function ScoutingForm() {
                         onClick={handleSubmit}
                         disabled={isButtonDisabled}
                         sx={{
-                            backgroundColor: '#4caf50',
+                            backgroundColor: '#4c74af',
                             '&:hover': { backgroundColor: '#388e3c' },
                             color: '#fff',
-                            paddingX: 4,
+                            paddingX: 6, // Increase padding for a bigger button
+                            paddingY: 2, // Increase padding for a bigger button
+                            fontSize: '1.25rem', // Increase font size for a bigger button
                         }}
                     >
                         Submit
                     </Button>
                 </Box>
+
+                {alertMessage && (
+                    <Alert severity={alertSeverity} sx={{ marginTop: 2 }}>
+                        {alertMessage}
+                    </Alert>
+                )}
 
                 <Box sx={{ textAlign: 'center', marginTop: 4 }}>
                     <Typography variant="h6" gutterBottom>

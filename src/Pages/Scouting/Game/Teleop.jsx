@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Box, Button, Typography, Grid, Paper, Divider } from '@mui/material';
+import {Box, Button, Typography, Grid, Paper, Divider, Alert, AlertTitle} from '@mui/material';
 import { ThemeContext } from '../../../ThemeContext';
 
 // CounterBox Component
@@ -163,12 +163,15 @@ const Teleop = ({ onChange }) => {
                 </Grid>
             </Grid>
             <Divider sx={{ marginY: 3 }} />
+
+            <Alert severity="info"> Remember To select a climbing option .</Alert>
             <Typography
                 variant="h6"
                 sx={{ textAlign: 'center', mt: 4, color: '#333', fontWeight: 'bold' }}
             >
                 Climbing Options
             </Typography>
+
             <ClimbingOptions
                 selectedOption={climbOption}
                 onSelect={(option) => setClimbOption(option)}
