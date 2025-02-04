@@ -1,133 +1,124 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Box, Button, Typography, Grid, Divider } from '@mui/material';
+import { Box, Button, Typography, Grid, Divider, Paper } from '@mui/material';
 import { ThemeContext } from '../../../ThemeContext';
 
 const CounterBox = ({ label, displayLabel, count, onIncrement, onDecrement }) => {
-    const { theme } = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
 
-    return (
-        <Box
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                backgroundColor: theme === 'dark' ? '#424242' : '#f5f5f5',
-                borderRadius: 2,
-                padding: 2,
-                boxShadow: 1,
-                marginBottom: 2,
-            }}
+  return (
+    <Paper
+      elevation={3}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 3,  // increased padding for better spacing
+        backgroundColor: theme === 'dark' ? '#333' : '#fafafa',
+        borderRadius: 3,
+        width: '250%',
+        maxWidth: '400px',  // increased maxWidth for a wider box
+      }}
+    >
+      <Typography variant="h6" sx={{ marginBottom: 1, color: theme === 'dark' ? '#fff' : '#000' }}>
+        {displayLabel}
+      </Typography>
+      <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
+        <Button
+          variant="contained"
+          onClick={onDecrement}
+          sx={{ backgroundColor: '#d32f2f', color: '#fff', minWidth: '100px', height: '50px' }} // Enlarged button
         >
-            <Typography variant="h6" sx={{ marginBottom: 1, color: theme === 'dark' ? '#fff' : '#000' }}>{displayLabel}</Typography>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', justifyContent: 'center' }}>
-                <Button
-                    variant="contained"
-                    onClick={onDecrement}
-                    sx={{
-                        color: '#000000',
-                        fontSize: 30, // Increase font size
-                        padding: '1px 45px 1px 45px', // Increase padding
-                        backgroundColor: '#4C86AFFF',
-                    }}
-                >
-                    -
-                </Button>
-                <Typography
-                    variant="h5"
-                    sx={{
-                        fontWeight: 'bold',
-                        color: theme === 'dark' ? '#fff' : '#333',
-                        minWidth: '50px',
-                        textAlign: 'center',
-                        ...(label === 'autoAlgaeCount' && {
-                            borderRadius: '50%',
-                            backgroundColor: '#4C86AFFF',
-                            color: '#fff',
-                            width: '100px',
-                            height: '100px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }),
-                    }}
-                >
-                    {count}
-                </Typography>
-                <Button
-                    variant="contained"
-                    onClick={onIncrement}
-                    sx={{
-                        color: '#000000',
-                        fontSize: 30, // Increase font size
-                        padding: '1px 45px 1px 45px', // Increase padding
-                        backgroundColor: '#4C86AFFF',
-                    }}
-                >
-                    +
-                </Button>
-            </Box>
-        </Box>
-    );
+          -
+        </Button>
+        <Typography
+          variant="h5"
+          sx={{
+            fontWeight: 'bold',
+            color: theme === 'dark' ? '#fff' : '#333',
+            minWidth: '70px',  // Increased minWidth for better alignment
+            textAlign: 'center',
+            ...(label === 'autoAlgaeCount' && {
+              borderRadius: '50%',
+              backgroundColor: '#4C86AFFF',
+              color: '#fff',
+              width: '100px',  // Increased size of the special counter
+              height: '100px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }),
+          }}
+        >
+          {count}
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={onIncrement}
+          sx={{ backgroundColor: '#388e3c', color: '#fff', minWidth: '100px', height: '50px' }} // Enlarged button
+        >
+          +
+        </Button>
+      </Box>
+    </Paper>
+  );
 };
 
-// Auto Component
 const Auto = ({ onChange }) => {
-    const [counters, setCounters] = useState({
-        autoL1: 0,
-        autoL2: 0,
-        autoL3: 0,
-        autoL4: 0,
-        autoAlgaeCount: 0,
-    });
+  const [counters, setCounters] = useState({
+    autoL1: 0,
+    autoL2: 0,
+    autoL3: 0,
+    autoL4: 0,
+    autoAlgaeCount: 0,
+  });
 
-    useEffect(() => {
-        if (onChange) {
-            onChange(counters);
-        }
-    }, [counters, onChange]);
+  useEffect(() => {
+    if (onChange) {
+      onChange(counters);
+    }
+  }, [counters, onChange]);
 
-    const handleCounterChange = (label, value) => {
-        setCounters((prev) => ({
-            ...prev,
-            [label]: Math.max(0, value),
-        }));
-    };
+  const handleCounterChange = (label, value) => {
+    setCounters((prev) => ({
+      ...prev,
+      [label]: Math.max(0, value),
+    }));
+  };
 
-    return (
-        <Box sx={{ padding: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <Typography
-                variant="h4"
-                sx={{
-                    marginBottom: 1,
-                    backgroundColor: '#4c86af',
-                    color: '#fff',
-                    padding: 2,
-                    borderRadius: 2,
-                    textAlign: 'center',
-                    width: '100%',
-                }}
-            >
-                Auto
-            </Typography>
-            <Divider sx={{ marginY: 3 }} />
-            <Grid container spacing={2} justifyContent="center">
-                {['autoL4', 'autoL3', 'autoL2', 'autoL1', 'autoAlgaeCount'].map((label) => (
-                    <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={label} container justifyContent="center">
-                        <CounterBox
-                            label={label}
-                            displayLabel={label.replace('auto', '')}
-                            count={counters[label]}
-                            onIncrement={() => handleCounterChange(label, counters[label] + 1)}
-                            onDecrement={() => handleCounterChange(label, counters[label] > 0 ? counters[label] - 1 : 0)}
-                        />
-                    </Grid>
-                ))}
-            </Grid>
-            <Divider sx={{ marginY: 3 }} />
-        </Box>
-    );
+  return (
+    <Box sx={{ padding: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+      <Typography
+        variant="h4"
+        sx={{
+          marginBottom: 3,
+          backgroundColor: '#4c86af',
+          color: '#fff',
+          padding: 3,  // Increased padding for a more spacious title
+          borderRadius: 2,
+          textAlign: 'center',
+          width: '100%',
+        }}
+      >
+        Auto
+      </Typography>
+      <Divider sx={{ marginY: 4, width: '100%' }} />
+      <Grid container spacing={4} justifyContent="center"> {/* Increased spacing between grid items */}
+        {['autoL4', 'autoL3', 'autoL2', 'autoL1', 'autoAlgaeCount'].map((label) => (
+          <Grid item xs={12} sm={6} md={4} lg={3} key={label} container justifyContent="center">
+            <CounterBox
+              label={label}
+              displayLabel={label.replace('auto', '')}
+              count={counters[label]}
+              onIncrement={() => handleCounterChange(label, counters[label] + 1)}
+              onDecrement={() => handleCounterChange(label, counters[label] > 0 ? counters[label] - 1 : 0)}
+            />
+          </Grid>
+        ))}
+      </Grid>
+      <Divider sx={{ marginY: 4, width: '100%' }} />
+    </Box>
+  );
 };
 
 export default Auto;

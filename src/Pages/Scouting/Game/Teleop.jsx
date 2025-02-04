@@ -23,18 +23,13 @@ const CounterBox = ({ label, count, onIncrement, onDecrement }) => {
         >
             <Typography variant="h6" sx={{ marginBottom: 1, color: theme === 'dark' ? '#fff' : '#000' }}>{label}</Typography>
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', justifyContent: 'center' }}>
-                <Button
-                    variant="contained"
-                    onClick={onDecrement}
-                    sx={{
-                        color: '#000000',
-                        fontSize: 24,
-                        backgroundColor: '#4caf50',
-                        '&:hover': { backgroundColor: '#388e3c' },
-                    }}
+                  <Button
+                  variant="contained"
+                  onClick={onDecrement}
+                  sx={{ backgroundColor: '#d32f2f', color: '#fff', minWidth: '100px', height: '50px' }} // Enlarged button
                 >
-                    -
-                </Button>
+                  -
+            </Button>
                 <Typography
                     variant="h5"
                     sx={{
@@ -57,16 +52,11 @@ const CounterBox = ({ label, count, onIncrement, onDecrement }) => {
                     {count}
                 </Typography>
                 <Button
-                    variant="contained"
-                    onClick={onIncrement}
-                    sx={{
-                        color: '#000000',
-                        fontSize: 24,
-                        backgroundColor: '#4caf50',
-                        '&:hover': { backgroundColor: '#388e3c' },
-                    }}
+                  variant="contained"
+                  onClick={onIncrement}
+                  sx={{ backgroundColor: '#388e3c', color: '#fff', minWidth: '100px', height: '50px' }} // Enlarged button
                 >
-                    +
+                  +
                 </Button>
             </Box>
         </Box>
