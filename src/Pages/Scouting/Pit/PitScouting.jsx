@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { db } from "../../../firebase-config";
 import { ref, push } from "firebase/database";
 import { UserContext } from "../../../context/UserContext";
-import { green, red } from "@mui/material/colors";
+import { ThemeContext } from "../../../ThemeContext";
+import { green, red } from '@mui/material/colors';
 import {
     Box,
     Button,
@@ -39,6 +40,7 @@ const questionsList = {
 
 function PitScouting() {
     const { user } = useContext(UserContext);
+    const { theme } = useContext(ThemeContext);
     const navigate = useNavigate();
     const location = useLocation();
     const { teamNumber } = location.state || {};
@@ -85,13 +87,13 @@ function PitScouting() {
     };
 
     return (
-        <Box sx={{ p: 4, maxWidth: 900, margin: "auto", direction: "rtl" }}>
-            <Card sx={{ mb: 3, backgroundColor: user ? green[50] : red[50], borderRadius: 2, boxShadow: 3 }}>
+        <Box sx={{ p: 4, maxWidth: 900, margin: "auto", direction: "rtl", backgroundColor: theme === 'dark' ? '#333' : '#fff', color: theme === 'dark' ? '#fff' : '#000' }}>
+            <Card sx={{ mb: 3, backgroundColor: user ? (theme === 'dark' ? green[900] : green[50]) : (theme === 'dark' ? red[900] : red[50]), borderRadius: 2, boxShadow: 3 }}>
                 <CardHeader
                     title="User Status"
                     sx={{
                         textAlign: "right",
-                        backgroundColor: user ? green[700] : red[700],
+                        backgroundColor: user ? (theme === 'dark' ? green[700] : green[700]) : (theme === 'dark' ? red[700] : red[700]),
                         color: "#fff",
                         borderRadius: "8px 8px 0 0",
                     }}
@@ -103,10 +105,10 @@ function PitScouting() {
                 </CardContent>
             </Card>
 
-            <Card sx={{ mb: 3, backgroundColor: "#f5f5f5", borderRadius: 2, boxShadow: 3 }}>
+            <Card sx={{ mb: 3, backgroundColor: theme === 'dark' ? '#424242' : "#f5f5f5", borderRadius: 2, boxShadow: 3 }}>
                 <CardHeader
                     title="Team Information"
-                    sx={{ textAlign: "right", backgroundColor: "#e0e0e0", borderRadius: "8px 8px 0 0" }}
+                    sx={{ textAlign: "right", backgroundColor: theme === 'dark' ? '#616161' : "#e0e0e0", borderRadius: "8px 8px 0 0" }}
                 />
                 <CardContent>
                     <Typography variant="h6" sx={{ mb: 3, fontWeight: 'bold', textAlign: "right" }}>
@@ -124,16 +126,16 @@ function PitScouting() {
                                 value={manualTeamNumber}
                                 onChange={(e) => setManualTeamNumber(e.target.value)}
                                 type="number"
-                                sx={{ mb: 2 }}
+                                sx={{ mb: 2, backgroundColor: theme === 'dark' ? '#616161' : '#fff', color: theme === 'dark' ? '#fff' : '#000' }}
                             />
                         </Box>
                     )}
                 </CardContent>
             </Card>
 
-            <Divider sx={{ marginY: 3 }} />
+            <Divider sx={{ marginY: 3, backgroundColor: theme === 'dark' ? '#757575' : '#000' }} />
 
-            <Paper elevation={3} sx={{ padding: 3, borderRadius: 2, boxShadow: 3 }}>
+            <Paper elevation={3} sx={{ padding: 3, borderRadius: 2, boxShadow: 3, backgroundColor: theme === 'dark' ? '#424242' : '#fff', color: theme === 'dark' ? '#fff' : '#000' }}>
                 <form onSubmit={handleManualSubmit}>
                     {Object.keys(questionsList).map((questionId) => {
                         const question = questionsList[questionId];
@@ -148,7 +150,7 @@ function PitScouting() {
                                         fullWidth
                                         value={formData[questionId] || ""}
                                         onChange={(e) => handleChange(e, questionId)}
-                                        sx={{ mb: 2 }}
+                                        sx={{ mb: 2, backgroundColor: theme === 'dark' ? '#616161' : '#fff', color: theme === 'dark' ? '#fff' : '#000' }}
                                     >
                                         <MenuItem value="yes">כן</MenuItem>
                                         <MenuItem value="no">לא</MenuItem>
@@ -163,7 +165,7 @@ function PitScouting() {
                                         marks
                                         valueLabelDisplay="auto"
                                         onChange={(e, newValue) => handleChange(e, questionId, newValue)}
-                                        sx={{ mb: 2 }}
+                                        sx={{ mb: 2, color: theme === 'dark' ? '#fff' : '#000' }}
                                     />
                                 )}
                                 {question.type === "open" && (
@@ -174,7 +176,7 @@ function PitScouting() {
                                         rows={4}
                                         value={formData[questionId] || ""}
                                         onChange={(e) => handleChange(e, questionId)}
-                                        sx={{ mb: 2 }}
+                                        sx={{ mb: 2, backgroundColor: theme === 'dark' ? '#616161' : '#fff', color: theme === 'dark' ? '#fff' : '#000' }}
                                     />
                                 )}
                             </Box>
