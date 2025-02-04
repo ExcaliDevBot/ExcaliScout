@@ -358,8 +358,12 @@ function ScoutingForm() {
                     >
                         <QRCode value={barcodeData} size={256} />
                     </Paper>
+                                            <Divider sx={{ marginY: 3 }} />
+            <Divider sx={{ marginY: 3 }} />
+
                 </Box>
             </Box>
+
         </>
     );
 }

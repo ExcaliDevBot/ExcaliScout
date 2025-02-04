@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Box, Button, Typography, Grid, Paper, Divider, Alert } from '@mui/material';
+import { Box, Button, Typography, Grid, Divider } from '@mui/material';
 import { ThemeContext } from '../../../ThemeContext';
 
 const CounterBox = ({ label, displayLabel, count, onIncrement, onDecrement }) => {
@@ -27,7 +27,8 @@ const CounterBox = ({ label, displayLabel, count, onIncrement, onDecrement }) =>
                     onClick={onDecrement}
                     sx={{
                         color: '#000000',
-                        fontSize: 24,
+                        fontSize: 30, // Increase font size
+                        padding: '1px 45px 1px 45px', // Increase padding
                         backgroundColor: '#4C86AFFF',
                     }}
                 >
@@ -59,7 +60,8 @@ const CounterBox = ({ label, displayLabel, count, onIncrement, onDecrement }) =>
                     onClick={onIncrement}
                     sx={{
                         color: '#000000',
-                        fontSize: 24,
+                        fontSize: 30, // Increase font size
+                        padding: '1px 45px 1px 45px', // Increase padding
                         backgroundColor: '#4C86AFFF',
                     }}
                 >
@@ -110,9 +112,9 @@ const Auto = ({ onChange }) => {
                 Auto
             </Typography>
             <Divider sx={{ marginY: 3 }} />
-            <Grid container spacing={3} justifyContent="center">
-                {['autoL4', 'autoL3', 'autoL2', 'autoL1'].map((label) => (
-                    <Grid item xs={12} sm={6} md={3} key={label} container justifyContent="center">
+            <Grid container spacing={2} justifyContent="center">
+                {['autoL4', 'autoL3', 'autoL2', 'autoL1', 'autoAlgaeCount'].map((label) => (
+                    <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={label} container justifyContent="center">
                         <CounterBox
                             label={label}
                             displayLabel={label.replace('auto', '')}
@@ -122,15 +124,6 @@ const Auto = ({ onChange }) => {
                         />
                     </Grid>
                 ))}
-                <Grid item xs={12} sm={6} md={3} container justifyContent="center">
-                    <CounterBox
-                        label="autoAlgaeCount"
-                        displayLabel="Algae Counter"
-                        count={counters.autoAlgaeCount}
-                        onIncrement={() => handleCounterChange('autoAlgaeCount', counters.autoAlgaeCount + 1)}
-                        onDecrement={() => handleCounterChange('autoAlgaeCount', counters.autoAlgaeCount > 0 ? counters.autoAlgaeCount - 1 : 0)}
-                    />
-                </Grid>
             </Grid>
             <Divider sx={{ marginY: 3 }} />
         </Box>

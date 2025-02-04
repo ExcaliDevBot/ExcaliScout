@@ -34,6 +34,7 @@ const questionsList = {
     10: { question: "האם הרובוט יוצא מאזור ההתחלה באוטונומי", type: "yesno" },
     11: { question: "האם אתם מסוגלים להעיף Algae מהריף", type: "yesno" },
     12: { question: "תאר פירוט אוטונומיי לגבי כל מסלול", type: "open" },
+    13: { question: "הערות כלליות אחרות", type: "open" },
 };
 
 function PitScouting() {
@@ -65,7 +66,6 @@ function PitScouting() {
 
         const dataToSend = {
             username: user?.username || "Unknown User",
-            team_number: manualTeamNumber,
             questions: Object.keys(questionsList).map((questionId) => ({
                 question: questionsList[questionId].question,
                 answer: formData[questionId] || "",
@@ -73,7 +73,7 @@ function PitScouting() {
         };
 
         try {
-            const pitScoutingRef = ref(db, "pitScoutingResults");
+            const pitScoutingRef = ref(db, `pitScoutingResults/${manualTeamNumber}`);
             await push(pitScoutingRef, dataToSend);
             alert("Data submitted successfully!");
         } catch (error) {
@@ -150,8 +150,8 @@ function PitScouting() {
                                         onChange={(e) => handleChange(e, questionId)}
                                         sx={{ mb: 2 }}
                                     >
-                                        <MenuItem value="yes">Yes</MenuItem>
-                                        <MenuItem value="no">No</MenuItem>
+                                        <MenuItem value="yes">כן</MenuItem>
+                                        <MenuItem value="no">לא</MenuItem>
                                     </Select>
                                 )}
                                 {question.type === "scale" && (
