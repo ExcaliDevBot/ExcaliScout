@@ -21,7 +21,7 @@ import { db } from "../../firebase-config";
 import { ref, set, get, child } from "firebase/database";
 import Teleop from "./Game/Teleop";
 import Auto from "./Game/Auto";
-import { ThemeContext } from "../../ThemeContext";
+import { ThemeContext } from "../../context/ThemeContext";
 import { EmojiEvents, Star, HelpOutline } from '@mui/icons-material';
 import QRCode from "qrcode.react"; // Ensure this import is present
 

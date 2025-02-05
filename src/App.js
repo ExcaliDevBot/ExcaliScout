@@ -18,10 +18,10 @@ import PitScouting from './Pages/Scouting/Pit/PitScouting';
 import PitScoutingAssign from './Pages/AdminTools/PitScoutingAssign';
 import QRCodeScanner from './Pages/Scanner/QRCodeScanner';
 // Routes and Access Control
-import AdminRoute from './AdminRoute';
-import ProtectedRoute from './ProtectedRoute';
+import AdminRoute from './Routes/AdminRoute';
+import ProtectedRoute from './Routes/ProtectedRoute';
 import React from "react";
-import { ThemeProvider } from './ThemeContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 function App() {
     return (

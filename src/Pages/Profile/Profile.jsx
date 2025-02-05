@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { useCurrentUser } from '../../context/useCurrentUser';
-import { ThemeContext } from '../../ThemeContext';
+import { ThemeContext } from '../../context/ThemeContext';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';

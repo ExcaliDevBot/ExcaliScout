@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { db } from "../../../firebase-config";
 import { ref, push } from "firebase/database";
 import { UserContext } from "../../../context/UserContext";
-import { ThemeContext } from "../../../ThemeContext";
+import { ThemeContext } from "../../../context/ThemeContext";
 import { green, red } from '@mui/material/colors';
 import {
     Box,

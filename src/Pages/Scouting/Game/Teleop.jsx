@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Box, Button, Typography, Grid, Paper, Divider, Alert } from '@mui/material';
-import { ThemeContext } from '../../../ThemeContext';
+import { ThemeContext } from '../../../context/ThemeContext';
 
 // CounterBox Component
 const CounterBox = ({ label, count, onIncrement, onDecrement }) => {
