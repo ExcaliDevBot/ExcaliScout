@@ -45,7 +45,6 @@ function ScoutingForm() {
         L4: 0,
         climbOption: '',
         autoAlgaeCount: 0,
-        autoCoralCount: 0,
         algaeCount: 0,
     });
 
@@ -68,7 +67,6 @@ function ScoutingForm() {
         L3: ${formData.L3 || 0},
         L4: ${formData.L4 || 0},
         AutoAlgaeCount: ${formData.autoAlgaeCount || 0},
-        AutoCoralCount: ${formData.autoCoralCount || 0},
         AlgaeCount: ${formData.algaeCount || 0},
         ClimbOption: ${formData.climbOption || "None"}
         `.replace(/\n/g, "").replace(/\s+/g, " ").trim();

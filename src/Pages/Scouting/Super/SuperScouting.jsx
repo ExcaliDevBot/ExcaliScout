@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { db } from "../../../firebase-config";
-import { ref, push } from "firebase/database";
+import {ref, push, set} from "firebase/database";
 import { UserContext } from "../../../context/UserContext";
 import { Box, Button, Typography, TextField, CircularProgress, Paper } from "@mui/material";
 import { green, red } from "@mui/material/colors";
@@ -40,7 +40,7 @@ function SuperScouting() {
         });
     };
 
-    const handleManualSubmit = async (event) => {
+const handleManualSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
     setIsSubmitted(true);
@@ -55,9 +55,11 @@ function SuperScouting() {
         })),
     };
 
+    const nodeName = `M${dataToSend.match_number}T${dataToSend.team_number}`;
+
     try {
-        const superScoutingRef = ref(db, "superScoutingResults");
-        await push(superScoutingRef, dataToSend);
+        const superScoutingRef = ref(db, `superScoutingResults/${nodeName}`);
+        await set(superScoutingRef, dataToSend);
         alert("Data submitted successfully!");
     } catch (error) {
         console.error("Error submitting data:", error);
