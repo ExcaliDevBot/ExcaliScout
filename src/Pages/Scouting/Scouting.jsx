@@ -23,7 +23,7 @@ import Teleop from "./Game/Teleop";
 import Auto from "./Game/Auto";
 import { ThemeContext } from "../../context/ThemeContext";
 import { EmojiEvents, Star, HelpOutline } from '@mui/icons-material';
-import QRCode from "qrcode.react"; // Ensure this import is present
+import QRCode from "qrcode.react";
 
 function ScoutingForm() {
     const location = useLocation();
@@ -44,8 +44,7 @@ function ScoutingForm() {
         L3: 0,
         L4: 0,
         climbOption: '',
-        autoAlgaeCount: 0,
-        algaeCount: 0,
+        removeAlgae: 0,
     });
 
     const [barcodeData, setBarcodeData] = useState('');
@@ -66,8 +65,7 @@ function ScoutingForm() {
         L2: ${formData.L2 || 0},
         L3: ${formData.L3 || 0},
         L4: ${formData.L4 || 0},
-        AutoAlgaeCount: ${formData.autoAlgaeCount || 0},
-        AlgaeCount: ${formData.algaeCount || 0},
+        RemoveAlgae: ${formData.autoRemoveAlgae + formData.removeAlgae || 0},
         ClimbOption: ${formData.climbOption || "None"}
         `.replace(/\n/g, "").replace(/\s+/g, " ").trim();
 
@@ -130,6 +128,7 @@ function ScoutingForm() {
 
         const dataToSubmit = {
             ...formData,
+            removeAlgae: formData.autoRemoveAlgae + formData.removeAlgae,
             submittedAt: new Date().toISOString(),
         };
 
@@ -177,7 +176,7 @@ function ScoutingForm() {
                     </Box>
                 </DialogContent>
             </Dialog>
-            <Alert severity="info"> Remember to track your robot's  actions well.</Alert>
+            <Alert severity="info"> Remember to track your robot's actions well.</Alert>
 
             <Box
                 sx={{
@@ -191,8 +190,6 @@ function ScoutingForm() {
                     boxShadow: 4,
                 }}
             >
-
-
                 <Grid container spacing={3} justifyContent="center">
                     <Grid item xs={12} sm={6}>
                         <TextField
@@ -281,7 +278,6 @@ function ScoutingForm() {
 
                 <Divider sx={{ marginY: 3 }} />
 
-
                 <Box
                     display="flex"
                     alignItems="center"
@@ -326,9 +322,9 @@ function ScoutingForm() {
                         sx={{
                             backgroundColor: '#4c74af',
                             color: '#fff',
-                            paddingX: 6, // Increase padding for a bigger button
-                            paddingY: 2, // Increase padding for a bigger button
-                            fontSize: '1.25rem', // Increase font size for a bigger button
+                            paddingX: 6,
+                            paddingY: 2,
+                            fontSize: '1.25rem',
                         }}
                     >
                         Submit
@@ -356,12 +352,8 @@ function ScoutingForm() {
                     >
                         <QRCode value={barcodeData} size={256} />
                     </Paper>
-                                            <Divider sx={{ marginY: 3 }} />
-            <Divider sx={{ marginY: 3 }} />
-
                 </Box>
             </Box>
-
         </>
     );
 }

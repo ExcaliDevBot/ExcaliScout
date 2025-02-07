@@ -23,13 +23,13 @@ const CounterBox = ({ label, count, onIncrement, onDecrement }) => {
         >
             <Typography variant="h6" sx={{ marginBottom: 1, color: theme === 'dark' ? '#fff' : '#000' }}>{label}</Typography>
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', justifyContent: 'center' }}>
-                  <Button
-                  variant="contained"
-                  onClick={onDecrement}
-                  sx={{ backgroundColor: '#d32f2f', color: '#fff', minWidth: '100px', height: '50px' }} // Enlarged button
+                <Button
+                    variant="contained"
+                    onClick={onDecrement}
+                    sx={{ backgroundColor: '#d32f2f', color: '#fff', minWidth: '100px', height: '50px' }} // Enlarged button
                 >
-                  -
-            </Button>
+                    -
+                </Button>
                 <Typography
                     variant="h5"
                     sx={{
@@ -37,7 +37,7 @@ const CounterBox = ({ label, count, onIncrement, onDecrement }) => {
                         color: theme === 'dark' ? '#fff' : '#333',
                         minWidth: '50px',
                         textAlign: 'center',
-                        ...(label === 'Algae Counter' && {
+                        ...(label === 'Remove Algae' || label === 'Place Algae' ? {
                             borderRadius: '50%',
                             backgroundColor: '#4caf50',
                             color: '#fff',
@@ -46,17 +46,17 @@ const CounterBox = ({ label, count, onIncrement, onDecrement }) => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                        }),
+                        } : {}),
                     }}
                 >
                     {count}
                 </Typography>
                 <Button
-                  variant="contained"
-                  onClick={onIncrement}
-                  sx={{ backgroundColor: '#388e3c', color: '#fff', minWidth: '100px', height: '50px' }} // Enlarged button
+                    variant="contained"
+                    onClick={onIncrement}
+                    sx={{ backgroundColor: '#388e3c', color: '#fff', minWidth: '100px', height: '50px' }} // Enlarged button
                 >
-                  +
+                    +
                 </Button>
             </Box>
         </Box>
@@ -110,7 +110,8 @@ const Teleop = ({ onChange }) => {
         L2: 0,
         L3: 0,
         L4: 0,
-        algaeCount: 0,
+        removeAlgae: 0,
+        placeAlgae: 0,
     });
 
     const [climbOption, setClimbOption] = useState('');
@@ -159,10 +160,18 @@ const Teleop = ({ onChange }) => {
                 ))}
                 <Grid item xs={12} sm={6} md={3} container justifyContent="center">
                     <CounterBox
-                        label="Algae Counter"
-                        count={counters.algaeCount}
-                        onIncrement={() => handleCounterChange('algaeCount', counters.algaeCount + 1)}
-                        onDecrement={() => handleCounterChange('algaeCount', counters.algaeCount > 0 ? counters.algaeCount - 1 : 0)}
+                        label="Remove Algae"
+                        count={counters.removeAlgae}
+                        onIncrement={() => handleCounterChange('removeAlgae', counters.removeAlgae + 1)}
+                        onDecrement={() => handleCounterChange('removeAlgae', counters.removeAlgae > 0 ? counters.removeAlgae - 1 : 0)}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6} md={3} container justifyContent="center">
+                    <CounterBox
+                        label="Place Algae"
+                        count={counters.placeAlgae}
+                        onIncrement={() => handleCounterChange('placeAlgae', counters.placeAlgae + 1)}
+                        onDecrement={() => handleCounterChange('placeAlgae', counters.placeAlgae > 0 ? counters.placeAlgae - 1 : 0)}
                     />
                 </Grid>
             </Grid>

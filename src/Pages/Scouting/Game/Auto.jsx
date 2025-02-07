@@ -13,11 +13,11 @@ const CounterBox = ({ label, displayLabel, count, onIncrement, onDecrement }) =>
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 3,  // increased padding for better spacing
+        padding: 3,
         backgroundColor: theme === 'dark' ? '#333' : '#fafafa',
         borderRadius: 3,
         width: '250%',
-        maxWidth: '400px',  // increased maxWidth for a wider box
+        maxWidth: '400px',
       }}
     >
       <Typography variant="h6" sx={{ marginBottom: 1, color: theme === 'dark' ? '#fff' : '#000' }}>
@@ -27,7 +27,7 @@ const CounterBox = ({ label, displayLabel, count, onIncrement, onDecrement }) =>
         <Button
           variant="contained"
           onClick={onDecrement}
-          sx={{ backgroundColor: '#d32f2f', color: '#fff', minWidth: '100px', height: '50px' }} // Enlarged button
+          sx={{ backgroundColor: '#d32f2f', color: '#fff', minWidth: '100px', height: '50px' }}
         >
           -
         </Button>
@@ -36,18 +36,18 @@ const CounterBox = ({ label, displayLabel, count, onIncrement, onDecrement }) =>
           sx={{
             fontWeight: 'bold',
             color: theme === 'dark' ? '#fff' : '#333',
-            minWidth: '70px',  // Increased minWidth for better alignment
+            minWidth: '70px',
             textAlign: 'center',
-            ...(label === 'autoAlgaeCount' && {
+            ...(label === 'autoRemoveAlgae' ? {
               borderRadius: '50%',
               backgroundColor: '#4C86AFFF',
               color: '#fff',
-              width: '100px',  // Increased size of the special counter
+              width: '100px',
               height: '100px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-            }),
+            } : {}),
           }}
         >
           {count}
@@ -55,7 +55,7 @@ const CounterBox = ({ label, displayLabel, count, onIncrement, onDecrement }) =>
         <Button
           variant="contained"
           onClick={onIncrement}
-          sx={{ backgroundColor: '#388e3c', color: '#fff', minWidth: '100px', height: '50px' }} // Enlarged button
+          sx={{ backgroundColor: '#388e3c', color: '#fff', minWidth: '100px', height: '50px' }}
         >
           +
         </Button>
@@ -70,7 +70,7 @@ const Auto = ({ onChange }) => {
     autoL2: 0,
     autoL3: 0,
     autoL4: 0,
-    autoAlgaeCount: 0,
+    autoRemoveAlgae: 0,
   });
 
   useEffect(() => {
@@ -94,7 +94,7 @@ const Auto = ({ onChange }) => {
           marginBottom: 3,
           backgroundColor: '#4c86af',
           color: '#fff',
-          padding: 3,  // Increased padding for a more spacious title
+          padding: 3,
           borderRadius: 2,
           textAlign: 'center',
           width: '100%',
@@ -103,8 +103,8 @@ const Auto = ({ onChange }) => {
         Auto
       </Typography>
       <Divider sx={{ marginY: 4, width: '100%' }} />
-      <Grid container spacing={4} justifyContent="center"> {/* Increased spacing between grid items */}
-        {['autoL4', 'autoL3', 'autoL2', 'autoL1', 'autoAlgaeCount'].map((label) => (
+      <Grid container spacing={4} justifyContent="center">
+        {['autoL4', 'autoL3', 'autoL2', 'autoL1', 'autoRemoveAlgae'].map((label) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={label} container justifyContent="center">
             <CounterBox
               label={label}
