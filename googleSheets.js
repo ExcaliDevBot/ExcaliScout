@@ -10,7 +10,7 @@ function fetchAndWriteScoutingData() {
 
   const scoutingHeaderOrder = [
     "Match", "Name", "Team", "Alliance", "Notes", "autoL1", "autoL2", "autoL3", "autoL4",
-    "autoAlgaeCount", "L1", "L2", "L3", "L4", "algaeCount",
+     "L1", "L2", "L3", "L4", "algaeCount",
     "climbOption", "WinnerPrediction", "submittedAt"
   ];
 
