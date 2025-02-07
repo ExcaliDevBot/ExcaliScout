@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { db } from "../../../firebase-config";
-import { ref, push } from "firebase/database";
+import {ref, push, set} from "firebase/database";
 import { UserContext } from "../../../context/UserContext";
 import { ThemeContext } from "../../../context/ThemeContext";
 import { green, red } from '@mui/material/colors';
@@ -62,21 +62,21 @@ function PitScouting() {
         });
     };
 
-    const handleManualSubmit = async (event) => {
+        const handleManualSubmit = async (event) => {
         event.preventDefault();
         setLoading(true);
 
         const dataToSend = {
             username: user?.username || "Unknown User",
-            questions: Object.keys(questionsList).map((questionId) => ({
-                question: questionsList[questionId].question,
-                answer: formData[questionId] || "",
-            })),
+            answers: Object.keys(questionsList).reduce((acc, questionId) => {
+                acc[questionId] = formData[questionId] || "";
+                return acc;
+            }, {}),
         };
 
         try {
             const pitScoutingRef = ref(db, `pitScoutingResults/${manualTeamNumber}`);
-            await push(pitScoutingRef, dataToSend);
+            await set(pitScoutingRef, dataToSend);
             alert("Data submitted successfully!");
         } catch (error) {
             console.error("Error submitting data:", error);
