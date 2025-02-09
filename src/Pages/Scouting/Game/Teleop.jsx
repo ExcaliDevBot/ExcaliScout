@@ -6,6 +6,8 @@ import { ThemeContext } from '../../../context/ThemeContext';
 const CounterBox = ({ label, count, onIncrement, onDecrement }) => {
     const { theme } = useContext(ThemeContext);
 
+    const isRemoveAlgae = label === 'Remove Algae';
+
     return (
         <Box
             sx={{
@@ -14,7 +16,7 @@ const CounterBox = ({ label, count, onIncrement, onDecrement }) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                backgroundColor: theme === 'dark' ? '#424242' : '#f5f5f5',
+                backgroundColor: isRemoveAlgae ? '#4caf98' : theme === 'dark' ? '#424242' : '#f5f5f5',
                 borderRadius: 2,
                 padding: 2,
                 boxShadow: 1,
@@ -26,7 +28,7 @@ const CounterBox = ({ label, count, onIncrement, onDecrement }) => {
                 <Button
                     variant="contained"
                     onClick={onDecrement}
-                    sx={{ backgroundColor: '#d32f2f', color: '#fff', minWidth: '100px', height: '50px' }} // Enlarged button
+                    sx={{ backgroundColor: '#d32f2f', color: '#fff', minWidth: '100px', height: '50px' }}
                 >
                     -
                 </Button>
@@ -37,10 +39,10 @@ const CounterBox = ({ label, count, onIncrement, onDecrement }) => {
                         color: theme === 'dark' ? '#fff' : '#333',
                         minWidth: '50px',
                         textAlign: 'center',
-                        ...(label === 'Remove Algae' || label === 'Place Algae' ? {
+                        ...(isRemoveAlgae ? {
                             borderRadius: '50%',
-                            backgroundColor: '#4caf50',
-                            color: '#fff',
+                            backgroundColor: '#4c74af',
+                            color: '#000',
                             width: '100px',
                             height: '100px',
                             display: 'flex',
@@ -54,7 +56,7 @@ const CounterBox = ({ label, count, onIncrement, onDecrement }) => {
                 <Button
                     variant="contained"
                     onClick={onIncrement}
-                    sx={{ backgroundColor: '#388e3c', color: '#fff', minWidth: '100px', height: '50px' }} // Enlarged button
+                    sx={{ backgroundColor: '#388e3c', color: '#fff', minWidth: '100px', height: '50px' }}
                 >
                     +
                 </Button>
