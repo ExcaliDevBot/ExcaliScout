@@ -61,7 +61,7 @@ function ScoutingForm() {
             Match: ${formData.Match || "Unknown"},
             Alliance: ${formData.Alliance || "Unknown"},
             WinnerPrediction: ${formData.WinnerPrediction || "None"},
-            Notes: ${formData.Notes || "Unknown"},
+            Notes: ${formData.Notes},
             L1: ${formData.L1 || 0},
             L2: ${formData.L2 || 0},
             L3: ${formData.L3 || 0},
