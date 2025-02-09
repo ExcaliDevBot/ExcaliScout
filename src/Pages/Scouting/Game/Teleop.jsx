@@ -148,7 +148,7 @@ const Teleop = ({ onChange }) => {
             </Typography>
             <Divider sx={{ marginY: 3 }} />
             <Grid container spacing={3} justifyContent="center">
-                {['L1', 'L2', 'L3', 'L4'].map((label) => (
+                {['L4', 'L3', 'L2', 'L1'].map((label) => (
                     <Grid item xs={12} sm={6} md={3} key={label} container justifyContent="center">
                         <CounterBox
                             label={label}
