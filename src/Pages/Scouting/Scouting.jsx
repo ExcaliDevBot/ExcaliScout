@@ -127,10 +127,10 @@ function ScoutingForm() {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if (!formData.Team || !formData.Match || !formData.Alliance || !formData.Name || !formData.WinnerPrediction) {
-            setAlertMessage("Please fill in all required fields.");
+        if (!formData.Team || !formData.Match || !formData.Alliance || !formData.Name || !formData.WinnerPrediction || !formData.climbOption) {
+            setAlertMessage("Please fill in all required fields, including the climb option.");
             setAlertSeverity("warning");
-            return;
+            return false;
         }
 
         const dataToSubmit = {
