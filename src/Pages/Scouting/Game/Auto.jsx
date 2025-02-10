@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Box, Button, Typography, Grid, Divider, Paper } from '@mui/material';
+import { Box, Button, Typography, Grid, Divider, Paper, FormControlLabel, Switch } from '@mui/material';
 import { ThemeContext } from '../../../context/ThemeContext';
 
 const CounterBox = ({ label, displayLabel, count, onIncrement, onDecrement }) => {
@@ -72,10 +72,15 @@ const Auto = ({ onChange }) => {
     autoL4: 0,
     autoRemoveAlgae: 0,
   });
+  const [leftStartingZone, setLeftStartingZone] = useState(false);
 
   useEffect(() => {
+    const anyCounterGreaterThanZero = Object.values(counters).some(count => count > 0);
+    if (anyCounterGreaterThanZero) {
+      setLeftStartingZone(true);
+    }
     if (onChange) {
-      onChange(counters);
+      onChange({ ...counters, leftStartingZone });
     }
   }, [counters, onChange]);
 
@@ -116,6 +121,17 @@ const Auto = ({ onChange }) => {
           </Grid>
         ))}
       </Grid>
+      <FormControlLabel
+        control={
+          <Switch
+            checked={leftStartingZone}
+            onChange={(e) => setLeftStartingZone(e.target.checked)}
+            color="primary"
+          />
+        }
+        label="Robot Left Starting Zone"
+        sx={{ marginTop: 4 }}
+      />
       <Divider sx={{ marginY: 4, width: '100%' }} />
     </Box>
   );
