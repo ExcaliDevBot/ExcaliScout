@@ -135,7 +135,6 @@ function ScoutingForm() {
 
         const dataToSubmit = {
             ...formData,
-            removeAlgae: formData.autoRemoveAlgae + formData.removeAlgae,
             submittedAt: new Date().toISOString(),
         };
 

@@ -6,8 +6,6 @@ import { ThemeContext } from '../../../context/ThemeContext';
 const CounterBox = ({ label, count, onIncrement, onDecrement }) => {
     const { theme } = useContext(ThemeContext);
 
-    const isRemoveAlgae = label === 'Remove Algae';
-
     return (
         <Box
             sx={{
@@ -16,7 +14,7 @@ const CounterBox = ({ label, count, onIncrement, onDecrement }) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                backgroundColor: isRemoveAlgae ? '#4caf98' : theme === 'dark' ? '#424242' : '#f5f5f5',
+                backgroundColor: theme === 'dark' ? '#424242' : '#f5f5f5',
                 borderRadius: 2,
                 padding: 2,
                 boxShadow: 1,
@@ -39,16 +37,6 @@ const CounterBox = ({ label, count, onIncrement, onDecrement }) => {
                         color: theme === 'dark' ? '#fff' : '#333',
                         minWidth: '50px',
                         textAlign: 'center',
-                        ...(isRemoveAlgae ? {
-                            borderRadius: '50%',
-                            backgroundColor: '#4c74af',
-                            color: '#000',
-                            width: '100px',
-                            height: '100px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        } : {}),
                     }}
                 >
                     {count}
@@ -113,7 +101,8 @@ const Teleop = ({ onChange }) => {
         L3: 0,
         L4: 0,
         removeAlgae: 0,
-        placeAlgae: 0,
+        netScore: 0,
+        processorScore: 0,
     });
 
     const [climbOption, setClimbOption] = useState('');
@@ -170,10 +159,18 @@ const Teleop = ({ onChange }) => {
                 </Grid>
                 <Grid item xs={12} sm={6} md={3} container justifyContent="center">
                     <CounterBox
-                        label="Place Algae"
-                        count={counters.placeAlgae}
-                        onIncrement={() => handleCounterChange('placeAlgae', counters.placeAlgae + 1)}
-                        onDecrement={() => handleCounterChange('placeAlgae', counters.placeAlgae > 0 ? counters.placeAlgae - 1 : 0)}
+                        label="Net Score"
+                        count={counters.netScore}
+                        onIncrement={() => handleCounterChange('netScore', counters.netScore + 1)}
+                        onDecrement={() => handleCounterChange('netScore', counters.netScore > 0 ? counters.netScore - 1 : 0)}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6} md={3} container justifyContent="center">
+                    <CounterBox
+                        label="Processor Score"
+                        count={counters.processorScore}
+                        onIncrement={() => handleCounterChange('processorScore', counters.processorScore + 1)}
+                        onDecrement={() => handleCounterChange('processorScore', counters.processorScore > 0 ? counters.processorScore - 1 : 0)}
                     />
                 </Grid>
             </Grid>
