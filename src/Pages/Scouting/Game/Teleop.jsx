@@ -103,6 +103,7 @@ const Teleop = ({ onChange }) => {
         removeAlgae: 0,
         netScore: 0,
         processorScore: 0,
+        defensivePins: 0,
     });
 
     const [climbOption, setClimbOption] = useState('');
@@ -149,6 +150,9 @@ const Teleop = ({ onChange }) => {
                         />
                     </Grid>
                 ))}
+                <Grid item xs={12}>
+                    <Divider sx={{ marginY: 3 }} />
+                </Grid>
                 <Grid item xs={12} sm={6} md={3} container justifyContent="center">
                     <CounterBox
                         label="Remove Algae"
@@ -171,6 +175,17 @@ const Teleop = ({ onChange }) => {
                         count={counters.processorScore}
                         onIncrement={() => handleCounterChange('processorScore', counters.processorScore + 1)}
                         onDecrement={() => handleCounterChange('processorScore', counters.processorScore > 0 ? counters.processorScore - 1 : 0)}
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <Divider sx={{ marginY: 3 }} />
+                </Grid>
+                <Grid item xs={12} sm={6} md={3} container justifyContent="center">
+                    <CounterBox
+                        label="Defensive Pins"
+                        count={counters.defensivePins}
+                        onIncrement={() => handleCounterChange('defensivePins', counters.defensivePins + 1)}
+                        onDecrement={() => handleCounterChange('defensivePins', counters.defensivePins > 0 ? counters.defensivePins - 1 : 0)}
                     />
                 </Grid>
             </Grid>
