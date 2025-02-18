@@ -47,6 +47,7 @@ const ApproveChangeRequests = () => {
                             <TableCell sx={{ color: '#fff' }}>Team</TableCell>
                             <TableCell sx={{ color: '#fff' }}>Field</TableCell>
                             <TableCell sx={{ color: '#fff' }}>New Value</TableCell>
+                            <TableCell sx={{ color: '#fff' }}>Reason</TableCell>
                             <TableCell sx={{ color: '#fff' }}>Actions</TableCell>
                         </TableRow>
                     </TableHead>
@@ -57,6 +58,7 @@ const ApproveChangeRequests = () => {
                                 <TableCell>{request.team}</TableCell>
                                 <TableCell>{request.field}</TableCell>
                                 <TableCell>{request.newValue}</TableCell>
+                                <TableCell>{request.reason}</TableCell>
                                 <TableCell>
                                     <Button
                                         variant="contained"

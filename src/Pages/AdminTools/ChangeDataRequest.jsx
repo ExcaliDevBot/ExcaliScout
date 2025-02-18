@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { db } from '../../firebase-config';
-import { ref, get, push } from 'firebase/database';
-import { Box, Button, TextField, Typography, MenuItem, Select, FormControl, InputLabel, Paper } from '@mui/material';
+import React, {useState, useEffect} from 'react';
+import {db} from '../../firebase-config';
+import {ref, get, push} from 'firebase/database';
+import {Box, Button, TextField, Typography, MenuItem, Select, FormControl, InputLabel, Paper} from '@mui/material';
 
 const ChangeDataRequest = () => {
     const [matches, setMatches] = useState([]);
@@ -11,6 +11,9 @@ const ChangeDataRequest = () => {
     const [fields, setFields] = useState([]);
     const [selectedField, setSelectedField] = useState('');
     const [newValue, setNewValue] = useState('');
+    const [selectedReason, setSelectedReason] = useState('');
+
+    const reasons = ['Misclick', 'Judges Decision', 'Data Error', 'Other'];
 
     useEffect(() => {
         const fetchMatches = async () => {
@@ -59,18 +62,20 @@ const ChangeDataRequest = () => {
             team: selectedTeam,
             field: selectedField,
             newValue,
+            reason: selectedReason,
             status: 'pending'
         });
         setSelectedMatch('');
         setSelectedTeam('');
         setSelectedField('');
         setNewValue('');
+        setSelectedReason('');
     };
 
     return (
-        <Box sx={{ padding: 4, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
-            <Paper sx={{ padding: 4, maxWidth: 600, margin: 'auto', boxShadow: 3 }}>
-                <Typography variant="h4" sx={{ marginBottom: 4, color: '#012265' }}>Request Data Change</Typography>
+        <Box sx={{padding: 4, backgroundColor: '#f5f5f5', minHeight: '100vh'}}>
+            <Paper sx={{padding: 4, maxWidth: 600, margin: 'auto', boxShadow: 3}}>
+                <Typography variant="h4" sx={{marginBottom: 4, color: '#012265'}}>Request Data Change</Typography>
                 <FormControl fullWidth margin="normal">
                     <InputLabel>Match</InputLabel>
                     <Select value={selectedMatch} onChange={(e) => setSelectedMatch(e.target.value)}>
@@ -102,7 +107,16 @@ const ChangeDataRequest = () => {
                     value={newValue}
                     onChange={(e) => setNewValue(e.target.value)}
                 />
-                <Button variant="contained" color="primary" onClick={handleSubmit} sx={{ marginTop: 2 }}>Submit Request</Button>
+                <FormControl fullWidth margin="normal">
+                    <InputLabel>Reason</InputLabel>
+                    <Select value={selectedReason} onChange={(e) => setSelectedReason(e.target.value)}>
+                        {reasons.map((reason) => (
+                            <MenuItem key={reason} value={reason}>{reason}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <Button variant="contained" color="primary" onClick={handleSubmit} sx={{marginTop: 2}}>Submit
+                    Request</Button>
             </Paper>
         </Box>
     );
