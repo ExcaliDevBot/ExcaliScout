@@ -20,6 +20,7 @@ import QRCodeScanner from './Pages/Scanner/QRCodeScanner';
 // Routes and Access Control
 import AdminRoute from './Routes/AdminRoute';
 import ProtectedRoute from './Routes/ProtectedRoute';
+import ScoutingDataPage from './Pages/Control/Control';
 import React from "react";
 import { ThemeProvider } from './context/ThemeContext';
 
@@ -42,13 +43,12 @@ function App() {
                     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                     <Route path="/scout/:match_id" element={<ProtectedRoute><ScoutingForm /></ProtectedRoute>} />
                     <Route path="/scout" element={<ProtectedRoute><ScoutingForm /></ProtectedRoute>} />
-
                     {/* Admin Routes */}
                     <Route path="/pit-assign" element={<AdminRoute><PitScoutingAssign /></AdminRoute>} />
                     <Route path="/assign-matches" element={<AdminRoute><MatchAssign /></AdminRoute>} />
                     <Route path="/super-assign" element={<AdminRoute><AdminSuperAssign /></AdminRoute>} />
                     <Route path="/manage-users" element={<AdminRoute><ManageUsers /></AdminRoute>} />
-
+                    <Route path="/scouting-data" element={<AdminRoute><ScoutingDataPage /></AdminRoute>} />
                     {/* Catch-all Route */}
                     <Route path="/no-access" element={<div>No Access</div>} />
                 </Routes>

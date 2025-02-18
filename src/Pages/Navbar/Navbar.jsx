@@ -178,9 +178,10 @@ const Navbar = () => {
                                     }}
                                 >
                                     <MenuItem onClick={() => navigate('/manage-users')}>Manage Users</MenuItem>
+                                    <MenuItem onClick={() => navigate('/scouting-data')}>Scouter Control</MenuItem>
                                     <MenuItem onClick={() => navigate('/assign-matches')}>Assign Matches</MenuItem>
-                                    <MenuItem onClick={() => navigate('/pit-assign')}>Assign Pit Scouting</MenuItem>
-                                    <MenuItem onClick={() => navigate('/super-assign')}>Assign Super Matches</MenuItem>
+                                    <MenuItem onClick={() => navigate('/pit-assign')}>Assign Pit</MenuItem>
+                                    <MenuItem onClick={() => navigate('/super-assign')}>Assign Super</MenuItem>
                                 </Menu>
                             </>
                         ) : (
