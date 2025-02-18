@@ -182,6 +182,8 @@ const Navbar = () => {
                                     <MenuItem onClick={() => navigate('/assign-matches')}>Assign Matches</MenuItem>
                                     <MenuItem onClick={() => navigate('/pit-assign')}>Assign Pit</MenuItem>
                                     <MenuItem onClick={() => navigate('/super-assign')}>Assign Super</MenuItem>
+                                    <MenuItem onClick={() => navigate('/change-data-request')}>Request Data Change</MenuItem>
+                                    <MenuItem onClick={() => navigate('/approve-change-requests')}>Approve Change Requests</MenuItem>
                                 </Menu>
                             </>
                         ) : (
