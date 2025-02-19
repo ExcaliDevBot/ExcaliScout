@@ -3,9 +3,11 @@ import { db } from '../../firebase-config';
 import { ref, get, update, remove } from 'firebase/database';
 import { Box, Button, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { UserContext } from '../../context/UserContext';
+import { ThemeContext } from '../../context/ThemeContext'; // Adjust the import path as needed
 
 const ApproveChangeRequests = () => {
-    const {user} = useContext(UserContext);
+    const { user } = useContext(UserContext);
+    const { theme } = useContext(ThemeContext);
     const [requests, setRequests] = useState([]);
 
     useEffect(() => {
@@ -37,34 +39,34 @@ const ApproveChangeRequests = () => {
     };
 
     return (
-        <Box sx={{ padding: 4, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
-            <Typography variant="h4" sx={{ marginBottom: 4, color: '#012265', textAlign: 'center' }}>Approve Change Requests</Typography>
-            <TableContainer component={Paper} sx={{ boxShadow: 3 }}>
+        <Box sx={{ padding: 4, backgroundColor: theme === 'light' ? '#f5f5f5' : '#333', minHeight: '100vh', color: theme === 'light' ? '#000' : '#fff' }}>
+            <Typography variant="h4" sx={{ marginBottom: 4, color: theme === 'light' ? '#012265' : '#d4af37', textAlign: 'center' }}>Approve Change Requests</Typography>
+            <TableContainer component={Paper} sx={{ boxShadow: 3, backgroundColor: theme === 'light' ? '#fff' : '#444' }}>
                 <Table>
                     <TableHead>
-                        <TableRow sx={{ backgroundColor: '#012265' }}>
-                            <TableCell sx={{ color: '#fff' }}>Match ID</TableCell>
-                            <TableCell sx={{ color: '#fff' }}>Team</TableCell>
-                            <TableCell sx={{ color: '#fff' }}>Field</TableCell>
-                            <TableCell sx={{ color: '#fff' }}>New Value</TableCell>
-                            <TableCell sx={{ color: '#fff' }}>Reason</TableCell>
-                            <TableCell sx={{ color: '#fff' }}>Actions</TableCell>
+                        <TableRow sx={{ backgroundColor: theme === 'light' ? '#012265' : '#d4af37' }}>
+                            <TableCell sx={{ color: theme === 'light' ? '#fff' : '#012265' }}>Match ID</TableCell>
+                            <TableCell sx={{ color: theme === 'light' ? '#fff' : '#012265' }}>Team</TableCell>
+                            <TableCell sx={{ color: theme === 'light' ? '#fff' : '#012265' }}>Field</TableCell>
+                            <TableCell sx={{ color: theme === 'light' ? '#fff' : '#012265' }}>New Value</TableCell>
+                            <TableCell sx={{ color: theme === 'light' ? '#fff' : '#012265' }}>Reason</TableCell>
+                            <TableCell sx={{ color: theme === 'light' ? '#fff' : '#012265' }}>Actions</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {requests.map(([id, request]) => (
                             <TableRow key={id}>
-                                <TableCell>{request.matchId}</TableCell>
-                                <TableCell>{request.team}</TableCell>
-                                <TableCell>{request.field}</TableCell>
-                                <TableCell>{request.newValue}</TableCell>
-                                <TableCell>{request.reason}</TableCell>
-                                <TableCell>
+                                <TableCell sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}>{request.matchId}</TableCell>
+                                <TableCell sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}>{request.team}</TableCell>
+                                <TableCell sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}>{request.field}</TableCell>
+                                <TableCell sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}>{request.newValue}</TableCell>
+                                <TableCell sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}>{request.reason}</TableCell>
+                                <TableCell sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}>
                                     <Button
                                         variant="contained"
                                         color="primary"
                                         onClick={() => handleApprove(id, request)}
-                                        sx={{ marginRight: 1 }}
+                                        sx={{ marginRight: 1, backgroundColor: theme === 'light' ? '#012265' : '#d4af37', '&:hover': { backgroundColor: theme === 'light' ? '#d4af37' : '#012265', color: theme === 'light' ? '#012265' : '#d4af37' } }}
                                     >
                                         Approve
                                     </Button>

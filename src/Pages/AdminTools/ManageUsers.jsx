@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { ref, onValue, set, update, remove } from 'firebase/database';
 import { db } from '../../firebase-config';
 import {
@@ -12,8 +12,11 @@ import {
     Select,
     MenuItem,
     InputLabel,
-    FormControl
+    FormControl,
+    Grid,
+    Container
 } from '@mui/material';
+import { ThemeContext } from '../../context/ThemeContext'; // Adjust the import path as needed
 
 function ManageUsers() {
     const [users, setUsers] = useState([]);
@@ -22,6 +25,7 @@ function ManageUsers() {
     const [loading, setLoading] = useState(true);
     const [feedbackMessage, setFeedbackMessage] = useState('');
     const [editingUser, setEditingUser] = useState(null);
+    const { theme } = useContext(ThemeContext);
 
     useEffect(() => {
         const usersRef = ref(db, 'users');
@@ -86,8 +90,8 @@ function ManageUsers() {
     );
 
     return (
-        <Box sx={{ p: 4 }}>
-            <Typography variant="h4" sx={{ textAlign: 'center', mb: 4, color: '#012265' }}>
+        <Container sx={{ p: 4, backgroundColor: theme === 'light' ? '#fff' : '#333', color: theme === 'light' ? '#000' : '#fff' }}>
+            <Typography variant="h4" sx={{ textAlign: 'center', mb: 4, color: theme === 'light' ? '#012265' : '#d4af37' }}>
                 Manage Users
             </Typography>
             {loading ? (
@@ -102,47 +106,66 @@ function ManageUsers() {
                         placeholder="Search by username"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        sx={{ width: '100%', maxWidth: 400 }}
+                        sx={{ width: '100%', maxWidth: 400, backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}
                     />
 
                     {/* Add User Form */}
-                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-                        <TextField
-                            label="Username"
-                            value={newUser.username}
-                            onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
-                            sx={{ width: '100%', maxWidth: 400 }}
-                        />
-                        <FormControl sx={{ width: '100%', maxWidth: 400 }}>
-                            <InputLabel>Role</InputLabel>
-                            <Select
-                                value={newUser.role}
-                                onChange={(e) => setNewUser({ ...newUser, role: e.target.value.toLowerCase() })}
-                            >
-                                <MenuItem value="admin">Admin</MenuItem>
-                                <MenuItem value="normal scouter">Normal Scouter</MenuItem>
-                                <MenuItem value="pit scouter">Pit Scouter</MenuItem>
-                                <MenuItem value="super scouter">Super Scouter</MenuItem>
-                            </Select>
-                        </FormControl>
-                        <TextField
-                            label="Password"
-                            type="password"
-                            value={newUser.password}
-                            onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                            sx={{ width: '100%', maxWidth: 400 }}
-                        />
-                        <Button
-                            variant="contained"
-                            sx={{
-                                backgroundColor: '#012265',
-                                '&:hover': { backgroundColor: '#d4af37', color: '#012265' },
-                            }}
-                            onClick={handleAddUser}
-                        >
-                            Add User
-                        </Button>
-                    </Box>
+                    <Card sx={{ width: '100%', maxWidth: 600, p: 2, mt: 2, backgroundColor: theme === 'light' ? '#f5f5f5' : '#555' }}>
+                        <CardContent>
+                            <Typography variant="h6" sx={{ mb: 2, color: theme === 'light' ? '#012265' : '#d4af37' }}>
+                                Add New User
+                            </Typography>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        label="Username"
+                                        value={newUser.username}
+                                        onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
+                                        fullWidth
+                                        sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <FormControl fullWidth sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}>
+                                        <InputLabel>Role</InputLabel>
+                                        <Select
+                                            value={newUser.role}
+                                            onChange={(e) => setNewUser({ ...newUser, role: e.target.value.toLowerCase() })}
+                                            sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}
+                                        >
+                                            <MenuItem value="admin">Admin</MenuItem>
+                                            <MenuItem value="normal scouter">Normal Scouter</MenuItem>
+                                            <MenuItem value="pit scouter">Pit Scouter</MenuItem>
+                                            <MenuItem value="super scouter">Super Scouter</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        label="Password"
+                                        type="password"
+                                        value={newUser.password}
+                                        onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                                        fullWidth
+                                        sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Button
+                                        variant="contained"
+                                        fullWidth
+                                        sx={{
+                                            backgroundColor: theme === 'light' ? '#012265' : '#d4af37',
+                                            '&:hover': { backgroundColor: theme === 'light' ? '#d4af37' : '#012265', color: theme === 'light' ? '#012265' : '#d4af37' },
+                                        }}
+                                        onClick={handleAddUser}
+                                    >
+                                        Add User
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </CardContent>
+                    </Card>
 
                     {feedbackMessage && (
                         <Typography sx={{ color: 'green', mt: 2 }}>{feedbackMessage}</Typography>
@@ -150,9 +173,9 @@ function ManageUsers() {
 
                     {/* User List */}
                     {filteredUsers.map((user) => (
-                        <Card key={user.username} sx={{ width: '100%', maxWidth: 600, mb: 2, boxShadow: 3 }}>
+                        <Card key={user.username} sx={{ width: '100%', maxWidth: 600, mb: 2, boxShadow: 3, backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}>
                             <CardContent>
-                                <Typography variant="h6" sx={{ color: '#d4af37', mb: 1 }}>
+                                <Typography variant="h6" sx={{ color: theme === 'light' ? '#d4af37' : '#ffeb3b', mb: 1 }}>
                                     {user.username}
                                 </Typography>
                                 <Typography variant="body1">Role: {user.role}</Typography>
@@ -160,8 +183,8 @@ function ManageUsers() {
                                     <Button
                                         variant="contained"
                                         sx={{
-                                            backgroundColor: '#012265',
-                                            '&:hover': { backgroundColor: '#d4af37', color: '#012265' },
+                                            backgroundColor: theme === 'light' ? '#012265' : '#d4af37',
+                                            '&:hover': { backgroundColor: theme === 'light' ? '#d4af37' : '#012265', color: theme === 'light' ? '#012265' : '#d4af37' },
                                         }}
                                         onClick={() => setEditingUser({ ...user, password: '' })}
                                     >
@@ -184,15 +207,17 @@ function ManageUsers() {
                                             InputProps={{
                                                 readOnly: true,
                                             }}
-                                            sx={{ width: '100%', maxWidth: 400 }}
+                                            fullWidth
+                                            sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}
                                         />
-                                        <FormControl sx={{ width: '100%', maxWidth: 400 }}>
+                                        <FormControl fullWidth sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}>
                                             <InputLabel>Role</InputLabel>
                                             <Select
                                                 value={editingUser.role}
                                                 onChange={(e) =>
                                                     setEditingUser({ ...editingUser, role: e.target.value.toLowerCase() })
                                                 }
+                                                sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}
                                             >
                                                 <MenuItem value="admin">Admin</MenuItem>
                                                 <MenuItem value="normal scouter">Normal Scouter</MenuItem>
@@ -207,13 +232,14 @@ function ManageUsers() {
                                             onChange={(e) =>
                                                 setEditingUser({ ...editingUser, password: e.target.value })
                                             }
-                                            sx={{ width: '100%', maxWidth: 400 }}
+                                            fullWidth
+                                            sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}
                                         />
                                         <Button
                                             variant="contained"
                                             sx={{
-                                                backgroundColor: '#012265',
-                                                '&:hover': { backgroundColor: '#d4af37', color: '#012265' },
+                                                backgroundColor: theme === 'light' ? '#012265' : '#d4af37',
+                                                '&:hover': { backgroundColor: theme === 'light' ? '#d4af37' : '#012265', color: theme === 'light' ? '#012265' : '#d4af37' },
                                             }}
                                             onClick={() => handleEditUser(user.username)}
                                         >
@@ -226,7 +252,7 @@ function ManageUsers() {
                     ))}
                 </Box>
             )}
-        </Box>
+        </Container>
     );
 }
 

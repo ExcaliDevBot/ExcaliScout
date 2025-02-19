@@ -1,7 +1,8 @@
-import React, {useState, useEffect} from 'react';
-import {db} from '../../firebase-config';
-import {ref, get, push} from 'firebase/database';
-import {Box, Button, TextField, Typography, MenuItem, Select, FormControl, InputLabel, Paper} from '@mui/material';
+import React, { useState, useEffect, useContext } from 'react';
+import { db } from '../../firebase-config';
+import { ref, get, push } from 'firebase/database';
+import { Box, Button, TextField, Typography, MenuItem, Select, FormControl, InputLabel, Paper } from '@mui/material';
+import { ThemeContext } from '../../context/ThemeContext'; // Adjust the import path as needed
 
 const ChangeDataRequest = () => {
     const [matches, setMatches] = useState([]);
@@ -13,6 +14,7 @@ const ChangeDataRequest = () => {
     const [newValue, setNewValue] = useState('');
     const [selectedReason, setSelectedReason] = useState('');
 
+    const { theme } = useContext(ThemeContext);
     const reasons = ['Misclick', 'Judges Decision', 'Data Error', 'Other'];
 
     useEffect(() => {
@@ -73,10 +75,10 @@ const ChangeDataRequest = () => {
     };
 
     return (
-        <Box sx={{padding: 4, backgroundColor: '#f5f5f5', minHeight: '100vh'}}>
-            <Paper sx={{padding: 4, maxWidth: 600, margin: 'auto', boxShadow: 3}}>
-                <Typography variant="h4" sx={{marginBottom: 4, color: '#012265'}}>Request Data Change</Typography>
-                <FormControl fullWidth margin="normal">
+        <Box sx={{ padding: 4, backgroundColor: theme === 'light' ? '#f5f5f5' : '#333', minHeight: '100vh', color: theme === 'light' ? '#000' : '#fff' }}>
+            <Paper sx={{ padding: 4, maxWidth: 600, margin: 'auto', boxShadow: 3, backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}>
+                <Typography variant="h4" sx={{ marginBottom: 4, color: theme === 'light' ? '#012265' : '#d4af37' }}>Request Data Change</Typography>
+                <FormControl fullWidth margin="normal" sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}>
                     <InputLabel>Match</InputLabel>
                     <Select value={selectedMatch} onChange={(e) => setSelectedMatch(e.target.value)}>
                         {matches.map((match) => (
@@ -84,7 +86,7 @@ const ChangeDataRequest = () => {
                         ))}
                     </Select>
                 </FormControl>
-                <FormControl fullWidth margin="normal">
+                <FormControl fullWidth margin="normal" sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}>
                     <InputLabel>Team</InputLabel>
                     <Select value={selectedTeam} onChange={(e) => setSelectedTeam(e.target.value)}>
                         {teams.map((team) => (
@@ -92,7 +94,7 @@ const ChangeDataRequest = () => {
                         ))}
                     </Select>
                 </FormControl>
-                <FormControl fullWidth margin="normal">
+                <FormControl fullWidth margin="normal" sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}>
                     <InputLabel>Field</InputLabel>
                     <Select value={selectedField} onChange={(e) => setSelectedField(e.target.value)}>
                         {fields.map((field) => (
@@ -106,8 +108,9 @@ const ChangeDataRequest = () => {
                     label="New Value"
                     value={newValue}
                     onChange={(e) => setNewValue(e.target.value)}
+                    sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}
                 />
-                <FormControl fullWidth margin="normal">
+                <FormControl fullWidth margin="normal" sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}>
                     <InputLabel>Reason</InputLabel>
                     <Select value={selectedReason} onChange={(e) => setSelectedReason(e.target.value)}>
                         {reasons.map((reason) => (
@@ -115,8 +118,7 @@ const ChangeDataRequest = () => {
                         ))}
                     </Select>
                 </FormControl>
-                <Button variant="contained" color="primary" onClick={handleSubmit} sx={{marginTop: 2}}>Submit
-                    Request</Button>
+                <Button variant="contained" color="primary" onClick={handleSubmit} sx={{ marginTop: 2, backgroundColor: theme === 'light' ? '#012265' : '#d4af37', '&:hover': { backgroundColor: theme === 'light' ? '#d4af37' : '#012265', color: theme === 'light' ? '#012265' : '#d4af37' } }}>Submit Request</Button>
             </Paper>
         </Box>
     );
