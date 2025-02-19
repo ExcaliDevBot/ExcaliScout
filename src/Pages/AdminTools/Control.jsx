@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
-import {db} from '../../firebase-config';
-import {ref, get} from 'firebase/database';
+import React, { useEffect, useState, useContext } from 'react';
+import { db } from '../../firebase-config';
+import { ref, get } from 'firebase/database';
 import {
     Table,
     TableBody,
@@ -17,11 +17,13 @@ import {
     CardContent,
     Container
 } from '@mui/material';
+import { ThemeContext } from '../../context/ThemeContext'; // Adjust the import path as needed
 
 const Control = () => {
     const [matches, setMatches] = useState([]);
     const [submittedMatches, setSubmittedMatches] = useState([]);
     const [scouterMisses, setScouterMisses] = useState({});
+    const { theme } = useContext(ThemeContext);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -61,7 +63,7 @@ const Control = () => {
                     const scouter = match[team].scouter_name;
                     if (scouter) {
                         if (!misses[scouter]) {
-                            misses[scouter] = {count: 0, lastMissedMatch: null, lastMissedTeam: null};
+                            misses[scouter] = { count: 0, lastMissedMatch: null, lastMissedTeam: null };
                         }
                         misses[scouter].count += 1;
                         misses[scouter].lastMissedMatch = match.match_id;
@@ -87,22 +89,22 @@ const Control = () => {
     const totalMatches = matches.length * 6; // 6 teams per match
     const sentForms = submittedMatches.length;
     const notSentForms = totalMatches - sentForms;
-    const accuracy = ((notSentForms / totalMatches) * 100).toFixed(2);
+    const accuracy = ((sentForms / notSentForms) * 100).toFixed(2);
 
     const sortedScouters = Object.entries(scouterMisses)
         .sort((a, b) => b[1].count - a[1].count)
         .slice(0, 3);
 
     return (
-        <Container>
+        <Container sx={{ backgroundColor: theme === 'light' ? '#fff' : '#333', color: theme === 'light' ? '#000' : '#fff' }}>
             <Box>
-                <Typography variant="h4" component="div" gutterBottom sx={{fontWeight: 'bold', color: '#012265'}}>
+                <Typography variant="h4" component="div" gutterBottom sx={{ fontWeight: 'bold', color: theme === 'light' ? '#012265' : '#d4af37' }}>
                     Scouting Data
                 </Typography>
-                <Box sx={{mb: 2}}>
+                <Box sx={{ mb: 2 }}>
                     <Grid container spacing={2}>
                         <Grid item xs={6} sm={3}>
-                            <Card sx={{backgroundColor: '#e0f7fa'}}>
+                            <Card sx={{ backgroundColor: theme === 'light' ? '#e0f7fa' : '#004d40' }}>
                                 <CardContent>
                                     <Typography variant="h6">Total Forms</Typography>
                                     <Typography variant="h5">{totalMatches}</Typography>
@@ -110,7 +112,7 @@ const Control = () => {
                             </Card>
                         </Grid>
                         <Grid item xs={6} sm={3}>
-                            <Card sx={{backgroundColor: '#e8f5e9'}}>
+                            <Card sx={{ backgroundColor: theme === 'light' ? '#e8f5e9' : '#1b5e20' }}>
                                 <CardContent>
                                     <Typography variant="h6">Sent Forms</Typography>
                                     <Typography variant="h5">{sentForms}</Typography>
@@ -118,7 +120,7 @@ const Control = () => {
                             </Card>
                         </Grid>
                         <Grid item xs={6} sm={3}>
-                            <Card sx={{backgroundColor: '#ffebee'}}>
+                            <Card sx={{ backgroundColor: theme === 'light' ? '#ffebee' : '#b71c1c' }}>
                                 <CardContent>
                                     <Typography variant="h6">Not Sent Forms</Typography>
                                     <Typography variant="h5">{notSentForms}</Typography>
@@ -126,7 +128,7 @@ const Control = () => {
                             </Card>
                         </Grid>
                         <Grid item xs={6} sm={3}>
-                            <Card sx={{backgroundColor: '#fff3e0'}}>
+                            <Card sx={{ backgroundColor: theme === 'light' ? '#fff3e0' : '#e65100' }}>
                                 <CardContent>
                                     <Typography variant="h6">Accuracy</Typography>
                                     <Typography variant="h5">{accuracy}%</Typography>
@@ -135,10 +137,10 @@ const Control = () => {
                         </Grid>
                     </Grid>
                 </Box>
-                <Divider sx={{my: 2}}/>
-                <Box sx={{mb: 2}}>
-                    <Typography variant="h6" sx={{fontWeight: 'bold', color: '#d4af37'}}>Inacurate Scouter</Typography>
-                    <TableContainer component={Paper}>
+                <Divider sx={{ my: 2 }} />
+                <Box sx={{ mb: 2 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: theme === 'light' ? '#d4af37' : '#ffeb3b' }}>Inaccurate Scouter</Typography>
+                    <TableContainer component={Paper} sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444' }}>
                         <Table>
                             <TableHead>
                                 <TableRow>
@@ -153,14 +155,12 @@ const Control = () => {
                                         <TableCell>{scouter}</TableCell>
                                         <TableCell>{data.count}</TableCell>
                                         <TableCell>
-                                            <Box sx={{backgroundColor: '#ffebee', padding: '8px', borderRadius: '4px'}}>
-                                                <Typography variant="body2"
-                                                            sx={{fontStyle: 'italic', display: 'inline'}}>
-                                                    Match {data.lastMissedMatch}   -
+                                            <Box sx={{ backgroundColor: theme === 'light' ? '#ffebee' : '#b71c1c', padding: '8px', borderRadius: '4px' }}>
+                                                <Typography variant="body2" sx={{ fontStyle: 'italic', display: 'inline' }}>
+                                                    Match {data.lastMissedMatch} -
                                                 </Typography>
                                                 {' '}
-                                                <Typography variant="body2"
-                                                            sx={{fontStyle: 'italic', display: 'inline'}}>
+                                                <Typography variant="body2" sx={{ fontStyle: 'italic', display: 'inline' }}>
                                                     Team {data.lastMissedTeam}
                                                 </Typography>
                                             </Box>
@@ -171,8 +171,8 @@ const Control = () => {
                         </Table>
                     </TableContainer>
                 </Box>
-                <Divider sx={{my: 2}}/>
-                <TableContainer component={Paper}>
+                <Divider sx={{ my: 2 }} />
+                <TableContainer component={Paper} sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444' }}>
                     <Table>
                         <TableHead>
                             <TableRow>
@@ -189,28 +189,28 @@ const Control = () => {
                             {matches.map((match) => (
                                 <TableRow key={match.matchId}>
                                     <TableCell>{match.matchId}</TableCell>
-                                    <TableCell style={{backgroundColor: getCellColor(match, 'blue1')}}>
-                                        {match.blue1?.team_number || 'N/A'}<br/>
+                                    <TableCell style={{ backgroundColor: getCellColor(match, 'blue1') }}>
+                                        {match.blue1?.team_number || 'N/A'}<br />
                                         {match.blue1?.scouter_name || 'N/A'}
                                     </TableCell>
-                                    <TableCell style={{backgroundColor: getCellColor(match, 'blue2')}}>
-                                        {match.blue2?.team_number || 'N/A'}<br/>
+                                    <TableCell style={{ backgroundColor: getCellColor(match, 'blue2') }}>
+                                        {match.blue2?.team_number || 'N/A'}<br />
                                         {match.blue2?.scouter_name || 'N/A'}
                                     </TableCell>
-                                    <TableCell style={{backgroundColor: getCellColor(match, 'blue3')}}>
-                                        {match.blue3?.team_number || 'N/A'}<br/>
+                                    <TableCell style={{ backgroundColor: getCellColor(match, 'blue3') }}>
+                                        {match.blue3?.team_number || 'N/A'}<br />
                                         {match.blue3?.scouter_name || 'N/A'}
                                     </TableCell>
-                                    <TableCell style={{backgroundColor: getCellColor(match, 'red1')}}>
-                                        {match.red1?.team_number || 'N/A'}<br/>
+                                    <TableCell style={{ backgroundColor: getCellColor(match, 'red1') }}>
+                                        {match.red1?.team_number || 'N/A'}<br />
                                         {match.red1?.scouter_name || 'N/A'}
                                     </TableCell>
-                                    <TableCell style={{backgroundColor: getCellColor(match, 'red2')}}>
-                                        {match.red2?.team_number || 'N/A'}<br/>
+                                    <TableCell style={{ backgroundColor: getCellColor(match, 'red2') }}>
+                                        {match.red2?.team_number || 'N/A'}<br />
                                         {match.red2?.scouter_name || 'N/A'}
                                     </TableCell>
-                                    <TableCell style={{backgroundColor: getCellColor(match, 'red3')}}>
-                                        {match.red3?.team_number || 'N/A'}<br/>
+                                    <TableCell style={{ backgroundColor: getCellColor(match, 'red3') }}>
+                                        {match.red3?.team_number || 'N/A'}<br />
                                         {match.red3?.scouter_name || 'N/A'}
                                     </TableCell>
                                 </TableRow>

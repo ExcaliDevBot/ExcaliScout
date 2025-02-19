@@ -23,7 +23,7 @@ import ApproveChangeRequests from './Pages/AdminTools/ApproveChangeRequests';
 // Routes and Access Control
 import AdminRoute from './Routes/AdminRoute';
 import ProtectedRoute from './Routes/ProtectedRoute';
-import ScoutingDataPage from './Pages/Control/Control';
+import ScoutingDataPage from './Pages/AdminTools/Control';
 import React from "react";
 import {ThemeProvider} from './context/ThemeContext';
 
