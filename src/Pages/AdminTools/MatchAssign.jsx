@@ -1,15 +1,32 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Select, MenuItem, Button, Typography, Box } from '@mui/material';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Select,
+    MenuItem,
+    Button,
+    Typography,
+    Box,
+    Paper,
+    FormControl,
+    InputLabel
+} from '@mui/material';
 import { getDatabase, ref, get, update } from 'firebase/database';
 import { debounce } from 'lodash';
+import { ThemeContext } from '../../context/ThemeContext'; // Adjust the import path as needed
 
 function MatchAssign() {
     const [matches, setMatches] = useState([]);
     const [scouters, setScouters] = useState([]);
+    const [assignmentType, setAssignmentType] = useState('');
     const db = getDatabase();
+    const { theme } = useContext(ThemeContext);
 
     useEffect(() => {
-        // Fetch matches and scouters data once when the component mounts
         const fetchData = async () => {
             try {
                 const matchesRef = ref(db, 'matches');
@@ -39,7 +56,6 @@ function MatchAssign() {
     }, [db]);
 
     const handleScouterChange = useCallback((matchId, position, scouterName) => {
-        // Update state immediately for a responsive UI
         setMatches(prevMatches =>
             prevMatches.map(match =>
                 match.id === matchId
@@ -54,7 +70,6 @@ function MatchAssign() {
             )
         );
 
-        // Debounce Firebase updates to minimize writes
         debounceUpdateFirebase(matchId, position, scouterName);
     }, []);
 
@@ -69,13 +84,11 @@ function MatchAssign() {
 
     const handleSaveAssignments = async () => {
         try {
-            // Prepare data for batch update
             const updates = {};
             matches.forEach(match => {
                 updates[`matches/${match.id}`] = match;
             });
 
-            // Perform batch update in Firebase
             await update(ref(db), updates);
             alert('Assignments saved successfully!');
         } catch (error) {
@@ -85,63 +98,85 @@ function MatchAssign() {
     };
 
     const handleAutoAssign = () => {
-        // Filter out admins (if any)
-        const nonAdminScouters = scouters.filter(scouter => !scouter.isAdmin);
+        if (assignmentType === 'consecutive') {
+            const normalScouters = scouters.filter(scouter => scouter.role === 'normal scouter');
 
-        // Ensure there are enough scouters
-        if (nonAdminScouters.length < 6) {
-            alert('You need at least 6 scouters to assign matches.');
-            return;
-        }
-
-        const totalMatchPositions = 62 * 6;  // Total positions needed (62 matches * 6 positions per match)
-        let scouterIndex = 0;  // Track scouter position in the list
-        let matchIndex = 0;    // Track the match number
-
-        // Copy the matches for updates
-        const updatedMatches = [...matches];
-
-        // Array to store the next available scouter for each match position
-        let scouterCycleIndex = 0;  // Used to track which scouter is assigned to the current match position
-
-        // Loop through all matches
-        while (matchIndex < 62) {
-            const match = updatedMatches[matchIndex];
-
-            // Assign scouters to this match's positions
-            ['red1', 'red2', 'blue1', 'blue2', 'red3', 'blue3'].forEach(position => {
-                const scouter = nonAdminScouters[scouterIndex];
-                if (scouter) {
-                    match[position].scouter_name = scouter.username;
-                }
-            });
-
-            // After assigning the scouter to a match, move to the next scouter for the next match
-            if ((matchIndex + 1) % 3 === 0) {  // After every 3 matches, the scouter gets a break
-                scouterIndex = (scouterIndex + 1) % nonAdminScouters.length;  // Move to the next scouter
+            if (normalScouters.length < 6) {
+                alert('You need at least 6 scouters to assign matches.');
+                return;
             }
 
-            matchIndex++; // Move to the next match
-        }
+            const updatedMatches = [...matches];
+            let scouterIndex = 0;
+            let matchIndex = 0;
 
-        setMatches(updatedMatches); // Update the match positions with assigned scouters
+            while (matchIndex < updatedMatches.length) {
+                for (let positionIndex = 1; positionIndex <= 6; positionIndex++) {
+                    const position = positionIndex <= 3 ? `red${positionIndex}` : `blue${positionIndex - 3}`;
+                    for (let i = 0; i < 3; i++) {
+                        if (matchIndex + i < updatedMatches.length) {
+                            updatedMatches[matchIndex + i][position].scouter_name = normalScouters[scouterIndex].username;
+                        }
+                    }
+                    scouterIndex = (scouterIndex + 1) % normalScouters.length;
+                }
+                matchIndex += 3;
+            }
+
+            setMatches(updatedMatches);
+        } else if (assignmentType === 'reserved') {
+            const normalScouters = scouters.filter(scouter => scouter.role === 'normal scouter' && scouter.username !== 'Phoenix 1' && scouter.username !== 'Phoenix 2');
+
+            if (normalScouters.length < 4) {
+                alert('You need at least 4 normal scouters to assign matches.');
+                return;
+            }
+
+            const updatedMatches = [...matches];
+            let scouterIndex = 0;
+
+            updatedMatches.forEach(match => {
+                match.red1.scouter_name = 'Phoenix 1';
+                match.blue1.scouter_name = 'Phoenix 2';
+
+                ['red2', 'red3', 'blue2', 'blue3'].forEach(position => {
+                    match[position].scouter_name = normalScouters[scouterIndex].username;
+                    scouterIndex = (scouterIndex + 1) % normalScouters.length;
+                });
+            });
+
+            setMatches(updatedMatches);
+        } else {
+            alert('Please select an assignment type.');
+        }
     };
 
-    // Sort matches by match number
     const sortedMatches = [...matches].sort((a, b) => a.match_id - b.match_id);
 
     return (
-        <Box sx={{ padding: 3, maxWidth: '1200px', margin: 'auto', fontFamily: 'sans-serif' }}>
-            <Typography variant="h4" align="center" sx={{ mb: 3, color: '#012265' }}>
+        <Box sx={{ padding: 3, maxWidth: '1200px', margin: 'auto', fontFamily: 'sans-serif', backgroundColor: theme === 'light' ? '#fff' : '#333', color: theme === 'light' ? '#000' : '#fff' }}>
+            <Typography variant="h4" align="center" sx={{ mb: 3, color: theme === 'light' ? '#012265' : '#d4af37' }}>
                 Match Assignment
             </Typography>
 
             <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 3 }}>
+                <FormControl sx={{ minWidth: 200 }}>
+                    <InputLabel>Assignment Type</InputLabel>
+                    <Select
+                        value={assignmentType}
+                        onChange={(e) => setAssignmentType(e.target.value)}
+                        label="Assignment Type"
+                        sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}
+                    >
+                        <MenuItem value="consecutive">Consecutive Matches</MenuItem>
+                        <MenuItem value="reserved">Reserved Positions</MenuItem>
+                    </Select>
+                </FormControl>
                 <Button
                     variant="contained"
                     color="primary"
                     onClick={handleSaveAssignments}
-                    sx={{ width: 200, backgroundColor: '#012265', '&:hover': { backgroundColor: '#d4af37' } }}
+                    sx={{ width: 200, backgroundColor: theme === 'light' ? '#012265' : '#d4af37', '&:hover': { backgroundColor: theme === 'light' ? '#d4af37' : '#012265', color: theme === 'light' ? '#012265' : '#d4af37' } }}
                 >
                     Save Assignments
                 </Button>
@@ -149,24 +184,24 @@ function MatchAssign() {
                     variant="contained"
                     color="secondary"
                     onClick={handleAutoAssign}
-                    sx={{ width: 200, backgroundColor: '#4caf50', '&:hover': { backgroundColor: '#2c6f2b' } }}
+                    sx={{ width: 200, backgroundColor: theme === 'light' ? '#4caf50' : '#2c6f2b', '&:hover': { backgroundColor: theme === 'light' ? '#2c6f2b' : '#4caf50' } }}
                 >
                     Auto Assign Scouters
                 </Button>
             </Box>
 
-            <TableContainer sx={{ overflowX: 'auto' }}>
+            <TableContainer component={Paper} sx={{ overflowX: 'auto', boxShadow: 3, backgroundColor: theme === 'light' ? '#fff' : '#444' }}>
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell align="center" sx={{ backgroundColor: '#012265', color: '#d4af37', fontWeight: 'bold' }}>
+                            <TableCell align="center" sx={{ backgroundColor: theme === 'light' ? '#012265' : '#d4af37', color: theme === 'light' ? '#d4af37' : '#012265', fontWeight: 'bold' }}>
                                 Match Number
                             </TableCell>
                             {[1, 2, 3, 4, 5, 6].map(index => (
                                 <TableCell
                                     key={index}
                                     align="center"
-                                    sx={{ backgroundColor: '#012265', color: '#d4af37', fontWeight: 'bold' }}
+                                    sx={{ backgroundColor: theme === 'light' ? '#012265' : '#d4af37', color: theme === 'light' ? '#d4af37' : '#012265', fontWeight: 'bold' }}
                                 >
                                     Scouter {index}
                                 </TableCell>
@@ -176,17 +211,17 @@ function MatchAssign() {
                     <TableBody>
                         {sortedMatches.map(match => (
                             <TableRow key={match.id}>
-                                <TableCell align="center">{match.match_id}</TableCell>
+                                <TableCell align="center" sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}>{match.match_id}</TableCell>
                                 {[1, 2, 3, 4, 5, 6].map(index => {
                                     const position = index <= 3 ? `red${index}` : `blue${index - 3}`;
                                     return (
-                                        <TableCell key={index} align="center">
+                                        <TableCell key={index} align="center" sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}>
                                             <Select
                                                 value={match[position]?.scouter_name || ''}
                                                 onChange={e => handleScouterChange(match.id, position, e.target.value)}
                                                 fullWidth
                                                 displayEmpty
-                                                sx={{ minWidth: 120 }}
+                                                sx={{ minWidth: 120, backgroundColor: theme === 'light' ? '#fff' : '#444', color: theme === 'light' ? '#000' : '#fff' }}
                                             >
                                                 <MenuItem value="">
                                                     <em>Select Scouter</em>
