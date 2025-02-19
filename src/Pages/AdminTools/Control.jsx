@@ -15,7 +15,8 @@ import {
     Grid,
     Card,
     CardContent,
-    Container
+    Container,
+    Button
 } from '@mui/material';
 import { ThemeContext } from '../../context/ThemeContext'; // Adjust the import path as needed
 
@@ -23,6 +24,8 @@ const Control = () => {
     const [matches, setMatches] = useState([]);
     const [submittedMatches, setSubmittedMatches] = useState([]);
     const [scouterMisses, setScouterMisses] = useState({});
+    const [currentPage, setCurrentPage] = useState(0);
+    const itemsPerPage = 3;
     const { theme } = useContext(ThemeContext);
 
     useEffect(() => {
@@ -92,8 +95,23 @@ const Control = () => {
     const accuracy = ((sentForms / notSentForms) * 100).toFixed(2);
 
     const sortedScouters = Object.entries(scouterMisses)
-        .sort((a, b) => b[1].count - a[1].count)
-        .slice(0, 3);
+        .sort((a, b) => b[1].count - a[1].count);
+
+    const totalPages = Math.ceil(sortedScouters.length / itemsPerPage);
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages - 1) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (currentPage > 0) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const paginatedScouters = sortedScouters.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
 
     return (
         <Container sx={{ backgroundColor: theme === 'light' ? '#fff' : '#333', color: theme === 'light' ? '#000' : '#fff' }}>
@@ -150,7 +168,7 @@ const Control = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {sortedScouters.map(([scouter, data]) => (
+                                {paginatedScouters.map(([scouter, data]) => (
                                     <TableRow key={scouter}>
                                         <TableCell>{scouter}</TableCell>
                                         <TableCell>{data.count}</TableCell>
@@ -170,6 +188,17 @@ const Control = () => {
                             </TableBody>
                         </Table>
                     </TableContainer>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
+                        <Button variant="contained" onClick={handlePreviousPage} disabled={currentPage === 0}>
+                            Previous
+                        </Button>
+                        <Typography>
+                            Page {currentPage + 1} of {totalPages}
+                        </Typography>
+                        <Button variant="contained" onClick={handleNextPage} disabled={currentPage >= totalPages - 1}>
+                            Next
+                        </Button>
+                    </Box>
                 </Box>
                 <Divider sx={{ my: 2 }} />
                 <TableContainer component={Paper} sx={{ backgroundColor: theme === 'light' ? '#fff' : '#444' }}>

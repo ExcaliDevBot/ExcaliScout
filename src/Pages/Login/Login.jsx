@@ -1,28 +1,24 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDatabase, ref, get } from 'firebase/database';
-import {
-    Box,
-    Button,
-    Checkbox,
-    CssBaseline,
-    Divider,
-    FormControl,
-    FormControlLabel,
-    FormLabel,
-    MenuItem,
-    Select,
-    TextField,
-    Typography,
-    Card,
-    CircularProgress,
-    InputAdornment,
-    IconButton,
-    Grid,
-    Container
-} from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { ThemeContext } from '../../context/ThemeContext'; // Adjust the import path as needed
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import CssBaseline from '@mui/material/CssBaseline';
+import Divider from '@mui/material/Divider';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import Card from '@mui/material/Card';
+import CircularProgress from '@mui/material/CircularProgress';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import logo from '../Login/Excalibur Frc (4).png';
 
 export default function LoginForm() {
@@ -33,7 +29,6 @@ export default function LoginForm() {
     const [loading, setLoading] = useState(false);
     const [users, setUsers] = useState([]);
     const navigate = useNavigate();
-    const { theme } = useContext(ThemeContext);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -75,6 +70,7 @@ export default function LoginForm() {
                 const userData = snapshot.val();
 
                 if (userData.password === password) {
+                    localStorage.setItem('user', JSON.stringify({ username: trimmedUsername, role: userData.role }));
                     navigate('/my_matches');
                 } else {
                     setMessage('Invalid password.');
@@ -95,15 +91,14 @@ export default function LoginForm() {
     };
 
     return (
-        <Container
+        <Box
             sx={{
                 height: '100vh',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: theme === 'light' ? '#f5f5f5' : '#333',
+                backgroundColor: '#f5f5f5',
                 padding: 4,
-                color: theme === 'light' ? '#000' : '#fff',
             }}
         >
             <CssBaseline />
@@ -116,8 +111,6 @@ export default function LoginForm() {
                     gap: 2,
                     boxShadow:
                         'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
-                    backgroundColor: theme === 'light' ? '#fff' : '#444',
-                    color: theme === 'light' ? '#000' : '#fff',
                 }}
             >
                 <Box
@@ -136,7 +129,7 @@ export default function LoginForm() {
                         component="span"
                         sx={{
                             fontFamily: 'Copperplate Gothic Bold, serif',
-                            color: theme === 'light' ? '#012265' : '#d4af37',
+                            color: '#012265',
                             fontSize: '1rem',
                         }}
                     >
@@ -165,7 +158,6 @@ export default function LoginForm() {
                             onChange={(e) => setUsername(e.target.value)}
                             displayEmpty
                             required
-                            sx={{ backgroundColor: theme === 'light' ? '#fff' : '#555', color: theme === 'light' ? '#000' : '#fff' }}
                         >
                             <MenuItem value="" disabled>
                                 Select Username
@@ -186,7 +178,6 @@ export default function LoginForm() {
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="Team Password"
                             required
-                            sx={{ backgroundColor: theme === 'light' ? '#fff' : '#555', color: theme === 'light' ? '#000' : '#fff' }}
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
@@ -216,7 +207,7 @@ export default function LoginForm() {
                         type="submit"
                         fullWidth
                         variant="contained"
-                        sx={{ mt: 3, backgroundColor: theme === 'light' ? '#012265' : '#d4af37', '&:hover': { backgroundColor: theme === 'light' ? '#d4af37' : '#012265', color: theme === 'light' ? '#012265' : '#d4af37' } }}
+                        sx={{ mt: 3 }}
                         disabled={loading}
                     >
                         {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign in'}
@@ -225,9 +216,9 @@ export default function LoginForm() {
                 <Divider sx={{ my: 2 }}>or</Divider>
                 <Typography textAlign="center">
                     Don&apos;t have an account?{' '}
-                    <Button variant="text" onClick={() => alert('Please contact the scouting admin')}>Contact Support</Button>
+                    <Button variant="text" onClick={() => alert('Yuda Buda')}>Contact Support</Button>
                 </Typography>
             </Card>
-        </Container>
+        </Box>
     );
 }
