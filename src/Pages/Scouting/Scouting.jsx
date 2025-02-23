@@ -1,5 +1,5 @@
-import React, {useEffect, useState, useContext} from "react";
-import {useLocation, useNavigate} from "react-router-dom";
+import React, { useEffect, useState, useContext } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
     Button,
     TextField,
@@ -17,20 +17,24 @@ import {
     DialogTitle,
     Alert,
 } from "@mui/material";
-import {db} from "../../firebase-config";
-import {ref, set, get, child} from "firebase/database";
+import { db } from "../../firebase-config";
+import { ref, set, get, child } from "firebase/database";
 import Teleop from "./Game/Teleop";
 import Auto from "./Game/Auto";
-import {ThemeContext} from "../../context/ThemeContext";
-import {EmojiEvents, Star, HelpOutline} from '@mui/icons-material';
+import { ThemeContext } from "../../context/ThemeContext";
+import { LanguageContext } from "../../context/LanguageContext";
+import { EmojiEvents, Star, HelpOutline } from '@mui/icons-material';
 import QRCode from "qrcode.react";
+import translations from '../../translations';
 
-function ScoutingForm() {
+const ScoutingForm = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const {match, user} = location.state || {};
+    const { match, user } = location.state || {};
     const isNewForm = !match;
-    const {theme} = useContext(ThemeContext);
+    const { theme } = useContext(ThemeContext);
+    const { language } = useContext(LanguageContext);
+    const t = translations[language];
 
     const [formData, setFormData] = useState({
         Name: user ? user.username : '',
@@ -81,7 +85,6 @@ function ScoutingForm() {
         setBarcodeData(generateBarcode());
     }, [formData]);
 
-
     useEffect(() => {
         const checkIfDataExists = async (team, match) => {
             const nodeName = `M${match}T${team}`;
@@ -100,8 +103,8 @@ function ScoutingForm() {
     }, [formData.Team, formData.Match, navigate]);
 
     const handleInputChange = (event) => {
-        const {name, value} = event.target;
-        setFormData((prev) => ({...prev, [name]: value}));
+        const { name, value } = event.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleAutoChange = (autoData) => {
@@ -111,7 +114,7 @@ function ScoutingForm() {
         }));
     };
 
-    const handleTeleChange = ({counters, climbOption}) => {
+    const handleTeleChange = ({ counters, climbOption }) => {
         setFormData((prev) => ({
             ...prev,
             ...counters,
@@ -120,7 +123,7 @@ function ScoutingForm() {
     };
 
     const handleWinnerSelect = (winner) => {
-        setFormData((prev) => ({...prev, WinnerPrediction: winner}));
+        setFormData((prev) => ({ ...prev, WinnerPrediction: winner }));
         setWinnerDialogOpen(false);
     };
 
@@ -128,7 +131,7 @@ function ScoutingForm() {
         event.preventDefault();
 
         if (!formData.Team || !formData.Match || !formData.Alliance || !formData.Name || !formData.WinnerPrediction || !formData.climbOption) {
-            setAlertMessage("Please fill in all required fields, including the climb option.");
+            setAlertMessage(t.fillRequiredFields);
             setAlertSeverity("warning");
             return false;
         }
@@ -142,48 +145,47 @@ function ScoutingForm() {
             const nodeName = `M${formData.Match}T${formData.Team}`;
             const dbRef = ref(db, `scoutingData/${nodeName}`);
             await set(dbRef, dataToSubmit);
-            setAlertMessage("Submission successful!");
+            setAlertMessage(t.submissionSuccess);
             setAlertSeverity("success");
             setIsButtonDisabled(true);
         } catch (error) {
             console.error("Error submitting data:", error);
-            setAlertMessage("Error submitting data. Please try again.");
+            setAlertMessage(t.submissionError);
             setAlertSeverity("error");
         }
     };
 
     return (
         <>
-            <Dialog open={winnerDialogOpen} onClose={() => {
-            }} disableBackdropClick>
-                <DialogTitle>Which Alliance Do You Think Will Win?</DialogTitle>
+            <Dialog open={winnerDialogOpen} onClose={() => { }} disableBackdropClick>
+                <DialogTitle>{t.whichAlliance}</DialogTitle>
                 <DialogContent>
-                    <Box sx={{display: 'flex', justifyContent: 'space-around', marginTop: 2}}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-around', marginTop: 2 }}>
                         <Button
                             variant="contained"
                             onClick={() => handleWinnerSelect("Red")}
-                            sx={{backgroundColor: '#ff0000', color: '#fff', '&:hover': {backgroundColor: '#ff0000'}}}
+                            sx={{ backgroundColor: '#ff0000', color: '#fff', '&:hover': { backgroundColor: '#ff0000' } }}
                         >
-                            Red
+                            {t.red}
                         </Button>
                         <Button
                             variant="contained"
                             onClick={() => handleWinnerSelect("Tie")}
-                            sx={{backgroundColor: '#9e9e9e', color: '#fff', '&:hover': {backgroundColor: '#757575'}}}
+                            sx={{ backgroundColor: '#9e9e9e', color: '#fff', '&:hover': { backgroundColor: '#757575' } }}
                         >
-                            Tie
+                            {t.tie}
                         </Button>
                         <Button
                             variant="contained"
                             onClick={() => handleWinnerSelect("Blue")}
-                            sx={{backgroundColor: '#00458c', color: '#fff', '&:hover': {backgroundColor: '#00458c'}}}
+                            sx={{ backgroundColor: '#00458c', color: '#fff', '&:hover': { backgroundColor: '#00458c' } }}
                         >
-                            Blue
+                            {t.blue}
                         </Button>
                     </Box>
                 </DialogContent>
             </Dialog>
-            <Alert severity="info"> Remember to track your robot's actions well.</Alert>
+            <Alert severity="info">{t.rememberTrack}</Alert>
 
             <Box
                 sx={{
@@ -195,12 +197,13 @@ function ScoutingForm() {
                     color: theme === 'dark' ? '#fff' : '#000',
                     borderRadius: 2,
                     boxShadow: 4,
+                    direction: language === 'he' ? 'rtl' : 'ltr',
                 }}
             >
                 <Grid container spacing={3} justifyContent="center">
                     <Grid item xs={12} sm={6}>
                         <TextField
-                            label="Team"
+                            label={t.team}
                             variant="outlined"
                             fullWidth
                             name="Team"
@@ -208,7 +211,7 @@ function ScoutingForm() {
                             onChange={handleInputChange}
                             disabled={!isNewForm}
                             InputProps={{
-                                style: {color: 'inherit'},
+                                style: { color: 'inherit' },
                             }}
                             sx={{
                                 backgroundColor: theme === 'dark' ? '#424242' : '#fff',
@@ -217,7 +220,7 @@ function ScoutingForm() {
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <TextField
-                            label="Match"
+                            label={t.match}
                             variant="outlined"
                             fullWidth
                             name="Match"
@@ -225,7 +228,7 @@ function ScoutingForm() {
                             onChange={handleInputChange}
                             disabled={!isNewForm}
                             InputProps={{
-                                style: {color: 'inherit'},
+                                style: { color: 'inherit' },
                             }}
                             sx={{
                                 backgroundColor: theme === 'dark' ? '#424242' : '#fff',
@@ -233,12 +236,12 @@ function ScoutingForm() {
                         />
                     </Grid>
                 </Grid>
-                <Grid container spacing={3} sx={{marginTop: 3}}>
+                <Grid container spacing={3} sx={{ marginTop: 3 }}>
                     <Grid item xs={12} sm={6}>
                         <FormControl fullWidth>
-                            <InputLabel>Alliance</InputLabel>
+                            <InputLabel>{t.alliance}</InputLabel>
                             <Select
-                                label="Alliance"
+                                label={t.alliance}
                                 name="Alliance"
                                 value={formData.Alliance}
                                 onChange={handleInputChange}
@@ -248,14 +251,14 @@ function ScoutingForm() {
                                     color: 'inherit',
                                 }}
                             >
-                                <MenuItem value="Red">Red</MenuItem>
-                                <MenuItem value="Blue">Blue</MenuItem>
+                                <MenuItem value="Red">{t.red}</MenuItem>
+                                <MenuItem value="Blue">{t.blue}</MenuItem>
                             </Select>
                         </FormControl>
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <TextField
-                            label="Notes"
+                            label={t.notes}
                             variant="outlined"
                             fullWidth
                             name="Notes"
@@ -264,7 +267,7 @@ function ScoutingForm() {
                             multiline
                             rows={4}
                             InputProps={{
-                                style: {color: 'inherit'},
+                                style: { color: 'inherit' },
                             }}
                             sx={{
                                 backgroundColor: theme === 'dark' ? '#424242' : '#fff',
@@ -273,17 +276,17 @@ function ScoutingForm() {
                     </Grid>
                 </Grid>
 
-                <Divider sx={{marginY: 3}}/>
+                <Divider sx={{ marginY: 3 }} />
 
-                <Auto onChange={handleAutoChange}/>
+                <Auto onChange={handleAutoChange} t={t} />
 
-                <Divider sx={{marginY: 3}}/>
+                <Divider sx={{ marginY: 3 }} />
 
-                <Box sx={{marginTop: 0, display: 'flex', justifyContent: 'center'}}>
-                    <Teleop onChange={handleTeleChange}/>
+                <Box sx={{ marginTop: 0, display: 'flex', justifyContent: 'center' }}>
+                    <Teleop onChange={handleTeleChange} t={t} />
                 </Box>
 
-                <Divider sx={{marginY: 3}}/>
+                <Divider sx={{ marginY: 3 }} />
 
                 <Box
                     display="flex"
@@ -300,13 +303,13 @@ function ScoutingForm() {
                     }}
                 >
                     {formData.WinnerPrediction === "Red" && (
-                        <EmojiEvents color="error" style={{marginRight: 8}}/>
+                        <EmojiEvents color="error" style={{ marginRight: 8 }} />
                     )}
                     {formData.WinnerPrediction === "Blue" && (
-                        <Star color="primary" style={{marginRight: 8}}/>
+                        <Star color="primary" style={{ marginRight: 8 }} />
                     )}
                     {formData.WinnerPrediction === "Tie" && (
-                        <HelpOutline color="action" style={{marginRight: 8}}/>
+                        <HelpOutline color="action" style={{ marginRight: 8 }} />
                     )}
 
                     <Typography
@@ -315,13 +318,13 @@ function ScoutingForm() {
                             color: theme === "dark" ? "#fff" : "#000",
                         }}
                     >
-                        Predicted Winner: {formData.WinnerPrediction || "None"}
+                        {t.predictedWinner}: {formData.WinnerPrediction || "None"}
                     </Typography>
                 </Box>
 
-                <Divider sx={{marginY: 3}}/>
+                <Divider sx={{ marginY: 3 }} />
 
-                <Box sx={{textAlign: 'center', marginTop: 4}}>
+                <Box sx={{ textAlign: 'center', marginTop: 4 }}>
                     <Button
                         variant="contained"
                         onClick={handleSubmit}
@@ -334,19 +337,19 @@ function ScoutingForm() {
                             fontSize: '1.25rem',
                         }}
                     >
-                        Submit
+                        {t.submit}
                     </Button>
                 </Box>
 
                 {alertMessage && (
-                    <Alert severity={alertSeverity} sx={{marginTop: 2}}>
+                    <Alert severity={alertSeverity} sx={{ marginTop: 2 }}>
                         {alertMessage}
                     </Alert>
                 )}
 
-                <Box sx={{textAlign: 'center', marginTop: 4}}>
+                <Box sx={{ textAlign: 'center', marginTop: 4 }}>
                     <Typography variant="h6" gutterBottom>
-                        Barcode
+                        {t.barcode}
                     </Typography>
                     <Paper
                         elevation={3}
@@ -357,12 +360,12 @@ function ScoutingForm() {
                             backgroundColor: '#fff',
                         }}
                     >
-                        <QRCode value={barcodeData} size={256}/>
+                        <QRCode value={barcodeData} size={256} />
                     </Paper>
                 </Box>
             </Box>
         </>
     );
-}
+};
 
 export default ScoutingForm;

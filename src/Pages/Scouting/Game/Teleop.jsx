@@ -3,7 +3,7 @@ import { Box, Button, Typography, Grid, Paper, Divider, Alert } from '@mui/mater
 import { ThemeContext } from '../../../context/ThemeContext';
 
 // CounterBox Component
-const CounterBox = ({ label, count, onIncrement, onDecrement }) => {
+const CounterBox = ({ label, displayLabel, count, onIncrement, onDecrement }) => {
     const { theme } = useContext(ThemeContext);
 
     return (
@@ -21,7 +21,7 @@ const CounterBox = ({ label, count, onIncrement, onDecrement }) => {
                 marginBottom: 2,
             }}
         >
-            <Typography variant="h6" sx={{ marginBottom: 1, color: theme === 'dark' ? '#fff' : '#000' }}>{label}</Typography>
+            <Typography variant="h6" sx={{ marginBottom: 1, color: theme === 'dark' ? '#fff' : '#000' }}>{displayLabel}</Typography>
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', justifyContent: 'center' }}>
                 <Button
                     variant="contained"
@@ -54,9 +54,9 @@ const CounterBox = ({ label, count, onIncrement, onDecrement }) => {
 };
 
 // ClimbingOptions Component
-const ClimbingOptions = ({ selectedOption, onSelect }) => {
+const ClimbingOptions = ({ selectedOption, onSelect, t }) => {
     const { theme } = useContext(ThemeContext);
-    const options = ['PARKED', 'DEEP', 'SHALLOW', 'UNPARKED'];
+    const options = [t.parked, t.deep, t.shallow, t.unparked];
 
     return (
         <Box
@@ -94,7 +94,7 @@ const ClimbingOptions = ({ selectedOption, onSelect }) => {
 };
 
 // Main Teleop Component
-const Teleop = ({ onChange }) => {
+const Teleop = ({ onChange, t }) => {
     const [counters, setCounters] = useState({
         L1: 0,
         L2: 0,
@@ -123,7 +123,7 @@ const Teleop = ({ onChange }) => {
     };
 
     return (
-        <Box sx={{ padding: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Box sx={{ padding: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', direction: t.direction }}>
             <Typography
                 variant="h4"
                 sx={{
@@ -144,6 +144,7 @@ const Teleop = ({ onChange }) => {
                     <Grid item xs={12} sm={6} md={3} key={label} container justifyContent="center">
                         <CounterBox
                             label={label}
+                            displayLabel={t[label]}
                             count={counters[label]}
                             onIncrement={() => handleCounterChange(label, counters[label] + 1)}
                             onDecrement={() => handleCounterChange(label, counters[label] > 0 ? counters[label] - 1 : 0)}
@@ -155,7 +156,8 @@ const Teleop = ({ onChange }) => {
                 </Grid>
                 <Grid item xs={12} sm={6} md={3} container justifyContent="center">
                     <CounterBox
-                        label="Remove Algae"
+                        label="removeAlgae"
+                        displayLabel={t.removeAlgae}
                         count={counters.removeAlgae}
                         onIncrement={() => handleCounterChange('removeAlgae', counters.removeAlgae + 1)}
                         onDecrement={() => handleCounterChange('removeAlgae', counters.removeAlgae > 0 ? counters.removeAlgae - 1 : 0)}
@@ -163,7 +165,8 @@ const Teleop = ({ onChange }) => {
                 </Grid>
                 <Grid item xs={12} sm={6} md={3} container justifyContent="center">
                     <CounterBox
-                        label="Net Score"
+                        label="netScore"
+                        displayLabel={t.netScore}
                         count={counters.netScore}
                         onIncrement={() => handleCounterChange('netScore', counters.netScore + 1)}
                         onDecrement={() => handleCounterChange('netScore', counters.netScore > 0 ? counters.netScore - 1 : 0)}
@@ -171,7 +174,8 @@ const Teleop = ({ onChange }) => {
                 </Grid>
                 <Grid item xs={12} sm={6} md={3} container justifyContent="center">
                     <CounterBox
-                        label="Processor Score"
+                        label="processorScore"
+                        displayLabel={t.processorScore}
                         count={counters.processorScore}
                         onIncrement={() => handleCounterChange('processorScore', counters.processorScore + 1)}
                         onDecrement={() => handleCounterChange('processorScore', counters.processorScore > 0 ? counters.processorScore - 1 : 0)}
@@ -182,7 +186,8 @@ const Teleop = ({ onChange }) => {
                 </Grid>
                 <Grid item xs={12} sm={6} md={3} container justifyContent="center">
                     <CounterBox
-                        label="Defensive Pins"
+                        label="defensivePins"
+                        displayLabel={t.defensivePins}
                         count={counters.defensivePins}
                         onIncrement={() => handleCounterChange('defensivePins', counters.defensivePins + 1)}
                         onDecrement={() => handleCounterChange('defensivePins', counters.defensivePins > 0 ? counters.defensivePins - 1 : 0)}
@@ -191,17 +196,18 @@ const Teleop = ({ onChange }) => {
             </Grid>
             <Divider sx={{ marginY: 3 }} />
 
-            <Alert severity="info"> Remember To select a climbing option .</Alert>
+            <Alert severity="info">{t.rememberClimbingOption}</Alert>
             <Typography
                 variant="h6"
                 sx={{ textAlign: 'center', mt: 4, color: '#333', fontWeight: 'bold' }}
             >
-                Climbing Options
+                {t.climbingOptions}
             </Typography>
 
             <ClimbingOptions
                 selectedOption={climbOption}
                 onSelect={(option) => setClimbOption(option)}
+                t={t}
             />
         </Box>
     );

@@ -1,20 +1,24 @@
-import React, {useState, useEffect, useContext} from 'react';
-import {useNavigate} from 'react-router-dom';
-import {getDatabase, ref, get} from 'firebase/database';
-import {UserContext} from '../../context/UserContext';
-import {ThemeContext} from '../../context/ThemeContext';
+import React, { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getDatabase, ref, get } from 'firebase/database';
+import { UserContext } from '../../context/UserContext';
+import { ThemeContext } from '../../context/ThemeContext';
+import { LanguageContext } from '../../context/LanguageContext';
 import {
     Box, Button, Card, CardContent, CircularProgress, Typography, Divider, IconButton,
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
+import translations from '../../translations';
 
 function MyMatches() {
     const [matches, setMatches] = useState([]);
     const [loading, setLoading] = useState(false);
     const [submittedMatches, setSubmittedMatches] = useState([]);
     const [infoContent, setInfoContent] = useState({});
-    const {user} = useContext(UserContext);
-    const {theme} = useContext(ThemeContext);
+    const { user } = useContext(UserContext);
+    const { theme } = useContext(ThemeContext);
+    const { language } = useContext(LanguageContext);
+    const t = translations[language];
     const navigate = useNavigate();
     const db = getDatabase();
 
@@ -141,25 +145,30 @@ function MyMatches() {
         const parentNodeName = snapshot.exists() ? snapshot.ref.parent.key : 'Unknown';
 
         setInfoContent((prev) => ({
-            ...prev, [match.match_number]: prev[match.match_number] ? null : {...match, parentNodeName},
+            ...prev, [match.match_number]: prev[match.match_number] ? null : { ...match, parentNodeName },
         }));
     };
 
-    return (<Box sx={{
-            p: 4, backgroundColor: theme === 'light' ? '#f0f0f0' : '#121212', color: theme === 'light' ? '#000' : '#fff'
+    return (
+        <Box sx={{
+            p: 4, backgroundColor: theme === 'light' ? '#f0f0f0' : '#121212', color: theme === 'light' ? '#000' : '#fff', direction: language === 'he' ? 'rtl' : 'ltr'
         }}>
             <Typography variant="h4"
-                        sx={{textAlign: 'center', mb: 4, color: theme === 'light' ? '#012265' : '#d4af37'}}>
-                My Matches
+                sx={{ textAlign: 'center', mb: 4, color: theme === 'light' ? '#012265' : '#d4af37' }}>
+                {t.myMatches}
             </Typography>
-            {loading ? (<Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh'}}>
-                    <CircularProgress/>
-                </Box>) : matches.length > 0 ? (<Box
+            {loading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                    <CircularProgress />
+                </Box>
+            ) : matches.length > 0 ? (
+                <Box
                     sx={{
                         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
                     }}
                 >
-                    {matches.map((match, index) => (<Card
+                    {matches.map((match, index) => (
+                        <Card
                             key={`${match.match_number}-${match.team_number}`}
                             sx={{
                                 width: '100%',
@@ -174,38 +183,44 @@ function MyMatches() {
                         >
                             <CardContent>
                                 <Typography variant="h6"
-                                            sx={{color: match.isPitScouting ? '#2a93b9' : '#d4af37', mb: 1}}>
-                                    Match {match.match_number}
+                                    sx={{ color: match.isPitScouting ? '#2a93b9' : '#d4af37', mb: 1 }}>
+                                    {t.match} {match.match_number}
                                 </Typography>
-                                <Typography variant="body1">Team: {match.team_number}</Typography>
-                                {!match.isSuperScouting && !match.isPitScouting && (<Typography
+                                <Typography variant="body1">{t.team}: {match.team_number}</Typography>
+                                {!match.isSuperScouting && !match.isPitScouting && (
+                                    <Typography
                                         variant="body1"
-                                        sx={{color: match.alliance === 'Red' ? 'red' : 'blue'}}
+                                        sx={{ color: match.alliance === 'Red' ? 'red' : 'blue' }}
                                     >
-                                        Alliance: {match.alliance}
-                                    </Typography>)}
-                                {match.isPitScouting && (<>
-                                        <Typography variant="body2" sx={{color: '#2a93b9'}}>
-                                            Pit Scouting Assigned
+                                        {t.alliance}: {match.alliance}
+                                    </Typography>
+                                )}
+                                {match.isSuperScouting && (
+                                    <>
+                                        <Typography variant="body2" sx={{ color: '#d4af37' }}>
+                                            {t.superScoutingAssigned}
                                         </Typography>
                                         <IconButton
-                                            sx={{position: 'absolute', bottom: 8, right: 8}}
+                                            sx={{ position: 'absolute', bottom: 8, right: 8 }}
                                             onClick={() => handleInfoClick(match)}
                                         >
-                                            <InfoIcon sx={{color: 'gray'}}/>
+                                            <InfoIcon sx={{ color: 'gray' }} />
                                         </IconButton>
-                                    </>)}
-                                {match.isSuperScouting && (<>
-                                        <Typography variant="body2" sx={{color: '#d4af37'}}>
-                                            Super Scouting Assigned
+                                    </>
+                                )}
+                                {match.isPitScouting && (
+                                    <>
+                                        <Typography variant="body2" sx={{ color: '#2a93b9' }}>
+                                            {t.pitScoutingAssigned}
                                         </Typography>
                                         <IconButton
-                                            sx={{position: 'absolute', bottom: 8, right: 8}}
+                                            sx={{ position: 'absolute', bottom: 8, right: 8 }}
                                             onClick={() => handleInfoClick(match)}
                                         >
-                                            <InfoIcon sx={{color: 'gray'}}/>
+                                            <InfoIcon sx={{ color: 'gray' }} />
                                         </IconButton>
-                                    </>)}
+                                    </>
+                                )}
                                 <Button
                                     variant="contained"
                                     sx={{
@@ -226,32 +241,39 @@ function MyMatches() {
                                                     }
                                                 });
                                             } else if (match.isPitScouting) {
-                                                navigate(`/pit-scout`, {state: {teamNumber: match.team_number}});
+                                                navigate(`/pit-scout`, { state: { teamNumber: match.team_number } });
                                             } else {
-                                                navigate(`/scout/new`, {state: {match, user}});
+                                                navigate(`/scout/new`, { state: { match, user } });
                                             }
                                         }
                                     }}
                                     disabled={submittedMatches.includes(`${match.match_number}-${match.team_number}`)}
                                 >
-                                    {submittedMatches.includes(`${match.match_number}-${match.team_number}`) ? 'Completed!' : 'Scout Now'}
+                                    {submittedMatches.includes(`${match.match_number}-${match.team_number}`) ? t.completed : t.scoutNow}
                                 </Button>
-                                {infoContent[match.match_number] && (<>
-                                        <Divider sx={{my: 2}}/>
-                                        <Typography variant="body2" sx={{color: 'gray'}}>
-                                            Assigned By: {match.assignedBy}
+                                {infoContent[match.match_number] && (
+                                    <>
+                                        <Divider sx={{ my: 2 }} />
+                                        <Typography variant="body2" sx={{ color: 'gray' }}>
+                                            {t.assignedBy}: {match.assignedBy}
                                         </Typography>
-                                        <Typography variant="body2" sx={{color: 'gray'}}>
-                                            Serial ID: {infoContent[match.match_number].assignmentId}
+                                        <Typography variant="body2" sx={{ color: 'gray' }}>
+                                            {t.serialId}: {infoContent[match.match_number].assignmentId}
                                         </Typography>
-                                    </>)}
+                                    </>
+                                )}
                             </CardContent>
-                        </Card>))}
-                </Box>) : (<Typography variant="body1" sx={{textAlign: 'center', mt: 2}}>
-                    No matches left for you :( Check back later!
-                </Typography>)}
+                        </Card>
+                    ))}
+                </Box>
+            ) : (
+                <Typography variant="body1" sx={{ textAlign: 'center', mt: 2 }}>
+                    {t.noMatchesLeft}
+                </Typography>
+            )}
 
-            {(user && (user.role === 'admin' || user.role === 'super scouter')) && (<Button
+            {(user && (user.role === 'admin' || user.role === 'super scouter')) && (
+                <Button
                     variant="outlined"
                     sx={{
                         mt: 4,
@@ -267,9 +289,11 @@ function MyMatches() {
                     }}
                     onClick={() => navigate('/super-scout')}
                 >
-                    New Super Scouting Form
-                </Button>)}
-            {(user && (user.role === 'admin' || user.role === 'pit scouter')) && (<Button
+                    {t.newSuperScoutingForm}
+                </Button>
+            )}
+            {(user && (user.role === 'admin' || user.role === 'pit scouter')) && (
+                <Button
                     variant="outlined"
                     sx={{
                         mt: 4,
@@ -285,9 +309,11 @@ function MyMatches() {
                     }}
                     onClick={() => navigate('/pit-scout')}
                 >
-                    New Pit Scouting Form
-                </Button>)}
-            {(user) && (<Button
+                    {t.newPitScoutingForm}
+                </Button>
+            )}
+            {(user) && (
+                <Button
                     variant="outlined"
                     sx={{
                         mt: 4,
@@ -301,11 +327,13 @@ function MyMatches() {
                             borderColor: theme === 'light' ? '#d4af37' : '#012265',
                         },
                     }}
-                    onClick={() => navigate('/scout/new', {state: {user}})}
+                    onClick={() => navigate('/scout/new', { state: { user } })}
                 >
-                    New Scouting Form
-                </Button>)}
-        </Box>);
+                    {t.newScoutingForm}
+                </Button>
+            )}
+        </Box>
+    );
 }
 
 export default MyMatches;
