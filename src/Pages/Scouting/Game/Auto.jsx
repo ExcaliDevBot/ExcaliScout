@@ -64,7 +64,7 @@ const CounterBox = ({ label, displayLabel, count, onIncrement, onDecrement }) =>
   );
 };
 
-const Auto = ({ onChange }) => {
+const Auto = ({ onChange, t }) => {
   const [counters, setCounters] = useState({
     autoL1: 0,
     autoL2: 0,
@@ -105,7 +105,7 @@ const Auto = ({ onChange }) => {
           width: '100%',
         }}
       >
-        Auto
+        {t.auto}
       </Typography>
       <Divider sx={{ marginY: 4, width: '100%' }} />
       <Grid container spacing={4} justifyContent="center">
@@ -113,7 +113,7 @@ const Auto = ({ onChange }) => {
           <Grid item xs={12} sm={6} md={4} lg={3} key={label} container justifyContent="center">
             <CounterBox
               label={label}
-              displayLabel={label.replace('auto', '')}
+              displayLabel={t[label]}
               count={counters[label]}
               onIncrement={() => handleCounterChange(label, counters[label] + 1)}
               onDecrement={() => handleCounterChange(label, counters[label] > 0 ? counters[label] - 1 : 0)}
@@ -129,7 +129,7 @@ const Auto = ({ onChange }) => {
             color="primary"
           />
         }
-        label="Robot Left Starting Zone"
+        label={t.robotLeftStartingZone}
         sx={{ marginTop: 4 }}
       />
       <Divider sx={{ marginY: 4, width: '100%' }} />

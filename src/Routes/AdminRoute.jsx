@@ -5,7 +5,7 @@ import { UserContext } from '../context/UserContext';
 const AdminRoute = ({ children }) => {
     const { user } = useContext(UserContext);
 
-    if (!user || !user.role === "admin") {
+    if (!user || (user.role !== 'admin' && user.role !== 'strategy')) {
         return <Navigate to="/no-access" />;
     }
 

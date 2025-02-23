@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { useCurrentUser } from '../../context/useCurrentUser';
 import { ThemeContext } from '../../context/ThemeContext';
+import { LanguageContext } from '../../context/LanguageContext';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -14,6 +15,7 @@ import './Profile.css';
 const Profile = () => {
     const user = useCurrentUser();
     const { theme, toggleTheme } = useContext(ThemeContext);
+    const { language, toggleLanguage } = useContext(LanguageContext);
 
     if (!user) {
         return (
@@ -92,6 +94,20 @@ const Profile = () => {
                         }}
                     >
                         Switch to {theme === 'light' ? 'Dark' : 'Light'} Theme
+                    </Button>
+                    <Button
+                        variant="contained"
+                        size="large"
+                        onClick={toggleLanguage}
+                        sx={{
+                            backgroundColor: theme === 'light' ? '#012265' : '#d4af37',
+                            color: '#fff',
+                            '&:hover': {
+                                backgroundColor: theme === 'light' ? '#001a4b' : '#c19730',
+                            },
+                        }}
+                    >
+                        {language === 'en' ? 'Switch to Hebrew' : 'Switch to English'}
                     </Button>
                 </Stack>
             </Paper>

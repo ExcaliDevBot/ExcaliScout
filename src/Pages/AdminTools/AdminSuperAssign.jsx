@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { db } from "../../firebase-config";
 import { ref, push, onValue, remove } from "firebase/database";
-import { Box, Typography, FormControl, InputLabel, Select, MenuItem, Button, Checkbox, ListItemText, TextField, CircularProgress, List, ListItem, ListItemSecondaryAction, IconButton, Paper } from "@mui/material";
+import { Box, Typography, FormControl, InputLabel, Select, MenuItem, Button, Checkbox, ListItemText, TextField, CircularProgress, List, ListItem, ListItemSecondaryAction, IconButton, Paper, Alert } from "@mui/material";
 import { UserContext } from "../../context/UserContext";
 import { ThemeContext } from "../../context/ThemeContext";
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -24,6 +24,7 @@ const AdminSuperAssign = () => {
     const [teamNumber, setTeamNumber] = useState("");
     const [selectedQuestions, setSelectedQuestions] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [alert, setAlert] = useState({ message: "", type: "" });
     const { user: currentUser } = useContext(UserContext);
     const { theme } = useContext(ThemeContext);
 
@@ -49,7 +50,7 @@ const AdminSuperAssign = () => {
 
     const handleAssign = async () => {
         if (!selectedUser || !matchNumber || !teamNumber || selectedQuestions.length === 0) {
-            alert("Please select a user, match, and questions.");
+            setAlert({ message: "Please select a user, match, and questions.", type: "error" });
             return;
         }
 
@@ -62,14 +63,14 @@ const AdminSuperAssign = () => {
                 questions: selectedQuestions,
                 assignedBy: currentUser?.username || 'Unknown User',
             });
-            alert("Assignment successfully added!");
+            setAlert({ message: "Assignment successfully added!", type: "success" });
             setSelectedUser("");
             setMatchNumber("");
             setTeamNumber("");
             setSelectedQuestions([]);
         } catch (error) {
             console.error("Error assigning match:", error);
-            alert("Error assigning match.");
+            setAlert({ message: "Error assigning match.", type: "error" });
         } finally {
             setLoading(false);
         }
@@ -78,10 +79,10 @@ const AdminSuperAssign = () => {
     const handleRemove = async (id) => {
         try {
             await remove(ref(db, `superScoutingAssignments/${id}`));
-            alert("Assignment successfully removed!");
+            setAlert({ message: "Assignment successfully removed!", type: "success" });
         } catch (error) {
             console.error("Error removing assignment:", error);
-            alert("Error removing assignment.");
+            setAlert({ message: "Error removing assignment.", type: "error" });
         }
     };
 
@@ -90,6 +91,12 @@ const AdminSuperAssign = () => {
             <Typography variant="h4" align="center" sx={{ color: theme === 'light' ? "#012265" : "#d4af37", mb: 4 }}>
                 Assign Super Scouting Matches
             </Typography>
+
+            {alert.message && (
+                <Alert severity={alert.type} onClose={() => setAlert({ message: "", type: "" })} sx={{ mb: 3 }}>
+                    {alert.message}
+                </Alert>
+            )}
 
             <FormControl fullWidth sx={{ marginBottom: 3 }}>
                 <InputLabel>Select Super Scouter</InputLabel>
