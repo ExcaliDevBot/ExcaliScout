@@ -70,7 +70,7 @@ const Navbar = () => {
                     >
                         <Box
                             component="img"
-                            src="https://www.excaliburfrc.com/static/img/logo_bg_removed.png"
+                            src="favicon.png"
                             alt="Logo"
                             sx={{
                                 height: 40,
