@@ -221,8 +221,10 @@ function ManageUsers() {
                                             >
                                                 <MenuItem value="admin">Admin</MenuItem>
                                                 <MenuItem value="normal scouter">Normal Scouter</MenuItem>
-                                                <MenuItem value="pit scouter">Pit Scouter</MenuItem>
                                                 <MenuItem value="super scouter">Super Scouter</MenuItem>
+                                                <MenuItem value="pit">Pit</MenuItem>
+                                                <MenuItem value="photographer">Photographer</MenuItem>
+                                                <MenuItem value="stratrgy">Strategy</MenuItem>
                                             </Select>
                                         </FormControl>
                                         <TextField
