@@ -251,7 +251,7 @@ function MyMatches() {
                     No matches left for you :( Check back later!
                 </Typography>)}
 
-            {(user && (user.role === 'admin' || user.role === 'super_scouter')) && (<Button
+            {(user && (user.role === 'admin' || user.role === 'super scouter')) && (<Button
                     variant="outlined"
                     sx={{
                         mt: 4,
@@ -269,7 +269,7 @@ function MyMatches() {
                 >
                     New Super Scouting Form
                 </Button>)}
-            {(user && (user.role === 'admin' || user.role === 'pit_scouter')) && (<Button
+            {(user && (user.role === 'admin' || user.role === 'pit scouter')) && (<Button
                     variant="outlined"
                     sx={{
                         mt: 4,

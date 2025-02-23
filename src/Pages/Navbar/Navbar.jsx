@@ -109,7 +109,7 @@ const Navbar = () => {
                                     <ListItem button component={Link} to="/my_matches">
                                         <ListItemText primary="My Matches" sx={{ color: '#fff' }} />
                                     </ListItem>
-                                    {user && user.role === 'admin' && (
+                                    {(user && (user.role === 'admin' || user.role === 'strategy')) && (
                                         <ListItem button onClick={handleActionsMenuOpen}>
                                             <ListItemText primary="Actions" sx={{ color: '#fff' }} />
                                         </ListItem>
@@ -152,7 +152,7 @@ const Navbar = () => {
                                     <MenuItem onClick={() => navigate('/profile')}>View Profile</MenuItem>
                                     <MenuItem onClick={handleLogout}>Logout</MenuItem>
                                 </Menu>
-                                {user && user.role === 'admin' && (
+                                {(user && (user.role === 'admin' || user.role === 'strategy')) && (
                                     <IconButton
                                         color="inherit"
                                         onClick={handleActionsMenuOpen}
@@ -177,13 +177,17 @@ const Navbar = () => {
                                         }
                                     }}
                                 >
-                                    <MenuItem onClick={() => navigate('/manage-users')}>Manage Users</MenuItem>
                                     <MenuItem onClick={() => navigate('/scouting-data')}>Scouter Control</MenuItem>
-                                    <MenuItem onClick={() => navigate('/assign-matches')}>Assign Matches</MenuItem>
-                                    <MenuItem onClick={() => navigate('/pit-assign')}>Assign Pit</MenuItem>
                                     <MenuItem onClick={() => navigate('/super-assign')}>Assign Super</MenuItem>
                                     <MenuItem onClick={() => navigate('/change-data-request')}>Request Data Change</MenuItem>
-                                    <MenuItem onClick={() => navigate('/approve-change-requests')}>Approve Change Requests</MenuItem>
+                                    {user.role === 'admin' && (
+                                        <>
+                                            <MenuItem onClick={() => navigate('/assign-matches')}>Assign Matches</MenuItem>
+                                            <MenuItem onClick={() => navigate('/pit-assign')}>Assign Pit</MenuItem>
+                                            <MenuItem onClick={() => navigate('/manage-users')}>Manage Users</MenuItem>
+                                            <MenuItem onClick={() => navigate('/approve-change-requests')}>Approve Change Requests</MenuItem>
+                                        </>
+                                    )}
                                 </Menu>
                             </>
                         ) : (
