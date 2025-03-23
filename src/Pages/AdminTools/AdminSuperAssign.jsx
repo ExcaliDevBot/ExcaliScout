@@ -33,7 +33,8 @@ const AdminSuperAssign = () => {
         const usersRef = ref(db, "users");
         onValue(usersRef, (snapshot) => {
             const data = snapshot.val();
-            setUsers(Object.values(data || {}));
+            const filteredUsers = Object.values(data || {}).filter(user => user.role === "super scouter" || user.role === "admin");
+            setUsers(filteredUsers);
         });
 
         const matchesRef = ref(db, "matches");
