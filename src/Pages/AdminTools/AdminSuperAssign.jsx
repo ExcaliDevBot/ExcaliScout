@@ -23,6 +23,7 @@ const AdminSuperAssign = () => {
     const [matchNumber, setMatchNumber] = useState("");
     const [teamNumber, setTeamNumber] = useState("");
     const [selectedQuestions, setSelectedQuestions] = useState([]);
+    const [customQuestion, setCustomQuestion] = useState("");
     const [loading, setLoading] = useState(false);
     const [alert, setAlert] = useState({ message: "", type: "" });
     const { user: currentUser } = useContext(UserContext);
@@ -61,6 +62,7 @@ const AdminSuperAssign = () => {
                 user: selectedUser,
                 match: { match_number: matchNumber, team_number: teamNumber },
                 questions: selectedQuestions,
+                customQuestion: customQuestion,
                 assignedBy: currentUser?.username || 'Unknown User',
             });
             setAlert({ message: "Assignment successfully added!", type: "success" });
@@ -68,6 +70,7 @@ const AdminSuperAssign = () => {
             setMatchNumber("");
             setTeamNumber("");
             setSelectedQuestions([]);
+            setCustomQuestion("");
         } catch (error) {
             console.error("Error assigning match:", error);
             setAlert({ message: "Error assigning match.", type: "error" });
@@ -147,6 +150,14 @@ const AdminSuperAssign = () => {
                 </Select>
             </FormControl>
 
+            <TextField
+                label="Custom Question"
+                fullWidth
+                value={customQuestion}
+                onChange={(e) => setCustomQuestion(e.target.value)}
+                sx={{ marginBottom: 3 }}
+            />
+
             <Box sx={{ textAlign: "center" }}>
                 <Button
                     variant="contained"
@@ -174,7 +185,7 @@ const AdminSuperAssign = () => {
                         <ListItem key={assignment.id}>
                             <ListItemText
                                 primary={`User: ${assignment.user}, Match: ${assignment.match.match_number}, Team: ${assignment.match.team_number}`}
-                                secondary={`Questions: ${assignment.questions.map((id) => questionsList[id]).join(", ")}`}
+                                secondary={`Questions: ${assignment.questions.map((id) => questionsList[id]).join(", ")}, Custom Question: ${assignment.customQuestion}`}
                             />
                             <ListItemSecondaryAction>
                                 <IconButton edge="end" aria-label="delete" onClick={() => handleRemove(assignment.id)}>
