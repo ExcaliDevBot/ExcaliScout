@@ -1,9 +1,9 @@
-import React, { useState, useContext, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { db } from "../../../firebase-config";
-import { ref, set, get } from "firebase/database";
-import { UserContext } from "../../../context/UserContext";
-import { Box, Button, Typography, TextField, CircularProgress, Paper } from "@mui/material";
+import React, {useState, useContext, useEffect} from "react";
+import {useNavigate, useLocation} from "react-router-dom";
+import {db} from "../../../firebase-config";
+import {ref, set, get} from "firebase/database";
+import {UserContext} from "../../../context/UserContext";
+import {Box, Button, Typography, TextField, CircularProgress, Paper} from "@mui/material";
 
 const questionsList = {
     0: "מהם האתגרים העיקריים שהרובוט נתקל בהם במהלך סייקל",
@@ -12,13 +12,21 @@ const questionsList = {
     3: "אילו חלקים ברובוט נוטים לתקלות או בעיות תפעוליות",
     4: "אילו משימות הרובוט ביצע במהלך שלב האוטונומי",
     5: "מה תפקיד הרובוט בברית",
+    6: ".1 מאיפה הם אוספים על הפידר?\n" +
+        "2. יש איסוף מהרצפה?\n" +
+        "3. יכולים לאסוף רק מצד אחד?\n" +
+        "4. נקודות חלשות?\n" +
+        "5. איך הם מתמודדים עם הגנה? איפה עשו עליו? איך ניסה להתמודד\n" +
+        "6. אוטומציות או ידניים?\n" +
+        "7. האם צריכים את היומן פלייר שלהם? אם כן איך מתמודד?\n" +
+        "8. האם עשה הגנה? איפה? האם הצליחו להתחמק ממנו ?איך?"
 };
 
 function SuperScouting() {
-    const { user } = useContext(UserContext);
+    const {user} = useContext(UserContext);
     const navigate = useNavigate();
     const location = useLocation();
-    const { match, questions, customQuestion } = location.state || {};
+    const {match, questions, customQuestion} = location.state || {};
     const [formData, setFormData] = useState({});
     const [loading, setLoading] = useState(false);
     const [manualMatchNumber, setManualMatchNumber] = useState("");
@@ -69,7 +77,7 @@ function SuperScouting() {
                     question: questionsList[questionId],
                     answer: formData[questionId] || "",
                 })),
-                { question: loadedCustomQuestion || customQuestion || "", answer: formData.customAnswer || "" }
+                {question: loadedCustomQuestion || customQuestion || "", answer: formData.customAnswer || ""}
             ],
         };
 
@@ -89,14 +97,14 @@ function SuperScouting() {
 
     if (!match || !questions) {
         return (
-            <Box sx={{ p: 4, maxWidth: 900, margin: "auto" }}>
-                <Paper elevation={3} sx={{ padding: 3 }}>
-                    <Typography variant="h6" sx={{ mb: 2 }}>
+            <Box sx={{p: 4, maxWidth: 900, margin: "auto"}}>
+                <Paper elevation={3} sx={{padding: 3}}>
+                    <Typography variant="h6" sx={{mb: 2}}>
                         Match or Questions Data is Missing
                     </Typography>
                     <form onSubmit={handleManualSubmit}>
-                        <Box sx={{ mb: 3 }}>
-                            <Typography variant="body1" sx={{ fontWeight: "bold", mb: 1 }}>
+                        <Box sx={{mb: 3}}>
+                            <Typography variant="body1" sx={{fontWeight: "bold", mb: 1}}>
                                 Enter Match Number:
                             </Typography>
                             <TextField
@@ -107,8 +115,8 @@ function SuperScouting() {
                                 type="number"
                             />
                         </Box>
-                        <Box sx={{ mb: 3 }}>
-                            <Typography variant="body1" sx={{ fontWeight: "bold", mb: 1 }}>
+                        <Box sx={{mb: 3}}>
+                            <Typography variant="body1" sx={{fontWeight: "bold", mb: 1}}>
                                 Enter Team Number:
                             </Typography>
                             <TextField
@@ -120,13 +128,13 @@ function SuperScouting() {
                             />
                         </Box>
 
-                        <Typography variant="h6" sx={{ mb: 2 }}>
+                        <Typography variant="h6" sx={{mb: 2}}>
                             Answer the Questions Below
                         </Typography>
 
                         {Object.keys(questionsList).map((questionId) => (
-                            <Box key={questionId} sx={{ mb: 3 }}>
-                                <Typography variant="body1" sx={{ fontWeight: "bold", mb: 1 }}>
+                            <Box key={questionId} sx={{mb: 3}}>
+                                <Typography variant="body1" sx={{fontWeight: "bold", mb: 1}}>
                                     {questionsList[questionId]}
                                 </Typography>
                                 <TextField
@@ -140,8 +148,8 @@ function SuperScouting() {
                             </Box>
                         ))}
 
-                        <Box sx={{ mb: 3 }}>
-                            <Typography variant="body1" sx={{ fontWeight: "bold", mb: 1 }}>
+                        <Box sx={{mb: 3}}>
+                            <Typography variant="body1" sx={{fontWeight: "bold", mb: 1}}>
                                 {loadedCustomQuestion || customQuestion || "Custom Question"}
                             </Typography>
                             <TextField
@@ -150,19 +158,19 @@ function SuperScouting() {
                                 multiline
                                 rows={4}
                                 value={formData.customAnswer || ""}
-                                onChange={(e) => setFormData({ ...formData, customAnswer: e.target.value })}
+                                onChange={(e) => setFormData({...formData, customAnswer: e.target.value})}
                             />
                         </Box>
 
-                        <Box sx={{ textAlign: "center" }}>
+                        <Box sx={{textAlign: "center"}}>
                             <Button
                                 variant="contained"
                                 color="primary"
-                                sx={{ mt: 3, px: 4 }}
+                                sx={{mt: 3, px: 4}}
                                 type="submit"
                                 disabled={loading || !manualMatchNumber || !manualTeamNumber || isSubmitted}
                             >
-                                {loading ? <CircularProgress size={24} sx={{ color: "#fff" }} /> : "Submit"}
+                                {loading ? <CircularProgress size={24} sx={{color: "#fff"}}/> : "Submit"}
                             </Button>
                         </Box>
                     </form>
@@ -172,10 +180,10 @@ function SuperScouting() {
     }
 
     return (
-        <Box sx={{ p: 4, maxWidth: 900, margin: "auto" }}>
-            <Paper elevation={3} sx={{ padding: 3 }}>
+        <Box sx={{p: 4, maxWidth: 900, margin: "auto"}}>
+            <Paper elevation={3} sx={{padding: 3}}>
 
-                <Box sx={{ mb: 4, paddingLeft: 1 }}>
+                <Box sx={{mb: 4, paddingLeft: 1}}>
                     <Typography variant="h6">Match Details</Typography>
                     <p><strong>Team Number:</strong> {match.team_number}</p>
                     <p><strong>Match Number:</strong> {match.match_number}</p>
@@ -185,8 +193,8 @@ function SuperScouting() {
                     {questions.map(
                         (questionId, index) =>
                             questionsList[questionId] && (
-                                <Box key={index} sx={{ mb: 3 }}>
-                                    <Typography variant="body1" sx={{ fontWeight: "bold", mb: 1 }}>
+                                <Box key={index} sx={{mb: 3}}>
+                                    <Typography variant="body1" sx={{fontWeight: "bold", mb: 1}}>
                                         {questionsList[questionId]}
                                     </Typography>
                                     <TextField
@@ -201,8 +209,8 @@ function SuperScouting() {
                             )
                     )}
 
-                    <Box sx={{ mb: 3 }}>
-                        <Typography variant="body1" sx={{ fontWeight: "bold", mb: 1 }}>
+                    <Box sx={{mb: 3}}>
+                        <Typography variant="body1" sx={{fontWeight: "bold", mb: 1}}>
                             {loadedCustomQuestion || customQuestion || "Custom Question"}
                         </Typography>
                         <TextField
@@ -211,19 +219,19 @@ function SuperScouting() {
                             multiline
                             rows={4}
                             value={formData.customAnswer || ""}
-                            onChange={(e) => setFormData({ ...formData, customAnswer: e.target.value })}
+                            onChange={(e) => setFormData({...formData, customAnswer: e.target.value})}
                         />
                     </Box>
 
-                    <Box sx={{ textAlign: "center" }}>
+                    <Box sx={{textAlign: "center"}}>
                         <Button
                             variant="contained"
                             color="primary"
-                            sx={{ mt: 3, px: 4 }}
+                            sx={{mt: 3, px: 4}}
                             type="submit"
                             disabled={loading || isSubmitted}
                         >
-                            {loading ? <CircularProgress size={24} sx={{ color: "#fff" }} /> : "Submit"}
+                            {loading ? <CircularProgress size={24} sx={{color: "#fff"}}/> : "Submit"}
                         </Button>
                     </Box>
                 </form>
