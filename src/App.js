@@ -27,6 +27,7 @@ import ScoutingDataPage from './Pages/AdminTools/Control';
 import React from "react";
 import {ThemeProvider} from './context/ThemeContext';
 import {LanguageProvider} from "./context/LanguageContext";
+import OfflineSubmissions from "./Pages/MyMatches/OfflineSubmissions";
 
 function App() {
     return (
@@ -52,6 +53,7 @@ function App() {
                                    element={<ProtectedRoute><ApproveChangeRequests/></ProtectedRoute>}/>
                             {/* Admin Routes */}
                             <Route path="/change-data-request" element={<AdminRoute><ChangeDataRequest/></AdminRoute>}/>
+                            <Route path="/offline_submissions" element={<OfflineSubmissions />} />
                             <Route path="/pit-assign" element={<AdminRoute><PitScoutingAssign/></AdminRoute>}/>
                             <Route path="/assign-matches" element={<AdminRoute><MatchAssign/></AdminRoute>}/>
                             <Route path="/super-assign" element={<AdminRoute><AdminSuperAssign/></AdminRoute>}/>

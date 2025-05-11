@@ -149,6 +149,7 @@ const Navbar = () => {
                                     }}
                                 >
                                     <MenuItem onClick={() => navigate('/scan-match')}>Scan Match</MenuItem>
+                                    <MenuItem onClick={() => navigate('/offline_submissions')}>Offline Matches</MenuItem>
                                     <MenuItem onClick={() => navigate('/profile')}>View Profile</MenuItem>
                                     <MenuItem onClick={handleLogout}>Logout</MenuItem>
                                 </Menu>
