@@ -23,7 +23,6 @@ import {
 } from '@mui/material';
 import { 
     Menu as MenuIcon, 
-    AccountCircle, 
     MoreVert, 
     QrCodeScanner, 
     CloudUpload, 

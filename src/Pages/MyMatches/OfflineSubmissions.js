@@ -7,7 +7,6 @@ import { LanguageContext } from "../../context/LanguageContext";
 import translations from "../../translations";
 
 const OfflineSubmissions = () => {
-    const { theme } = useContext(ThemeContext);
     const { language } = useContext(LanguageContext);
     const t = translations[language];
 

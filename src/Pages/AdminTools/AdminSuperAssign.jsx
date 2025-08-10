@@ -25,7 +25,6 @@ const questionsList = {
 
 const AdminSuperAssign = () => {
     const [users, setUsers] = useState([]);
-    const [matches, setMatches] = useState([]);
     const [assignments, setAssignments] = useState([]);
     const [selectedUser, setSelectedUser] = useState("");
     const [matchNumber, setMatchNumber] = useState("");
@@ -43,12 +42,6 @@ const AdminSuperAssign = () => {
             const data = snapshot.val();
             const filteredUsers = Object.values(data || {}).filter(user => user.role === "super scouter" || user.role === "admin");
             setUsers(filteredUsers);
-        });
-
-        const matchesRef = ref(db, "matches");
-        onValue(matchesRef, (snapshot) => {
-            const data = snapshot.val();
-            setMatches(Object.values(data || {}));
         });
 
         const assignmentsRef = ref(db, "superScoutingAssignments");

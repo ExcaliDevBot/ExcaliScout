@@ -5,9 +5,9 @@ import { UserContext } from '../../context/UserContext';
 import { ThemeContext } from '../../context/ThemeContext';
 import { LanguageContext } from '../../context/LanguageContext';
 import {
-    Box, Button, Card, CardContent, CircularProgress, Typography, Divider, IconButton, Chip, Stack, Container, Fab, SpeedDial, SpeedDialAction, SpeedDialIcon,
+    Box, Button, Card, CardContent, CircularProgress, Typography, IconButton, Chip, Stack, Container, SpeedDial, SpeedDialAction, SpeedDialIcon,
 } from '@mui/material';
-import { Info, Add, QrCodeScanner, Engineering, SupervisorAccount, SportsSoccer } from '@mui/icons-material';
+import { Info, QrCodeScanner, Engineering, SupervisorAccount, SportsSoccer } from '@mui/icons-material';
 import translations from '../../translations';
 
 function MyMatches() {

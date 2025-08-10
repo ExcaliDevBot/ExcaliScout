@@ -12,8 +12,6 @@ import {
     Typography,
     Box,
     Paper,
-    FormControl,
-    InputLabel
 } from '@mui/material';
 import {getDatabase, ref, get, update} from 'firebase/database';
 import {debounce} from 'lodash';
@@ -70,7 +68,7 @@ function MatchAssign() {
         );
 
         debounceUpdateFirebase(matchId, position, scouterName);
-    }, []);
+    }, [debounceUpdateFirebase]);
 
     const debounceUpdateFirebase = debounce((matchId, position, scouterName) => {
         const matchRef = ref(db, `matches/${matchId}`);
