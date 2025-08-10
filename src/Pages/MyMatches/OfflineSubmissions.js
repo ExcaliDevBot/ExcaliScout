@@ -43,6 +43,7 @@ const OfflineSubmissions = () => {
             </Typography>
 
             {alert && <Alert severity={alert.severity} sx={{ mb: 2 }}>{alert.message}</Alert>}
+            }
 
             {pendingSubmissions.length === 0 ? (
                 <Typography>{t.noPendingSubmissions || "No saved data to submit."}</Typography>
