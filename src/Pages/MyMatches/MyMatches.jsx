@@ -5,9 +5,9 @@ import { UserContext } from '../../context/UserContext';
 import { ThemeContext } from '../../context/ThemeContext';
 import { LanguageContext } from '../../context/LanguageContext';
 import {
-    Box, Button, Card, CardContent, CircularProgress, Typography, Divider, IconButton,
+    Box, Button, Card, CardContent, CircularProgress, Typography, Divider, IconButton, Chip, Stack, Container, Fab, SpeedDial, SpeedDialAction, SpeedDialIcon,
 } from '@mui/material';
-import InfoIcon from '@mui/icons-material/Info';
+import { Info, Add, QrCodeScanner, Engineering, SupervisorAccount, SportsSoccer } from '@mui/icons-material';
 import translations from '../../translations';
 
 function MyMatches() {
@@ -15,6 +15,7 @@ function MyMatches() {
     const [loading, setLoading] = useState(false);
     const [submittedMatches, setSubmittedMatches] = useState([]);
     const [infoContent, setInfoContent] = useState({});
+    const [speedDialOpen, setSpeedDialOpen] = useState(false);
     const { user } = useContext(UserContext);
     const { theme } = useContext(ThemeContext);
     const { language } = useContext(LanguageContext);
@@ -149,50 +150,303 @@ function MyMatches() {
         }));
     };
 
+    const speedDialActions = [
+        ...(user && (user.role === 'admin' || user.role === 'super scouter') ? [{
+            icon: <SupervisorAccount />,
+            name: t.newSuperScoutingForm,
+            action: () => navigate('/super-scout')
+        }] : []),
+        ...(user && (user.role === 'admin' || user.role === 'pit scouter') ? [{
+            icon: <Engineering />,
+            name: t.newPitScoutingForm,
+            action: () => navigate('/pit-scout')
+        }] : []),
+        {
+            icon: <SportsSoccer />,
+            name: t.newScoutingForm,
+            action: () => navigate('/scout/new', { state: { user } })
+        },
+        {
+            icon: <QrCodeScanner />,
+            name: 'Scan QR Code',
+            action: () => navigate('/scan-match')
+        }
+    ];
+
     return (
-        <Box sx={{
-            p: 4, backgroundColor: theme === 'light' ? '#f0f0f0' : '#121212', color: theme === 'light' ? '#000' : '#fff', direction: language === 'he' ? 'rtl' : 'ltr'
-        }}>
-            <Typography variant="h4"
-                sx={{ textAlign: 'center', mb: 4, color: theme === 'light' ? '#012265' : '#d4af37' }}>
-                {t.myMatches}
-            </Typography>
-            {loading ? (
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                    <CircularProgress />
-                </Box>
-            ) : matches.length > 0 ? (
-                <Box
-                    sx={{
-                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
+        <Container 
+            maxWidth="sm" 
+            sx={{
+                minHeight: '100vh',
+                backgroundColor: theme === 'light' ? '#f5f5f5' : '#121212',
+                py: 2,
+                px: 1,
+                direction: language === 'he' ? 'rtl' : 'ltr'
+            }}
+        >
+            <Box sx={{ mb: 3, textAlign: 'center' }}>
+                <Typography 
+                    variant="h4"
+                    sx={{ 
+                        color: theme === 'light' ? '#012265' : '#d4af37',
+                        fontWeight: 'bold',
+                        mb: 1
                     }}
                 >
+                    {t.myMatches}
+                </Typography>
+                <Typography 
+                    variant="subtitle1" 
+                    sx={{ 
+                        color: theme === 'light' ? '#666' : '#ccc',
+                        mb: 2
+                    }}
+                >
+                    Welcome back, {user?.username}
+                </Typography>
+            </Box>
+
+            {loading ? (
+                <Box sx={{ 
+                    display: 'flex', 
+                    flexDirection: 'column',
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    height: '50vh' 
+                }}>
+                    <CircularProgress size={60} sx={{ mb: 2 }} />
+                    <Typography variant="h6" sx={{ color: theme === 'light' ? '#666' : '#ccc' }}>
+                        Loading your matches...
+                    </Typography>
+                </Box>
+            ) : matches.length > 0 ? (
+                <Stack spacing={2} sx={{ pb: 10 }}>
                     {matches.map((match, index) => (
                         <Card
                             key={`${match.match_number}-${match.team_number}`}
                             sx={{
                                 width: '100%',
-                                maxWidth: 400,
-                                boxShadow: 3,
-                                borderRadius: 2,
-                                border: match.isSuperScouting ? '4px solid #d4af37' : match.isPitScouting ? '4px solid #2a93b9' : 'none',
-                                backgroundColor: theme === 'light' ? (match.isPitScouting ? '#f0f8ff' : '#fff') : (match.isPitScouting ? '#1e1e1e' : '#333'),
+                                borderRadius: 3,
+                                boxShadow: theme === 'light' ? '0 4px 12px rgba(0,0,0,0.1)' : '0 4px 12px rgba(0,0,0,0.3)',
+                                border: match.isSuperScouting ? '3px solid #d4af37' : match.isPitScouting ? '3px solid #2196f3' : '2px solid transparent',
+                                backgroundColor: theme === 'light' ? '#fff' : '#1e1e1e',
                                 color: theme === 'light' ? '#000' : '#fff',
                                 position: 'relative',
+                                transition: 'all 0.3s ease',
+                                '&:hover': {
+                                    transform: 'translateY(-2px)',
+                                    boxShadow: theme === 'light' ? '0 8px 20px rgba(0,0,0,0.15)' : '0 8px 20px rgba(0,0,0,0.4)',
+                                },
                             }}
                         >
-                            <CardContent>
-                                <Typography variant="h6"
-                                    sx={{ color: match.isPitScouting ? '#2a93b9' : '#d4af37', mb: 1 }}>
-                                    {t.match} {match.match_number}
-                                </Typography>
-                                <Typography variant="body1">{t.team}: {match.team_number}</Typography>
-                                {!match.isSuperScouting && !match.isPitScouting && (
-                                    <Typography
-                                        variant="body1"
-                                        sx={{ color: match.alliance === 'Red' ? 'red' : 'blue' }}
-                                    >
-                                        {t.alliance}: {match.alliance}
+                            <CardContent sx={{ p: 3 }}>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                                    <Box>
+                                        <Typography 
+                                            variant="h5"
+                                            sx={{ 
+                                                color: theme === 'light' ? '#012265' : '#d4af37',
+                                                fontWeight: 'bold',
+                                                mb: 0.5
+                                            }}
+                                        >
+                                            {t.match} {match.match_number}
+                                        </Typography>
+                                        <Typography 
+                                            variant="h6" 
+                                            sx={{ 
+                                                color: theme === 'light' ? '#333' : '#fff',
+                                                mb: 1
+                                            }}
+                                        >
+                                            {t.team} {match.team_number}
+                                        </Typography>
+                                    </Box>
+                                    
+                                    {(match.isSuperScouting || match.isPitScouting) && (
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => handleInfoClick(match)}
+                                            sx={{ 
+                                                color: theme === 'light' ? '#666' : '#ccc',
+                                                '&:hover': {
+                                                    backgroundColor: theme === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.08)'
+                                                }
+                                            }}
+                                        >
+                                            <Info />
+                                        </IconButton>
+                                    )}
+                                </Box>
+
+                                <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap', gap: 1 }}>
+                                    {!match.isSuperScouting && !match.isPitScouting && match.alliance && (
+                                        <Chip
+                                            label={`${t.alliance}: ${match.alliance}`}
+                                            size="small"
+                                            sx={{
+                                                backgroundColor: match.alliance === 'Red' ? '#ffebee' : '#e3f2fd',
+                                                color: match.alliance === 'Red' ? '#c62828' : '#1565c0',
+                                                fontWeight: 'bold'
+                                            }}
+                                        />
+                                    )}
+                                    
+                                    {match.isSuperScouting && (
+                                        <Chip
+                                            label={t.superScoutingAssigned}
+                                            size="small"
+                                            sx={{
+                                                backgroundColor: '#fff3e0',
+                                                color: '#e65100',
+                                                fontWeight: 'bold'
+                                            }}
+                                        />
+                                    )}
+                                    
+                                    {match.isPitScouting && (
+                                        <Chip
+                                            label={t.pitScoutingAssigned}
+                                            size="small"
+                                            sx={{
+                                                backgroundColor: '#e3f2fd',
+                                                color: '#1565c0',
+                                                fontWeight: 'bold'
+                                            }}
+                                        />
+                                    )}
+                                    
+                                    <Chip
+                                        label={submittedMatches.includes(`${match.match_number}-${match.team_number}`) ? t.completed : 'Pending'}
+                                        size="small"
+                                        sx={{
+                                            backgroundColor: submittedMatches.includes(`${match.match_number}-${match.team_number}`) ? '#e8f5e8' : '#fff3e0',
+                                            color: submittedMatches.includes(`${match.match_number}-${match.team_number}`) ? '#2e7d32' : '#f57c00',
+                                            fontWeight: 'bold'
+                                        }}
+                                    />
+                                </Stack>
+
+                                <Button
+                                    variant="contained"
+                                    fullWidth
+                                    size="large"
+                                    sx={{
+                                        py: 1.5,
+                                        fontSize: '1.1rem',
+                                        fontWeight: 'bold',
+                                        borderRadius: 2,
+                                        backgroundColor: submittedMatches.includes(`${match.match_number}-${match.team_number}`) 
+                                            ? '#4caf50' 
+                                            : (theme === 'light' ? '#012265' : '#d4af37'),
+                                        '&:hover': {
+                                            backgroundColor: submittedMatches.includes(`${match.match_number}-${match.team_number}`) 
+                                                ? '#388e3c' 
+                                                : (theme === 'light' ? '#001a4b' : '#b8941f'),
+                                        },
+                                        '&:disabled': {
+                                            backgroundColor: '#4caf50',
+                                            color: '#fff'
+                                        }
+                                    }}
+                                    onClick={() => {
+                                        if (!submittedMatches.includes(`${match.match_number}-${match.team_number}`)) {
+                                            if (match.isSuperScouting) {
+                                                navigate(`/super-scout`, {
+                                                    state: {
+                                                        match, questions: match.superScoutingQuestions
+                                                    }
+                                                });
+                                            } else if (match.isPitScouting) {
+                                                navigate(`/pit-scout`, { state: { teamNumber: match.team_number } });
+                                            } else {
+                                                navigate(`/scout/new`, { state: { match, user } });
+                                            }
+                                        }
+                                    }}
+                                    disabled={submittedMatches.includes(`${match.match_number}-${match.team_number}`)}
+                                >
+                                    {submittedMatches.includes(`${match.match_number}-${match.team_number}`) ? t.completed : t.scoutNow}
+                                </Button>
+
+                                {infoContent[match.match_number] && (
+                                    <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid', borderColor: theme === 'light' ? '#e0e0e0' : '#444' }}>
+                                        <Typography variant="body2" sx={{ color: theme === 'light' ? '#666' : '#ccc', mb: 0.5 }}>
+                                            <strong>{t.assignedBy}:</strong> {match.assignedBy}
+                                        </Typography>
+                                        <Typography variant="body2" sx={{ color: theme === 'light' ? '#666' : '#ccc' }}>
+                                            <strong>{t.serialId}:</strong> {infoContent[match.match_number].assignmentId}
+                                        </Typography>
+                                    </Box>
+                                )}
+                            </CardContent>
+                        </Card>
+                    ))}
+                </Stack>
+            ) : (
+                <Card sx={{ 
+                    textAlign: 'center', 
+                    py: 6,
+                    backgroundColor: theme === 'light' ? '#fff' : '#1e1e1e',
+                    borderRadius: 3
+                }}>
+                    <CardContent>
+                        <SportsSoccer sx={{ fontSize: 64, color: theme === 'light' ? '#ccc' : '#666', mb: 2 }} />
+                        <Typography variant="h6" sx={{ color: theme === 'light' ? '#666' : '#ccc', mb: 1 }}>
+                            {t.noMatchesLeft}
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: theme === 'light' ? '#999' : '#777' }}>
+                            Check back later for new assignments
+                        </Typography>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Speed Dial for Quick Actions */}
+            <SpeedDial
+                ariaLabel="Quick Actions"
+                sx={{ 
+                    position: 'fixed', 
+                    bottom: 24, 
+                    right: 24,
+                    '& .MuiFab-primary': {
+                        backgroundColor: theme === 'light' ? '#012265' : '#d4af37',
+                        '&:hover': {
+                            backgroundColor: theme === 'light' ? '#001a4b' : '#b8941f',
+                        }
+                    }
+                }}
+                icon={<SpeedDialIcon />}
+                open={speedDialOpen}
+                onClose={() => setSpeedDialOpen(false)}
+                onOpen={() => setSpeedDialOpen(true)}
+            >
+                {speedDialActions.map((action) => (
+                    <SpeedDialAction
+                        key={action.name}
+                        icon={action.icon}
+                        tooltipTitle={action.name}
+                        onClick={() => {
+                            setSpeedDialOpen(false);
+                            action.action();
+                        }}
+                        sx={{
+                            '& .MuiFab-primary': {
+                                backgroundColor: theme === 'light' ? '#f5f5f5' : '#333',
+                                color: theme === 'light' ? '#012265' : '#d4af37',
+                                '&:hover': {
+                                    backgroundColor: theme === 'light' ? '#e0e0e0' : '#444',
+                                }
+                            }
+                        }}
+                    />
+                ))}
+            </SpeedDial>
+        </Container>
+    );
+}
+
+export default MyMatches;
                                     </Typography>
                                 )}
                                 {match.isSuperScouting && (
