@@ -1,10 +1,9 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { db } from "../../../firebase-config";
-import {ref, push, set} from "firebase/database";
+import { ref, set } from "firebase/database";
 import { UserContext } from "../../../context/UserContext";
 import { ThemeContext } from "../../../context/ThemeContext";
-import { green, red } from '@mui/material/colors';
 import {
     Box,
     Button,
@@ -12,30 +11,49 @@ import {
     TextField,
     CircularProgress,
     Paper,
-    Select,
-    MenuItem,
-    Slider,
-    Divider,
-    Card,
-    CardContent,
-    CardHeader
+    Stack,
+    ToggleButton,
+    ToggleButtonGroup,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
+    Alert,
+    AlertTitle
 } from "@mui/material";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { amber } from '@mui/material/colors';
 
-const questionsList = {
-    0: { question: "גובה הטיפוס (מטר מקסימלי)", type: "scale" },
-    1: { question: "האם הטיפוס מפריע לקבוצה אחרת לטפס", type: "yesno" },
-    2: { question: "האם הרובוט מסוגל לנקד ב L1", type: "yesno" },
-    3: { question: "האם הרובוט מסוגל לנקד בL2 ", type: "yesno" },
-    4: { question: "האם הרובוט מסוגל לנקד ב L3", type: "yesno" },
-    5: { question: "האם הרובוט מסוגל לנקד בL4 ", type: "yesno" },
-    6: { question: "האם הרובוט מסוגל לאסוף מהרצפה", type: "yesno" },
-    7: { question: "האם הרובוט מסוגל לאסוף מהפידר", type: "yesno" },
-    8: { question: "האם הרובוט מסוגל לנקד Algae בפרוססור", type: "yesno" },
-    9: { question: "האם הרובוט מסוגל לנקד Algae ברשת", type: "yesno" },
-    10: { question: "האם הרובוט יוצא מאזור ההתחלה באוטונומי", type: "yesno" },
-    11: { question: "האם אתם מסוגלים להעיף Algae מהריף", type: "yesno" },
-    12: { question: "תאר פירוט אוטונומיי לגבי כל מסלול", type: "open" },
-    13: { question: "הערות כלליות אחרות", type: "open" },
+// Helper to create question data
+const createQuestion = (id, label, type = 'toggle', options = []) => ({ id, label, type, options });
+
+const questions = {
+    capabilities: [
+        createQuestion(0, "האם הרובוט יכול לטפס לגבוה"),
+        createQuestion(1, "האם הרובוט יכול לטפס לנמוך"),
+        createQuestion(2, "האם הרובוט מסוגל לנקד ב L1"),
+        createQuestion(3, "האם הרובוט מסוגל לנקד בL2"),
+        createQuestion(4, "האם הרובוט מסוגל לנקד ב L3"),
+        createQuestion(5, "האם הרובוט מסוגל לנקד בL4"),
+        createQuestion(6, "האם הרובוט מסוגל לאסוף מהרצפה"),
+        createQuestion(7, "האם הרובוט מסוגל לאסוף מהפידר"),
+        createQuestion(8, "האם הרובוט מסוגל לנקד Algae בפרוססור"),
+        createQuestion(9, "האם הרובוט מסוגל לנקד Algae ברשת"),
+    ],
+    technical: [
+        createQuestion(14, 'משקל הרובוט (ק"ג)', 'number'),
+        createQuestion(15, 'מנועי הנעה (סוורב)', 'text'),
+        createQuestion(16, 'מנועי סיבוב (סוורב)', 'text'),
+        createQuestion(17, 'גודל מרכב (מטר, עשרוני)', 'number'),
+        createQuestion(18, 'המרה בסוורב', 'text'),
+        createQuestion(19, 'שניות לנקד ל-L4', 'number'),
+        createQuestion(20, 'סייקלים ממוצע למקצה', 'number'),
+    ],
+    scout: [
+        createQuestion(21, 'האם האיסוף מהפידר דורש דיוק כמו של 2230/2231?'),
+        createQuestion(22, 'האם האיסוף מהפידר מתנדנד כמו הרובוט שלנו בעונה?'),
+        createQuestion(23, 'האם האיסוף מהרצפה בגודל מרכב או פחות?'),
+    ],
+    notes: createQuestion(13, 'הערות כלליות אחרות', 'multiline'),
 };
 
 function PitScouting() {
@@ -50,157 +68,174 @@ function PitScouting() {
 
     useEffect(() => {
         if (!user) {
-            console.error("User not found.");
+            console.error("משתמש לא נמצא.");
             navigate("/login");
         }
     }, [user, navigate]);
 
-    const handleChange = (event, questionId, newValue) => {
-        setFormData({
-            ...formData,
-            [questionId]: newValue !== undefined ? newValue : event.target.value,
-        });
+    const handleChange = (questionId, value) => {
+        setFormData(prev => ({ ...prev, [questionId]: value }));
     };
 
-        const handleManualSubmit = async (event) => {
+    const handleToggleChange = (questionId, event, newValue) => {
+        if (newValue !== null) {
+            handleChange(questionId, newValue);
+        }
+    };
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
         setLoading(true);
-
         const dataToSend = {
-            username: user?.username || "Unknown User",
-            answers: Object.keys(questionsList).reduce((acc, questionId) => {
-                acc[questionId] = formData[questionId] || "";
-                return acc;
-            }, {}),
+            scout: user?.username || "משתמש לא ידוע",
+            timestamp: new Date().toISOString(),
+            answers: { ...formData },
         };
 
         try {
-            const pitScoutingRef = ref(db, `pitScoutingResults/${manualTeamNumber}`);
+            const pitScoutingRef = ref(db, `pitScouting/${manualTeamNumber}`);
             await set(pitScoutingRef, dataToSend);
-            alert("Data submitted successfully!");
+            alert("המידע נשלח בהצלחה!");
+            navigate("/scouting"); // Navigate away after success
         } catch (error) {
-            console.error("Error submitting data:", error);
-            alert("Error submitting data.");
+            console.error("שגיאה בשליחת המידע:", error);
+            alert("שגיאה בשליחת המידע.");
         } finally {
             setLoading(false);
         }
     };
 
+    const renderQuestion = (q) => {
+        switch (q.type) {
+            case 'toggle':
+                return (
+                    <ToggleButtonGroup
+                        value={formData[q.id]}
+                        exclusive
+                        onChange={(e, val) => handleToggleChange(q.id, e, val)}
+                        fullWidth
+                        size="small"
+                    >
+                        <ToggleButton value="yes" color="success">כן</ToggleButton>
+                        <ToggleButton value="no" color="error">לא</ToggleButton>
+                    </ToggleButtonGroup>
+                );
+            case 'number':
+            case 'text':
+                return (
+                    <TextField
+                        label={q.label}
+                        variant="outlined"
+                        fullWidth
+                        size="small"
+                        type={q.type}
+                        value={formData[q.id] || ''}
+                        onChange={(e) => handleChange(q.id, e.target.value)}
+                    />
+                );
+            case 'multiline':
+                 return (
+                    <TextField
+                        variant="outlined"
+                        fullWidth
+                        multiline
+                        rows={4}
+                        label={q.label}
+                        value={formData[q.id] || ''}
+                        onChange={(e) => handleChange(q.id, e.target.value)}
+                    />
+                );
+            default:
+                return null;
+        }
+    };
+
     return (
-        <Box sx={{ p: 4, maxWidth: 900, margin: "auto", direction: "rtl", backgroundColor: theme === 'dark' ? '#333' : '#fff', color: theme === 'dark' ? '#fff' : '#000' }}>
-            <Card sx={{ mb: 3, backgroundColor: user ? (theme === 'dark' ? green[900] : green[50]) : (theme === 'dark' ? red[900] : red[50]), borderRadius: 2, boxShadow: 3 }}>
-                <CardHeader
-                    title="User Status"
-                    sx={{
-                        textAlign: "right",
-                        backgroundColor: user ? (theme === 'dark' ? green[700] : green[700]) : (theme === 'dark' ? red[700] : red[700]),
-                        color: "#fff",
-                        borderRadius: "8px 8px 0 0",
-                    }}
-                />
-                <CardContent>
-                    <Typography variant="h6" sx={{ textAlign: "right" }}>
-                        {user ? user.username : "User not logged in."}
-                    </Typography>
-                </CardContent>
-            </Card>
+        <Box sx={{ p: { xs: 1, sm: 2, md: 3 }, maxWidth: 1000, margin: "auto", direction: "rtl" }}>
+            <Paper elevation={3} sx={{ p: 2, mb: 3, borderRadius: 3 }}>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="space-between" alignItems="center">
+                    <Box>
+                        <Typography variant="h5" fontWeight="bold">פיט סקאוטינג</Typography>
+                        <Typography variant="body2" color="text.secondary">סקאוט: {user ? user.username : "לא מחובר"}</Typography>
+                    </Box>
+                    <Box sx={{ width: { xs: '100%', sm: 250 } }}>
+                        <TextField
+                            label="מספר קבוצה"
+                            variant="outlined"
+                            fullWidth
+                            required
+                            disabled={!!teamNumber}
+                            value={manualTeamNumber}
+                            onChange={(e) => setManualTeamNumber(e.target.value.replace(/\D/g, ''))}
+                            type="number"
+                        />
+                    </Box>
+                </Stack>
+            </Paper>
 
-            <Card sx={{ mb: 3, backgroundColor: theme === 'dark' ? '#424242' : "#f5f5f5", borderRadius: 2, boxShadow: 3 }}>
-                <CardHeader
-                    title="Team Information"
-                    sx={{ textAlign: "right", backgroundColor: theme === 'dark' ? '#616161' : "#e0e0e0", borderRadius: "8px 8px 0 0" }}
-                />
-                <CardContent>
-                    <Typography variant="h6" sx={{ mb: 3, fontWeight: 'bold', textAlign: "right" }}>
-                        Team Number: {manualTeamNumber || "Not Provided"}
-                    </Typography>
-
-                    {!teamNumber && (
-                        <Box sx={{ mb: 3 }}>
-                            <Typography variant="body1" sx={{ fontWeight: "bold", mb: 1, textAlign: "right" }}>
-                                Enter Team Number:
-                            </Typography>
-                            <TextField
-                                variant="outlined"
-                                fullWidth
-                                value={manualTeamNumber}
-                                onChange={(e) => setManualTeamNumber(e.target.value)}
-                                type="number"
-                                sx={{ mb: 2, backgroundColor: theme === 'dark' ? '#616161' : '#fff', color: theme === 'dark' ? '#fff' : '#000' }}
-                            />
-                        </Box>
-                    )}
-                </CardContent>
-            </Card>
-
-            <Divider sx={{ marginY: 3, backgroundColor: theme === 'dark' ? '#757575' : '#000' }} />
-
-            <Paper elevation={3} sx={{ padding: 3, borderRadius: 2, boxShadow: 3, backgroundColor: theme === 'dark' ? '#424242' : '#fff', color: theme === 'dark' ? '#fff' : '#000' }}>
-                <form onSubmit={handleManualSubmit}>
-                    {Object.keys(questionsList).map((questionId) => {
-                        const question = questionsList[questionId];
-                        return (
-                            <Box key={questionId} sx={{ mb: 3 }}>
-                                <Typography variant="body1" sx={{ fontWeight: "bold", mb: 1, textAlign: "right" }}>
-                                    {question.question}
-                                </Typography>
-                                {question.type === "yesno" && (
-                                    <Select
-                                        variant="outlined"
-                                        fullWidth
-                                        value={formData[questionId] || ""}
-                                        onChange={(e) => handleChange(e, questionId)}
-                                        sx={{ mb: 2, backgroundColor: theme === 'dark' ? '#616161' : '#fff', color: theme === 'dark' ? '#fff' : '#000' }}
-                                    >
-                                        <MenuItem value="yes">כן</MenuItem>
-                                        <MenuItem value="no">לא</MenuItem>
-                                    </Select>
-                                )}
-                                {question.type === "scale" && (
-                                    <Slider
-                                        value={formData[questionId] || 1}
-                                        min={1}
-                                        max={2}
-                                        step={0.05}
-                                        marks
-                                        valueLabelDisplay="auto"
-                                        onChange={(e, newValue) => handleChange(e, questionId, newValue)}
-                                        sx={{ mb: 2, color: theme === 'dark' ? '#fff' : '#000' }}
-                                    />
-                                )}
-                                {question.type === "open" && (
-                                    <TextField
-                                        variant="outlined"
-                                        fullWidth
-                                        multiline
-                                        rows={4}
-                                        value={formData[questionId] || ""}
-                                        onChange={(e) => handleChange(e, questionId)}
-                                        sx={{ mb: 2, backgroundColor: theme === 'dark' ? '#616161' : '#fff', color: theme === 'dark' ? '#fff' : '#000' }}
-                                    />
-                                )}
+            <form onSubmit={handleSubmit}>
+                <Stack spacing={2}>
+                    <Accordion defaultExpanded>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ '& .MuiAccordionSummary-content': { mr: 1 } }}>
+                            <Typography variant="h6">יכולות רובוט</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+                                {questions.capabilities.map(q => (
+                                    <Paper key={q.id} variant="outlined" sx={{ p: 2 }}>
+                                        <Typography variant="subtitle1" gutterBottom>{q.label}</Typography>
+                                        {renderQuestion(q)}
+                                    </Paper>
+                                ))}
                             </Box>
-                        );
-                    })}
+                        </AccordionDetails>
+                    </Accordion>
 
-                    <Box sx={{ textAlign: "center" }}>
+                    <Accordion>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ '& .MuiAccordionSummary-content': { mr: 1 } }}>
+                            <Typography variant="h6">מפרט טכני</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 2 }}>
+                                {questions.technical.map(q => (
+                                    <Paper key={q.id} variant="outlined" sx={{ p: 2 }}>
+                                        {renderQuestion(q)}
+                                    </Paper>
+                                ))}
+                            </Box>
+                        </AccordionDetails>
+                    </Accordion>
+
+                    <Paper variant="outlined" sx={{ p: 2 }}>
+                        {renderQuestion(questions.notes)}
+                    </Paper>
+
+                    <Alert severity="warning" icon={false} sx={{ mt: 2, backgroundColor: theme === 'dark' ? amber[900] : amber[50], color: theme === 'dark' ? amber[50] : 'text.primary' }}>
+                        <AlertTitle sx={{fontWeight: 'bold'}}>הערות של הסקאוטר בלבד</AlertTitle>
+                        יש לענות על השאלות הבאות באופן עצמאי וללא עזרה מהקבוצה הנסקרת.
+                    </Alert>
+                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 2 }}>
+                        {questions.scout.map(q => (
+                            <Paper key={q.id} variant="outlined" sx={{ p: 2 }}>
+                                <Typography variant="subtitle1" gutterBottom>{q.label}</Typography>
+                                {renderQuestion(q)}
+                            </Paper>
+                        ))}
+                    </Box>
+
+                    <Box sx={{ textAlign: 'center', mt: 3 }}>
                         <Button
                             variant="contained"
-                            color="primary"
-                            sx={{
-                                mt: 3,
-                                px: 4,
-                                bgcolor: "#d4af37",
-                                "&:hover": { bgcolor: "#b68e2f" },
-                            }}
+                            size="large"
+                            sx={{ minWidth: 200 }}
                             type="submit"
                             disabled={loading || !manualTeamNumber}
                         >
-                            {loading ? <CircularProgress size={24} sx={{ color: "#fff" }} /> : "Submit"}
+                            {loading ? <CircularProgress size={26} color="inherit" /> : 'שלח'}
                         </Button>
                     </Box>
-                </form>
-            </Paper>
+                </Stack>
+            </form>
         </Box>
     );
 }
