@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback, useContext} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
     Table,
     TableBody,
@@ -62,26 +62,24 @@ function MatchAssign() {
         });
     }, 300);
 
-    const handleScouterChange = useCallback(
-        (matchId, position, scouterName) => {
-            setMatches(prevMatches =>
-                prevMatches.map(match =>
-                    match.id === matchId
-                        ? {
-                            ...match,
-                            [position]: {
-                                ...match[position],
-                                scouter_name: scouterName,
-                            },
-                        }
-                        : match
-                )
-            );
+    // Change handleScouterChange to a normal function to avoid react-hooks/exhaustive-deps issues
+    const handleScouterChange = (matchId, position, scouterName) => {
+        setMatches(prevMatches =>
+            prevMatches.map(match =>
+                match.id === matchId
+                    ? {
+                        ...match,
+                        [position]: {
+                            ...match[position],
+                            scouter_name: scouterName,
+                        },
+                    }
+                    : match
+            )
+        );
 
-            debounceUpdateFirebase(matchId, position, scouterName);
-        },
-        [setMatches]
-    );
+        debounceUpdateFirebase(matchId, position, scouterName);
+    };
 
     const handleSaveAssignments = async () => {
         try {
@@ -283,4 +281,3 @@ const handleAutoAssign = () => {
 }
 
 export default MatchAssign;
-
