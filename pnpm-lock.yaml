@@ -150,7 +150,7 @@ importers:
         specifier: ^3.0.4
         version: 3.5.2
       webpack:
-        specifier: ^5.95.0
+        specifier: ^5.105.2
         version: 5.105.2
       webpack-dev-middleware:
         specifier: ^7.4.2
