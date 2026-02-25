@@ -52,17 +52,15 @@ function MatchAssign() {
         fetchData();
     }, [db]);
 
-    const debounceUpdateFirebase = useCallback(
-        debounce((matchId, position, scouterName) => {
-            const matchRef = ref(db, `matches/${matchId}`);
-            update(matchRef, {
-                [`${position}/scouter_name`]: scouterName,
-            }).catch(error => {
-                console.error("Error updating match in Firebase:", error);
-            });
-        }, 300),
-        [db]
-    );
+    // Use a simple debounced function instead of useCallback-wrapped debounce to satisfy react-hooks/exhaustive-deps in CRA
+    const debounceUpdateFirebase = debounce((matchId, position, scouterName) => {
+        const matchRef = ref(db, `matches/${matchId}`);
+        update(matchRef, {
+            [`${position}/scouter_name`]: scouterName,
+        }).catch(error => {
+            console.error("Error updating match in Firebase:", error);
+        });
+    }, 300);
 
     const handleScouterChange = useCallback(
         (matchId, position, scouterName) => {
@@ -82,7 +80,7 @@ function MatchAssign() {
 
             debounceUpdateFirebase(matchId, position, scouterName);
         },
-        [debounceUpdateFirebase]
+        [setMatches]
     );
 
     const handleSaveAssignments = async () => {
@@ -285,3 +283,4 @@ const handleAutoAssign = () => {
 }
 
 export default MatchAssign;
+

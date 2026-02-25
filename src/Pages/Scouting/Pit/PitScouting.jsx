@@ -23,9 +23,7 @@ import {
 } from "@mui/material";
 import {
     Engineering,
-    Person,
     CheckCircle,
-    Settings,
     Warning,
     Speed,
     Build,
