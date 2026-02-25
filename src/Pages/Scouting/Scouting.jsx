@@ -43,12 +43,13 @@ const ScoutingForm = () => {
         Alliance: match ? match.alliance : '',
         WinnerPrediction: '',
         Notes: '',
+        // legacy numeric fields kept for compatibility but not used by 2026 auto/tele
         L1: 0,
         L2: 0,
         L3: 0,
         L4: 0,
-        climbOption: '',
         removeAlgae: 0,
+        // 2026 auto & teleop keys will be merged in from children
     });
 
     const [barcodeData, setBarcodeData] = useState('');
@@ -108,17 +109,18 @@ const ScoutingForm = () => {
     };
 
     const handleAutoChange = (autoData) => {
+        // autoData already comes as flat 2026 keys from Auto.jsx
         setFormData((prev) => ({
             ...prev,
             ...autoData,
         }));
     };
 
-    const handleTeleChange = ({counters, climbOption}) => {
+    const handleTeleChange = (teleData) => {
+        // teleData already comes as flat 2026 keys from Teleop.jsx
         setFormData((prev) => ({
             ...prev,
-            ...counters,
-            climbOption,
+            ...teleData,
         }));
     };
 
@@ -130,9 +132,20 @@ const ScoutingForm = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if (!formData.Team || !formData.Match || !formData.Alliance || !formData.Name || !formData.WinnerPrediction || !formData.climbOption) {
-            setAlertMessage(t.fillRequiredFields);
-            setAlertSeverity("warning");
+        const {
+            Team,
+            Match,
+            Alliance,
+            Name,
+            WinnerPrediction,
+        } = formData;
+
+        // Only basic fields are required now
+        if (!Team || !Match || !Alliance || !Name || !WinnerPrediction) {
+            setAlertMessage(language === 'he'
+                ? 'נא למלא קבוצה, משחק, ברית, שם ומי צפית שינצח.'
+                : 'Please fill in team, match, alliance, name, and predicted winner.');
+            setAlertSeverity('warning');
             return false;
         }
 
@@ -146,12 +159,12 @@ const ScoutingForm = () => {
             const dbRef = ref(db, `scoutingData/${nodeName}`);
             await set(dbRef, dataToSubmit);
             setAlertMessage(t.submissionSuccess);
-            setAlertSeverity("success");
+            setAlertSeverity('success');
             setIsButtonDisabled(true);
         } catch (error) {
-            console.error("Error submitting data:", error);
+            console.error('Error submitting data:', error);
             setAlertMessage(t.submissionError);
-            setAlertSeverity("error");
+            setAlertSeverity('error');
         }
     };
 
@@ -279,12 +292,15 @@ const ScoutingForm = () => {
 
                 <Divider sx={{marginY: 3}}/>
 
-                <Auto onChange={handleAutoChange} t={t}/>
+                <Auto onChange={handleAutoChange} />
 
                 <Divider sx={{marginY: 3}}/>
 
-                <Box sx={{marginTop: 0, display: 'flex', justifyContent: 'center'}}>
-                    <Teleop onChange={handleTeleChange} t={t}/>
+                <Box sx={{marginTop: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1}}>
+                    <Teleop onChange={handleTeleChange} />
+                    <Typography variant="caption" sx={{ color: theme === 'dark' ? '#ccc' : '#555' }}>
+                        {'בטלאופ: נגיעה אחת במגרש = נקודת זריקה, לחיצה כפולה = נקודת דליברי (אם סימנת דליברי).'}
+                    </Typography>
                 </Box>
 
                 <Divider sx={{marginY: 3}}/>

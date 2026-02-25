@@ -319,14 +319,14 @@ const Auto = ({ onChange }) => {
                   fullWidth
                   size="large"
                 >
-                  <ToggleButton value="left" sx={toggleButtonSx(climbPosition === 'left')}>
-                    {'שמאל'}
+                  <ToggleButton value="right" sx={toggleButtonSx(climbPosition === 'right')}>
+                    {'ימין'}
                   </ToggleButton>
                   <ToggleButton value="center" sx={toggleButtonSx(climbPosition === 'center')}>
                     {'אמצע'}
                   </ToggleButton>
-                  <ToggleButton value="right" sx={toggleButtonSx(climbPosition === 'right')}>
-                    {'ימין'}
+                  <ToggleButton value="left" sx={toggleButtonSx(climbPosition === 'left')}>
+                    {'שמאל'}
                   </ToggleButton>
                 </ToggleButtonGroup>
               </Box>
