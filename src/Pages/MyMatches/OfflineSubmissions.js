@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from "react";
 import { Button, Typography, Paper, Box, Alert } from "@mui/material";
 import { ref, set } from "firebase/database";
 import { db } from "../../firebase-config";
-import { ThemeContext } from "../../context/ThemeContext";
 import { LanguageContext } from "../../context/LanguageContext";
 import translations from "../../translations";
 

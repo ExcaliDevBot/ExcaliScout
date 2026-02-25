@@ -5,7 +5,6 @@ import {
     Typography,
     Paper,
     CircularProgress,
-    TextField,
     MenuItem,
     Select,
     FormControl,
@@ -13,13 +12,13 @@ import {
     Card,
     CardContent,
     Alert,
-    IconButton,
     Fab
 } from '@mui/material';
 import { CameraAlt, FlashOn, FlashOff, Cameraswitch } from '@mui/icons-material';
 import { db } from '../../firebase-config';
 import { ref, set, get } from 'firebase/database';
-import { UserContext } from '../../context/UserContext';
+// Removed unused UserContext import
+// import { UserContext } from '../../context/UserContext';
 import { ThemeContext } from '../../context/ThemeContext';
 import QrScanner from 'qr-scanner';
 
@@ -32,7 +31,8 @@ const QRCodeScanner = () => {
     const [selectedCamera, setSelectedCamera] = useState('');
     const [isScanning, setIsScanning] = useState(false);
     const [alert, setAlert] = useState(null);
-    const { user: currentUser } = useContext(UserContext);
+    // Removed unused user variable
+    // const { user } = useContext(UserContext);
     const { theme } = useContext(ThemeContext);
     const videoRef = useRef(null);
     const qrScannerRef = useRef(null);

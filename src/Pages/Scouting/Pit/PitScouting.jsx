@@ -49,13 +49,6 @@ const questionsList = {
     13: { question: "הערות כלליות אחרות", type: "open" },
 };
 
-const steps = [
-    { label: 'Team Information', icon: <Person /> },
-    { label: 'Robot Capabilities', icon: <Engineering /> },
-    { label: 'Technical Details', icon: <Settings /> },
-    { label: 'Final Review', icon: <CheckCircle /> }
-];
-
 function PitScouting() {
     const { user } = useContext(UserContext);
     const { theme } = useContext(ThemeContext);
@@ -65,8 +58,6 @@ function PitScouting() {
     const [formData, setFormData] = useState({});
     const [loading, setLoading] = useState(false);
     const [manualTeamNumber, setManualTeamNumber] = useState(teamNumber || "");
-    const [activeStep, setActiveStep] = useState(0);
-    const [completedSections, setCompletedSections] = useState(new Set());
 
     useEffect(() => {
         if (!user) {
@@ -97,7 +88,6 @@ function PitScouting() {
         try {
             const pitScoutingRef = ref(db, `pitScoutingResults/${manualTeamNumber}`);
             await set(pitScoutingRef, dataToSend);
-            setActiveStep(3);
             setTimeout(() => {
                 navigate('/my_matches');
             }, 2000);
@@ -469,4 +459,3 @@ function PitScouting() {
 }
 
 export default PitScouting;
-

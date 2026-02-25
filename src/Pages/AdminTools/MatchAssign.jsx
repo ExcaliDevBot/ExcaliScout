@@ -52,32 +52,38 @@ function MatchAssign() {
         fetchData();
     }, [db]);
 
-    const handleScouterChange = useCallback((matchId, position, scouterName) => {
-        setMatches(prevMatches =>
-            prevMatches.map(match =>
-                match.id === matchId
-                    ? {
-                        ...match,
-                        [position]: {
-                            ...match[position],
-                            scouter_name: scouterName,
-                        },
-                    }
-                    : match
-            )
-        );
+    const debounceUpdateFirebase = useCallback(
+        debounce((matchId, position, scouterName) => {
+            const matchRef = ref(db, `matches/${matchId}`);
+            update(matchRef, {
+                [`${position}/scouter_name`]: scouterName,
+            }).catch(error => {
+                console.error("Error updating match in Firebase:", error);
+            });
+        }, 300),
+        [db]
+    );
 
-        debounceUpdateFirebase(matchId, position, scouterName);
-    }, [debounceUpdateFirebase]);
+    const handleScouterChange = useCallback(
+        (matchId, position, scouterName) => {
+            setMatches(prevMatches =>
+                prevMatches.map(match =>
+                    match.id === matchId
+                        ? {
+                            ...match,
+                            [position]: {
+                                ...match[position],
+                                scouter_name: scouterName,
+                            },
+                        }
+                        : match
+                )
+            );
 
-    const debounceUpdateFirebase = debounce((matchId, position, scouterName) => {
-        const matchRef = ref(db, `matches/${matchId}`);
-        update(matchRef, {
-            [`${position}/scouter_name`]: scouterName,
-        }).catch(error => {
-            console.error("Error updating match in Firebase:", error);
-        });
-    }, 300);
+            debounceUpdateFirebase(matchId, position, scouterName);
+        },
+        [debounceUpdateFirebase]
+    );
 
     const handleSaveAssignments = async () => {
         try {
