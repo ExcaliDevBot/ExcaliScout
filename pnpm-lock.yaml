@@ -51,7 +51,7 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
       axios:
-        specifier: ^1.7.9
+        specifier: ^1.13.5
         version: 1.13.5
       body-parser:
         specifier: ^1.20.3
