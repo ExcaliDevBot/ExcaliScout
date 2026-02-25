@@ -43,12 +43,6 @@ const ScoutingForm = () => {
         Alliance: match ? match.alliance : '',
         WinnerPrediction: '',
         Notes: '',
-        // legacy numeric fields kept for compatibility but not used by 2026 auto/tele
-        L1: 0,
-        L2: 0,
-        L3: 0,
-        L4: 0,
-        removeAlgae: 0,
         // 2026 auto & teleop keys will be merged in from children
     });
 
@@ -60,27 +54,33 @@ const ScoutingForm = () => {
 
     useEffect(() => {
         const generateBarcode = () => {
-            const barcodeString = `
-            Name: ${formData.Name || "Unknown"},
-            Team: ${formData.Team || "Unknown"},
-            Match: ${formData.Match || "Unknown"},
-            Alliance: ${formData.Alliance || "Unknown"},
-            WinnerPrediction: ${formData.WinnerPrediction || "None"},
-            Notes: ${formData.Notes},
-            L1: ${formData.L1 || 0},
-            L2: ${formData.L2 || 0},
-            L3: ${formData.L3 || 0},
-            L4: ${formData.L4 || 0},
-            removeAlgae: ${formData.autoRemoveAlgae + formData.removeAlgae || 0},
-            climbOption: ${formData.climbOption || "None"},
-            autoL1: ${formData.autoL1 || 0},
-            autoL2: ${formData.autoL2 || 0},
-            autoL3: ${formData.autoL3 || 0},
-            autoL4: ${formData.autoL4 || 0},
-            autoRemoveAlgae: ${formData.autoRemoveAlgae || 0}
-        `.replace(/\n/g, "").replace(/\s+/g, " ").trim();
+            // Compact, 2026-specific barcode payload as JSON string
+            const payload = {
+                n: formData.Name || 'Unknown',
+                t: formData.Team || 'Unknown',
+                m: formData.Match || 'Unknown',
+                a: formData.Alliance || 'Unknown',
+                wp: formData.WinnerPrediction || 'None',
+                notes: formData.Notes || '',
 
-            return barcodeString.replace(/true/g, "TRUE");
+                // 2026 AUTO
+                aStartX: formData.auto2026StartX ?? null,
+                aStartY: formData.auto2026StartY ?? null,
+                aFuel: formData.auto2026FuelPoints || [], // [{x,y}]
+                aCl: formData.auto2026ClimbPerformed ?? false,
+                aClLvl: formData.auto2026ClimbLevel ?? null,
+                aClSide: formData.auto2026ClimbSide || null,
+
+                // 2026 TELEOP
+                tAutoW: formData.teleop2026AutoWinner || null, // 'red' | 'blue'
+                tMoved: formData.teleop2026MovedInAuto ?? null, // bool
+                tDel: formData.teleop2026DeliveryPoints || [], // [{x,y}]
+                tShot: formData.teleop2026ShotPoints || [], // [{x,y}]
+                tBalls: formData.teleop2026EstimatedBalls ?? null,
+            };
+
+            // QR content as single-line JSON
+            return JSON.stringify(payload);
         };
 
         setBarcodeData(generateBarcode());

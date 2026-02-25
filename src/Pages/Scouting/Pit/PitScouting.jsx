@@ -11,8 +11,6 @@ import {
     TextField,
     CircularProgress,
     Paper,
-    Select,
-    MenuItem,
     Divider,
     Card,
     CardContent,
@@ -21,15 +19,7 @@ import {
     Avatar,
     Alert,
     Fade,
-    Stepper,
-    Step,
-    StepLabel,
-    StepContent,
-    FormControl,
-    InputLabel,
     Grid,
-    IconButton,
-    Tooltip
 } from "@mui/material";
 import {
     Engineering,
@@ -479,3 +469,4 @@ function PitScouting() {
 }
 
 export default PitScouting;
+
