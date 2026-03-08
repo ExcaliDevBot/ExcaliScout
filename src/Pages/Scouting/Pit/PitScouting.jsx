@@ -20,6 +20,10 @@ import {
     Alert,
     Fade,
     Grid,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
 } from "@mui/material";
 import {
     Engineering,
@@ -31,13 +35,14 @@ import {
 } from '@mui/icons-material';
 
 const questionsList = {
-    0: { question: "איזה המרה יש לכם בסוורב(l1/l2/l3)?", type: "open" },
+    0: { question: "איזה המרה יש לכם בסוורב(l1/l2/l3)?", type: "multiple", options: ["L1", "L2", "L3"] },
     1: { question: "כמה אתם שוקלים?", type: "yesno" },
     2: { question: "אתם עוברים מתחת trench?", type: "yesno" },
     3: { question: "מסוגלים לעבור מעל הbump?", type: "yesno" },
-    4: { question: "מטפסים באוטונומי (אם כן מאיפה אמצע ימין או שמאל)", type: "yesno" },
-    5: { question: "מה גודל המרכב", type: "yesno" },
-    6: { question: "מסוגלים לאסוף ישירות מהשחקן אנושי", type: "yesno" },
+    4: { question: "מטפסים באוטונומי", type: "yesno" },
+    5: { question: "אם מטפסים: משמאל ימין או אמצע" , type: "multiple", options: ["שמאל", "אמצע", "ימין"]},
+    6: { question: "מה גודל המרכב", type: "yesno" },
+    7: { question: "מסוגלים לאסוף ישירות מהשחקן אנושי", type: "yesno" },
     13: { question: "הערות כלליות אחרות", type: "open" },
 };
 
@@ -159,6 +164,62 @@ function PitScouting() {
                         לא
                     </Button>
                 </Box>
+            </CardContent>
+        </Card>
+    );
+
+    const renderMultipleChoiceQuestion = (questionId, question, options) => (
+        <Card
+            key={questionId}
+            elevation={2}
+            sx={{
+                mb: 2,
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                    elevation: 4,
+                    transform: 'translateY(-2px)'
+                },
+                border: formData[questionId] ? `2px solid ${theme === 'dark' ? '#d4af37' : '#012265'}` : 'none'
+            }}
+        >
+            <CardContent sx={{ p: 3 }}>
+                <Typography
+                    variant="h6"
+                    sx={{
+                        mb: 2,
+                        fontWeight: 'bold',
+                        textAlign: "right",
+                        color: theme === 'dark' ? '#fff' : '#333'
+                    }}
+                >
+                    {question}
+                </Typography>
+                <FormControl fullWidth>
+                    <InputLabel id={`label-${questionId}`} sx={{ color: theme === 'dark' ? '#b0b0b0' : '#666' }}>בחר אפשרות</InputLabel>
+                    <Select
+                        labelId={`label-${questionId}`}
+                        value={formData[questionId] || ""}
+                        label="בחר אפשרות"
+                        variant="outlined"
+                        onChange={(e) => handleChange(e, questionId)}
+                        sx={{
+                            textAlign: 'right',
+                             '& .MuiOutlinedInput-notchedOutline': {
+                                borderColor: theme === 'dark' ? '#d4af37' : '#012265',
+                            },
+                            color: theme === 'dark' ? '#fff' : '#000',
+                            '& .MuiSvgIcon-root': {
+                                color: theme === 'dark' ? '#fff' : '#000',
+                            }
+                        }}
+                    >
+                        {options && options.map((option, index) => (
+                            <MenuItem key={index} value={option}>
+                                {option}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
             </CardContent>
         </Card>
     );
@@ -362,6 +423,13 @@ function PitScouting() {
                                             return (
                                                 <Grid item xs={12} md={6} key={questionId}>
                                                     {renderYesNoQuestion(questionId, questionData.question)}
+                                                </Grid>
+                                            );
+                                        }
+                                        if (questionData.type === 'multiple') {
+                                            return (
+                                                <Grid item xs={12} md={6} key={questionId}>
+                                                    {renderMultipleChoiceQuestion(questionId, questionData.question, questionData.options)}
                                                 </Grid>
                                             );
                                         }
