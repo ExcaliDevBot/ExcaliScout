@@ -31,19 +31,13 @@ import {
 } from '@mui/icons-material';
 
 const questionsList = {
-    0: { question: "גובה הטיפוס (מטר מקסימלי)", type: "scale" },
-    1: { question: "האם הטיפוס מפריע לקבוצה אחרת לטפס", type: "yesno" },
-    2: { question: "האם הרובוט מסוגל לנקד ב L1", type: "yesno" },
-    3: { question: "האם הרובוט מסוגל לנקד בL2 ", type: "yesno" },
-    4: { question: "האם הרובוט מסוגל לנקד ב L3", type: "yesno" },
-    5: { question: "האם הרובוט מסוגל לנקד בL4 ", type: "yesno" },
-    6: { question: "האם הרובוט מסוגל לאסוף מהרצפה", type: "yesno" },
-    7: { question: "האם הרובוט מסוגל לאסוף מהפידר", type: "yesno" },
-    8: { question: "האם הרובוט מסוגל לנקד Algae בפרוססור", type: "yesno" },
-    9: { question: "האם הרובוט מסוגל לנקד Algae ברשת", type: "yesno" },
-    10: { question: "האם הרובוט יוצא מאזור ההתחלה באוטונומי", type: "yesno" },
-    11: { question: "האם אתם מסוגלים להעיף Algae מהריף", type: "yesno" },
-    12: { question: "תאר פירוט אוטונומיי לגבי כל מסלול", type: "open" },
+    0: { question: "איזה המרה יש לכם בסוורב(l1/l2/l3)?", type: "open" },
+    1: { question: "כמה אתם שוקלים?", type: "yesno" },
+    2: { question: "אתם עוברים מתחת trench?", type: "yesno" },
+    3: { question: "מסוגלים לעבור מעל הbump?", type: "yesno" },
+    4: { question: "מטפסים באוטונומי (אם כן מאיפה אמצע ימין או שמאל)", type: "yesno" },
+    5: { question: "מה גודל המרכב", type: "yesno" },
+    6: { question: "מסוגלים לאסוף ישירות מהשחקן אנושי", type: "yesno" },
     13: { question: "הערות כלליות אחרות", type: "open" },
 };
 
