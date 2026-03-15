@@ -155,6 +155,77 @@ const handleAutoAssign = () => {
 
     setMatches(updatedMatches);
 };
+
+// Add a new auto-assign variant that forces all red positions to Y-Team1/2/3 while assigning the rest normally
+const handleAutoAssignWithYTeams = () => {
+    const pitScouters = scouters.filter(scouter => scouter.role === 'pit');
+    const strategyScouters = scouters.filter(scouter => scouter.role === 'strategy');
+    const photographerScouters = scouters.filter(scouter => scouter.role === 'photographer');
+    const normalScouters = scouters.filter(scouter => scouter.role === 'normal scouter');
+
+    if (pitScouters.length < 3 || strategyScouters.length < 3 || normalScouters.length < 6) {
+        // still allow operation but warn if too few scouters for balanced assignment
+        // proceed anyway to set the red teams
+        console.warn('Not enough scouters for a fully balanced assignment, proceeding to assign Y-Teams for reds.');
+    }
+
+    const updatedMatches = [...matches];
+    let pitIndex = 0;
+    let strategyIndex = 0;
+    let photographerIndex = 0;
+    let normalIndex = 0;
+
+    // First, set all red positions to Y-Team1/2/3
+    updatedMatches.forEach(match => {
+        for (let i = 1; i <= 3; i++) {
+            const pos = `red${i}`;
+            if (match[pos]) {
+                match[pos].scouter_name = `Y-Team${i}`;
+            }
+        }
+    });
+
+    // Then assign the remaining positions (blue slots) using the existing strategy from handleAutoAssign
+    updatedMatches.forEach((match, matchIndex) => {
+        const is6738Playing = match.teams && match.teams.includes(6738);
+        const isPreviousMatch = matchIndex > 0 && updatedMatches[matchIndex - 1].teams && updatedMatches[matchIndex - 1].teams.includes(6738);
+
+        if (is6738Playing || isPreviousMatch) {
+            // For 6738-related matches assign pit/strategy to remaining spots (mostly blue positions)
+            for (let i = 0; i < 6; i++) {
+                const position = i < 3 ? `red${i + 1}` : `blue${i - 2}`;
+                if (position.startsWith('red')) continue; // skip reds (already set to Y-Team)
+                if (match[position]) {
+                    if (i < 3) {
+                        // should not happen because reds are skipped
+                    } else {
+                        // blue slots (i = 3,4,5) -> strategy scouters
+                        match[position].scouter_name = strategyScouters[strategyIndex % Math.max(1, strategyScouters.length)]?.username || normalScouters[normalIndex % Math.max(1, normalScouters.length)]?.username || '';
+                        strategyIndex = (strategyIndex + 1) % Math.max(1, strategyScouters.length);
+                    }
+                }
+            }
+        } else {
+            // Non-6738 matches: photographer to as many as available, then normal scouters
+            for (let i = 0; i < 6; i++) {
+                const position = i < 3 ? `red${i + 1}` : `blue${i - 2}`;
+                if (position.startsWith('red')) continue; // skip reds
+                if (match[position]) {
+                    if (photographerIndex < photographerScouters.length) {
+                        match[position].scouter_name = photographerScouters[photographerIndex].username;
+                        photographerIndex++;
+                    } else {
+                        match[position].scouter_name = normalScouters[normalIndex % Math.max(1, normalScouters.length)]?.username || '';
+                        normalIndex = (normalIndex + 1) % Math.max(1, normalScouters.length);
+                    }
+                }
+            }
+        }
+    });
+
+    setMatches(updatedMatches);
+};
+
     const sortedMatches = [...matches].sort((a, b) => a.match_id - b.match_id);
 
     return (
@@ -197,6 +268,18 @@ const handleAutoAssign = () => {
                     }}
                 >
                     Auto Assign Scouters
+                </Button>
+                <Button
+                    variant="contained"
+                    color="info"
+                    onClick={handleAutoAssignWithYTeams}
+                    sx={{
+                        width: 260,
+                        backgroundColor: theme === 'light' ? '#0288d1' : '#0b66a3',
+                        '&:hover': {backgroundColor: theme === 'light' ? '#0277bd' : '#075985'}
+                    }}
+                >
+                    Auto Assign (Reds → Y-Team1/2/3)
                 </Button>
             </Box>
 
