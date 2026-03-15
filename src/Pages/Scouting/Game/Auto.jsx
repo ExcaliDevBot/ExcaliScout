@@ -5,23 +5,27 @@ import {
   Box,
   Button,
   Typography,
-  Grid,
   Divider,
   Paper,
   FormControlLabel,
   Switch,
   ToggleButton,
   ToggleButtonGroup,
+  TextField,
+  useMediaQuery,
+  Stack,
 } from '@mui/material';
 import { ThemeContext } from '../../../context/ThemeContext';
 
 const Auto = ({ onChange }) => {
   const { theme } = useContext(ThemeContext);
+  const isMobile = useMediaQuery('(max-width:600px)');
 
   // --- 2026 Auto State ---
   // We store logical grid coordinates (0-100 integer) so they are standard across devices
   const [startPosition, setStartPosition] = useState(null); // { x: 0-100, y: 0-100 }
   const [fuelPickupPoints, setFuelPickupPoints] = useState([]); // array of { id, x: 0-100, y: 0-100 }
+  const [autoFuelScored, setAutoFuelScored] = useState(0); // number of balls scored in auto
   const [autoClimbPerformed, setAutoClimbPerformed] = useState(false);
   const [climbPosition, setClimbPosition] = useState(null); // 'left' | 'center' | 'right'
 
@@ -61,24 +65,18 @@ const Auto = ({ onChange }) => {
       auto2026StartX: startPosition ? startPosition.x : null,
       auto2026StartY: startPosition ? startPosition.y : null,
       auto2026FuelPoints: fuelPickupPoints.map(({ x, y }) => ({ x, y })),
+      auto2026FuelScored: autoFuelScored,
       auto2026ClimbPerformed: autoClimbPerformed,
       auto2026ClimbLevel: autoClimbPerformed ? 1 : null, // always 1 in auto
       auto2026ClimbSide: autoClimbPerformed ? climbPosition : null,
     });
-  }, [startPosition, fuelPickupPoints, autoClimbPerformed, climbPosition, onChange]);
+  }, [startPosition, fuelPickupPoints, autoClimbPerformed, climbPosition, onChange, autoFuelScored]);
 
-  const fieldBorderColor = theme === 'dark' ? '#888' : '#ccc';
+  const fieldBorderColor = theme === 'dark' ? '#4a5568' : '#d1d5db';
+  const cardBg = theme === 'dark' ? '#111214' : '#ffffff';
 
-  const toggleButtonSx = (selected) => ({
-    fontWeight: 'bold',
-    '&.Mui-selected': {
-      backgroundColor: selected ? '#4c86af' : undefined,
-      color: '#fff',
-    },
-    '&.Mui-selected:hover': {
-      backgroundColor: '#3b6b8a',
-    },
-  });
+  // Small helper to clamp the scored value
+  const setClamped = (v) => setAutoFuelScored((typeof v === 'number') ? Math.max(0, Math.floor(v)) : 0);
 
   return (
     <Box
@@ -95,14 +93,15 @@ const Auto = ({ onChange }) => {
       <Typography
         variant="h4"
         sx={{
-          marginBottom: 1,
-          backgroundColor: '#4c86af',
+          marginBottom: 0,
+          background: 'linear-gradient(90deg,#4c86af,#6fb1d8)',
           color: '#fff',
           padding: 2,
           borderRadius: 2,
           textAlign: 'center',
           width: '100%',
-          fontSize: { xs: '1.4rem', sm: '1.8rem' },
+          fontSize: { xs: '1.25rem', sm: '1.6rem' },
+          boxShadow: 2,
         }}
       >
         {'אוטונומי'}
@@ -110,207 +109,222 @@ const Auto = ({ onChange }) => {
 
       <Divider sx={{ width: '100%' }} />
 
-      {/* 2026 Field Section */}
-      <Grid container spacing={2} sx={{ width: '100%' }}>
-        <Grid
-          item
-          xs={12}
-          md={7}
-          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-        >
-          <Box
-            onClick={(e) => handleFieldClick(e, startPosition ? 'fuel' : 'start')}
+      {/* Main content: left = field, right = controls. Use Stack for responsive symmetry. */}
+      <Stack
+        direction={{ xs: 'column', md: 'row' }}
+        spacing={2}
+        sx={{ width: '100%', alignItems: 'stretch', justifyContent: 'center' }}
+      >
+        {/* Field area */}
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: { xs: '100%', md: '60%' } }}>
+          <Paper
+            elevation={3}
             sx={{
-              position: 'relative',
               width: '100%',
-              maxWidth: 450,
-              aspectRatio: '16 / 9',
-              borderRadius: 2,
+              maxWidth: isMobile ? 360 : 520,
+              borderRadius: 3,
               overflow: 'hidden',
               border: `2px solid ${fieldBorderColor}`,
-              backgroundColor: theme === 'dark' ? '#1e1e1e' : '#f0f4f8',
-              backgroundImage: 'url(/2026field.png)', // image already in public/
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
             }}
           >
-            {/* Start position marker */}
-            {startPosition && (
-              <Box
-                sx={{
-                  position: 'absolute',
-                  left: `${startPosition.x}%`,
-                  top: `${startPosition.y}%`,
-                  transform: 'translate(-50%, -50%)',
-                  width: 22,
-                  height: 22,
-                  borderRadius: '50%',
-                  backgroundColor: '#4caf50',
-                  border: '2px solid #fff',
-                }}
-              />
-            )}
-
-            {/* Fuel pickup markers */}
-            {fuelPickupPoints.map((p, index) => (
-              <Box
-                key={p.id}
-                sx={{
-                  position: 'absolute',
-                  left: `${p.x}%`,
-                  top: `${p.y}%`,
-                  transform: 'translate(-50%, -50%)',
-                  width: 20,
-                  height: 20,
-                  borderRadius: '50%',
-                  backgroundColor: '#ff9800',
-                  border: '2px solid #fff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '0.7rem',
-                  color: '#000',
-                  fontWeight: 'bold',
-                }}
-              >
-                {index + 1}
-              </Box>
-            ))}
-          </Box>
-        </Grid>
-
-        <Grid item xs={12} md={5}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Paper
-              elevation={2}
+            <Box
+              onClick={(e) => handleFieldClick(e, startPosition ? 'fuel' : 'start')}
               sx={{
-                padding: 2,
-                borderRadius: 2,
-                backgroundColor: theme === 'dark' ? '#2b2b2b' : '#fafafa',
+                position: 'relative',
+                width: '100%',
+                aspectRatio: '16 / 9',
+                backgroundColor: theme === 'dark' ? '#0b0b0b' : '#f7fafc',
+                backgroundImage: 'url(/2026field.png)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                cursor: 'crosshair',
               }}
             >
-              <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-                {'נקודת התחלה באוטונומי'}
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 1 }}>
-                {startPosition
-                  ? 'עכשיו, כל נגיעה במגרש תוסיף נקודת איסוף כדורים.'
-                  : 'גע פעם אחת במגרש כדי לבחור איפה הרובוט מתחיל.'}
-              </Typography>
+              {/* Start position marker */}
               {startPosition && (
-                <Button
-                  size="small"
-                  variant="outlined"
-                  onClick={() => {
-                    setStartPosition(null);
-                    setFuelPickupPoints([]);
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    left: `${startPosition.x}%`,
+                    top: `${startPosition.y}%`,
+                    transform: 'translate(-50%, -50%)',
+                    width: isMobile ? 28 : 34,
+                    height: isMobile ? 28 : 34,
+                    borderRadius: '50%',
+                    backgroundColor: '#22c55e',
+                    border: '3px solid #fff',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                  }}
+                />
+              )}
+
+              {/* Fuel pickup markers */}
+              {fuelPickupPoints.map((p, index) => (
+                <Box
+                  key={p.id}
+                  sx={{
+                    position: 'absolute',
+                    left: `${p.x}%`,
+                    top: `${p.y}%`,
+                    transform: 'translate(-50%, -50%)',
+                    width: isMobile ? 26 : 30,
+                    height: isMobile ? 26 : 30,
+                    borderRadius: '50%',
+                    backgroundColor: '#ffb020',
+                    border: '3px solid #fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: isMobile ? '0.75rem' : '0.85rem',
+                    color: '#000',
+                    fontWeight: '700',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
                   }}
                 >
+                  {index + 1}
+                </Box>
+              ))}
+            </Box>
+
+            <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
+              <Typography variant="body2" sx={{ color: theme === 'dark' ? '#cbd5e1' : '#475569' }}>
+                {startPosition ? 'נבחרה נקודת התחלה' : 'הקש פעם אחת על המגרש כדי לבחור נקודת התחלה'}
+              </Typography>
+
+              {startPosition && (
+                <Button size={isMobile ? 'small' : 'small'} variant="outlined" onClick={() => { setStartPosition(null); setFuelPickupPoints([]); }}>
                   {'איפוס התחלה ונקודות איסוף'}
                 </Button>
               )}
-            </Paper>
+            </Box>
+          </Paper>
+        </Box>
 
-            <Paper
-              elevation={2}
-              sx={{
-                padding: 2,
-                borderRadius: 2,
-                backgroundColor: theme === 'dark' ? '#2b2b2b' : '#fafafa',
-              }}
-            >
-              <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
+        {/* Controls area */}
+        <Box sx={{ width: { xs: '100%', md: '40%' }, display: 'flex', justifyContent: 'center' }}>
+          <Stack spacing={2} sx={{ width: '100%', maxWidth: 420 }}>
+            {/* Card: pickup summary */}
+            <Paper elevation={3} sx={{ p: 2, borderRadius: 3, background: cardBg }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 1, textAlign: 'right' }}>
                 {'נקודות איסוף כדורים באוטונומי'}
               </Typography>
-              <Typography variant="body2" sx={{ mb: 1 }}>
-                {'אחרי שסימנת נקודת התחלה: כל נגיעה במגרש מוסיפה נקודת איסוף ממוספרת.'}
-              </Typography>
-              {fuelPickupPoints.length > 0 && (
-                <>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    {'סה"כ נקודות איסוף: '} {fuelPickupPoints.length}
+              <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Typography variant="body2" sx={{ color: theme === 'dark' ? '#cbd5e1' : '#475569' }}>
+                  {'סה"כ נקודות איסוף:'}
+                </Typography>
+                <Typography variant="h6" sx={{ fontWeight: 800 }}>{fuelPickupPoints.length}</Typography>
+              </Stack>
+
+              <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+                <Button fullWidth size={isMobile ? 'large' : 'small'} variant="outlined" color="warning" onClick={handleClearFuelPoints}>
+                  {'איפוס נקודות איסוף'}
+                </Button>
+                <Button fullWidth size={isMobile ? 'large' : 'small'} variant="contained" onClick={() => setFuelPickupPoints((p) => p.slice(0, -1))}>
+                  {'בטל נקודה אחרונה'}
+                </Button>
+              </Box>
+            </Paper>
+
+            {/* Card: fuel scored (big, central) */}
+            <Paper elevation={4} sx={{ p: 2, borderRadius: 3, background: 'linear-gradient(180deg,#f8fafc,#ffffff)' }}>
+              <Stack spacing={1} sx={{ alignItems: 'stretch' }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 800, textAlign: 'right' }}>
+                  {'כדורים שקלעו באוטונומי'}
+                </Typography>
+
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <Typography variant={isMobile ? 'h3' : 'h2'} sx={{ fontWeight: 900, color: '#0f172a', minWidth: 120, textAlign: 'center' }}>
+                    {autoFuelScored}
                   </Typography>
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    color="warning"
-                    onClick={handleClearFuelPoints}
-                  >
-                    {'איפוס נקודות איסוף'}
+                </Box>
+
+                <Stack direction={isMobile ? 'column' : 'row'} spacing={1} sx={{ mt: 1 }}>
+                  <Button fullWidth={isMobile} variant="outlined" size={isMobile ? 'large' : 'medium'} onClick={() => setClamped(0)}>
+                    {'איפוס'}
                   </Button>
-                </>
+                  <Button fullWidth={isMobile} variant="outlined" size={isMobile ? 'large' : 'medium'} onClick={() => setClamped(autoFuelScored - 5)}>
+                    {'-5'}
+                  </Button>
+                  <Button fullWidth={isMobile} variant="outlined" size={isMobile ? 'large' : 'medium'} onClick={() => setClamped(autoFuelScored - 1)}>
+                    {'-1'}
+                  </Button>
+                  <Button fullWidth={isMobile} variant="contained" color="primary" size={isMobile ? 'large' : 'medium'} onClick={() => setClamped(autoFuelScored + 1)}>
+                    {'+1'}
+                  </Button>
+                  <Button fullWidth={isMobile} variant="contained" color="primary" size={isMobile ? 'large' : 'medium'} onClick={() => setClamped(autoFuelScored + 5)}>
+                    {'+5'}
+                  </Button>
+                </Stack>
+
+                <Box sx={{ mt: 1, display: 'flex', gap: 1, alignItems: 'center' }}>
+                  <TextField
+                    fullWidth
+                    size={isMobile ? 'large' : 'small'}
+                    label={'סה"כ סופי'}
+                    type="number"
+                    value={autoFuelScored}
+                    onChange={(e) => {
+                      const v = parseInt(e.target.value, 10);
+                      setClamped(Number.isNaN(v) ? 0 : v);
+                    }}
+                  />
+                </Box>
+              </Stack>
+            </Paper>
+
+            {/* Card: climb controls */}
+            <Paper elevation={3} sx={{ p: 2, borderRadius: 3, background: cardBg }}>
+              <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
+                  {'טיפוס באוטונומי'}
+                </Typography>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={autoClimbPerformed}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setAutoClimbPerformed(checked);
+                        if (!checked) setClimbPosition(null);
+                      }}
+                      color="primary"
+                    />
+                  }
+                  labelPlacement="start"
+                  label={''}
+                />
+              </Stack>
+
+              {autoClimbPerformed && (
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="body2" sx={{ mb: 1, fontWeight: 'bold' }}>
+                    {'מיקום הטיפוס'}
+                  </Typography>
+                  <ToggleButtonGroup
+                    value={climbPosition}
+                    exclusive
+                    onChange={(_, value) => value && setClimbPosition(value)}
+                    fullWidth
+                    size={isMobile ? 'small' : 'large'}
+                  >
+                    <ToggleButton value="right" sx={{ fontWeight: 700 }}>
+                      {'ימין'}
+                    </ToggleButton>
+                    <ToggleButton value="center" sx={{ fontWeight: 700 }}>
+                      {'אמצע'}
+                    </ToggleButton>
+                    <ToggleButton value="left" sx={{ fontWeight: 700 }}>
+                      {'שמאל'}
+                    </ToggleButton>
+                  </ToggleButtonGroup>
+                </Box>
               )}
             </Paper>
-          </Box>
-        </Grid>
-      </Grid>
 
-      <Divider sx={{ width: '100%', my: 2 }} />
-
-      {/* Auto climb selection */}
-      <Paper
-        elevation={2}
-        sx={{
-          width: '100%',
-          maxWidth: 600,
-          padding: 2,
-          borderRadius: 2,
-          backgroundColor: theme === 'dark' ? '#2b2b2b' : '#fafafa',
-        }}
-      >
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-              {'טיפוס באוטונומי'}
-            </Typography>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={autoClimbPerformed}
-                  onChange={(e) => {
-                    const checked = e.target.checked;
-                    setAutoClimbPerformed(checked);
-                    if (!checked) {
-                      setClimbPosition(null);
-                    }
-                  }}
-                  color="primary"
-                />
-              }
-              labelPlacement="start"
-              label={'הרובוט טיפס בסוף האוטונומי'}
-              sx={{ ml: 0 }}
-            />
-          </Box>
-
-          {autoClimbPerformed && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box>
-                <Typography variant="body2" sx={{ mb: 1, fontWeight: 'bold' }}>
-                  {'מיקום הטיפוס'}
-                </Typography>
-                <ToggleButtonGroup
-                  value={climbPosition}
-                  exclusive
-                  onChange={(_, value) => value && setClimbPosition(value)}
-                  fullWidth
-                  size="large"
-                >
-                  <ToggleButton value="right" sx={toggleButtonSx(climbPosition === 'right')}>
-                    {'ימין'}
-                  </ToggleButton>
-                  <ToggleButton value="center" sx={toggleButtonSx(climbPosition === 'center')}>
-                    {'אמצע'}
-                  </ToggleButton>
-                  <ToggleButton value="left" sx={toggleButtonSx(climbPosition === 'left')}>
-                    {'שמאל'}
-                  </ToggleButton>
-                </ToggleButtonGroup>
-              </Box>
-            </Box>
-          )}
+          </Stack>
         </Box>
-      </Paper>
+      </Stack>
+
     </Box>
   );
 };

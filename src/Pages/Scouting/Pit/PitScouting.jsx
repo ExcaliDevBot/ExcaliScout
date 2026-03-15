@@ -35,13 +35,13 @@ import {
 } from '@mui/icons-material';
 
 const questionsList = {
-    0: { question: "איזה המרה יש לכם בסוורב(l1/l2/l3)?", type: "multiple", options: ["L1", "L2", "L3"] },
-    1: { question: "כמה אתם שוקלים?", type: "yesno" },
+    0: { question: "איזה המרה יש לכם בסוורב(טנק/l1/l2/l3)?", type: "multiple", options: ["L1", "L2", "L3", "טנק"] },
+    1: { question: "כמה אתם שוקלים?", type: "open" },
     2: { question: "אתם עוברים מתחת trench?", type: "yesno" },
     3: { question: "מסוגלים לעבור מעל הbump?", type: "yesno" },
     4: { question: "מטפסים באוטונומי", type: "yesno" },
     5: { question: "אם מטפסים: משמאל ימין או אמצע" , type: "multiple", options: ["שמאל", "אמצע", "ימין"]},
-    6: { question: "מה גודל המרכב", type: "yesno" },
+    6: { question: " מה גודל המרכב ללא באמפר", type: "yesno" },
     7: { question: "מסוגלים לאסוף ישירות מהשחקן אנושי", type: "yesno" },
     13: { question: "הערות כלליות אחרות", type: "open" },
 };
