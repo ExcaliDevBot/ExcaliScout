@@ -1,3 +1,5 @@
+// src/Pages/Scouting/Game/Auto.jsx
+
 import React, { useState, useEffect, useContext } from 'react';
 import {
   Box,
@@ -21,7 +23,6 @@ const Auto = ({ onChange }) => {
   const [startPosition, setStartPosition] = useState(null); // { x: 0-100, y: 0-100 }
   const [fuelPickupPoints, setFuelPickupPoints] = useState([]); // array of { id, x: 0-100, y: 0-100 }
   const [autoClimbPerformed, setAutoClimbPerformed] = useState(false);
-  const [climbLevel, setClimbLevel] = useState(null); // 1 | 2 | 3
   const [climbPosition, setClimbPosition] = useState(null); // 'left' | 'center' | 'right'
 
   // --- Helpers for field clicks ---
@@ -61,10 +62,10 @@ const Auto = ({ onChange }) => {
       auto2026StartY: startPosition ? startPosition.y : null,
       auto2026FuelPoints: fuelPickupPoints.map(({ x, y }) => ({ x, y })),
       auto2026ClimbPerformed: autoClimbPerformed,
-      auto2026ClimbLevel: autoClimbPerformed ? climbLevel : null,
+      auto2026ClimbLevel: autoClimbPerformed ? 1 : null, // always 1 in auto
       auto2026ClimbSide: autoClimbPerformed ? climbPosition : null,
     });
-  }, [startPosition, fuelPickupPoints, autoClimbPerformed, climbLevel, climbPosition, onChange]);
+  }, [startPosition, fuelPickupPoints, autoClimbPerformed, climbPosition, onChange]);
 
   const fieldBorderColor = theme === 'dark' ? '#888' : '#ccc';
 
@@ -270,7 +271,6 @@ const Auto = ({ onChange }) => {
                     const checked = e.target.checked;
                     setAutoClimbPerformed(checked);
                     if (!checked) {
-                      setClimbLevel(null);
                       setClimbPosition(null);
                     }
                   }}
@@ -285,29 +285,6 @@ const Auto = ({ onChange }) => {
 
           {autoClimbPerformed && (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box>
-                <Typography variant="body2" sx={{ mb: 1, fontWeight: 'bold' }}>
-                  {'גובה הטיפוס'}
-                </Typography>
-                <ToggleButtonGroup
-                  value={climbLevel}
-                  exclusive
-                  onChange={(_, value) => value && setClimbLevel(value)}
-                  fullWidth
-                  size="large"
-                >
-                  <ToggleButton value={1} sx={toggleButtonSx(climbLevel === 1)}>
-                    {'דרגה 1'}
-                  </ToggleButton>
-                  <ToggleButton value={2} sx={toggleButtonSx(climbLevel === 2)}>
-                    {'דרגה 2'}
-                  </ToggleButton>
-                  <ToggleButton value={3} sx={toggleButtonSx(climbLevel === 3)}>
-                    {'דרגה 3'}
-                  </ToggleButton>
-                </ToggleButtonGroup>
-              </Box>
-
               <Box>
                 <Typography variant="body2" sx={{ mb: 1, fontWeight: 'bold' }}>
                   {'מיקום הטיפוס'}
@@ -339,4 +316,3 @@ const Auto = ({ onChange }) => {
 };
 
 export default Auto;
-
